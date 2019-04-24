@@ -1,0 +1,106 @@
+@startuml
+'autonumber
+skinparam backgroundColor white
+title
+	Autentication Filters Call Graph
+end title
+
+participant Filter
+participant AbstractAuthFilter
+participant AbstractSessionAuthFilter
+participant AbstractFormAuthFilter
+participant FormAuthFilter
+participant RememberMeFormAuthFilter
+
+' initial call
+Filter -> AbstractAuthFilter ++ : <b>doFilter(req,resp,chain)</b>
+
+  ' pre filter
+  AbstractAuthFilter -> FormAuthFilter ++ : <b>preFilter</b>(req, resp, chain)
+    rnote over FormAuthFilter : require model\ninitialization
+  return
+  
+  ' is protected
+  AbstractAuthFilter -> AbstractFormAuthFilter : <b>isProtectedURI</b>(uri)
+    activate AbstractFormAuthFilter
+    rnote over AbstractFormAuthFilter : never protect login uri
+    AbstractAuthFilter <- AbstractFormAuthFilter ++ : [uri != login uri]
+      rnote over AbstractAuthFilter : check protection regex
+    return
+  return
+
+  == Public URI ==
+
+  AbstractAuthFilter -> RememberMeFormAuthFilter ++ : <b>processPublicRequest</b>(req, resp, chain)
+    rnote over RememberMeFormAuthFilter : check remember_me\ncookie if not logged in
+    RememberMeFormAuthFilter -> AbstractFormAuthFilter ++
+      rnote over AbstractFormAuthFilter : <font color="blue">redirect logged in users</font>\n<font color="blue">from login URI to index URI</font>
+      AbstractFormAuthFilter -> AbstractAuthFilter ++ : [not logged or uri != login uri]
+        rnote over AbstractAuthFilter : <font color="green">process filter chain</font>
+      return
+    return
+  return
+
+== Protected URI ==
+
+  AbstractAuthFilter -> AbstractSessionAuthFilter ++ : <b>getAuthentifiedUser</b>(req)
+    AbstractSessionAuthFilter -> AbstractSessionAuthFilter : <b>getSessionUser</b>(session)
+    AbstractSessionAuthFilter -> AbstractAuthFilter ++ : [no user in session and uri == do_login uri]
+      AbstractAuthFilter -> AbstractFormAuthFilter ++ : <b>authenticate</b>(req)
+        AbstractFormAuthFilter -> FormAuthFilter ++ : <b>checkCredentials</b>(login, password)
+          rnote over FormAuthFilter : check credentails\nin database
+        return
+      return
+    return
+  return  
+
+  group granted access
+    AbstractAuthFilter -> AbstractSessionAuthFilter ++ : <b>processProtectedRequest</b>(user, req, resp, chain)
+      AbstractSessionAuthFilter -> AbstractSessionAuthFilter : <b>checkSessionUser</b>(user, session)
+      group logging in
+        AbstractSessionAuthFilter -> AbstractSessionAuthFilter : <b>setSessionUser</b>(user, session)
+        AbstractSessionAuthFilter -> RememberMeFormAuthFilter ++ : <b>processPostLoginRequest</b>(user, req, resp, chain)
+          rnote over RememberMeFormAuthFilter : handle remember_me request
+          AbstractFormAuthFilter <- RememberMeFormAuthFilter ++
+            rnote over AbstractFormAuthFilter : <font color="blue">handle redirection</font>\n<font color="blue">and saved requests</font>
+            AbstractFormAuthFilter -> AbstractSessionAuthFilter ++ : [not redirected]
+              rnote over AbstractSessionAuthFilter : <font color="green">200 Ok</font>
+            return
+          return
+        return
+      end
+      group logging out
+        AbstractSessionAuthFilter -> AbstractSessionAuthFilter : <b>clearSessionUser</b>(user, session)
+        AbstractSessionAuthFilter -> RememberMeFormAuthFilter ++ : <b>processPostLogoutRequest</b>(user, req, resp, chain)
+          rnote over RememberMeFormAuthFilter : clear remember_me cookie
+          AbstractFormAuthFilter <- RememberMeFormAuthFilter ++
+            rnote over AbstractFormAuthFilter : <font color="blue">handle redirection</font>\n<font color="blue">towards login uri</font>
+            AbstractSessionAuthFilter <- AbstractFormAuthFilter ++ : [not redirected]
+              rnote over AbstractSessionAuthFilter : <font color="green">200 Ok</font>
+            return
+          return    
+        return
+      end
+      group normal processing
+        AbstractAuthFilter <- AbstractSessionAuthFilter ++
+          rnote over AbstractAuthFilter : <font color="green">process filter chain</font>
+        return
+      end
+    return
+  end
+
+  group forbidden access
+    AbstractAuthFilter -> RememberMeFormAuthFilter ++ : <b>processForbiddenRequest</b>(req, resp, chain)
+      rnote over RememberMeFormAuthFilter : <font color="blue">check remember_me cookie,</font>\n<font color="blue">transfer control to <b>ganted access</b></font>\n<font color="blue">if successful</font>
+      AbstractFormAuthFilter <- RememberMeFormAuthFilter ++ : [still no user]
+        rnote over AbstractFormAuthFilter : <font color="blue">handle redirection</font>\n<font color="blue">towards login</font>\n<font color="blue">and save request</font>
+        AbstractAuthFilter <- AbstractFormAuthFilter ++ : [not redirected]
+          rnote over AbstractAuthFilter : <font color="red">403 Forbidden</font>
+        return
+      return
+    return
+  end
+
+return
+
+@enduml

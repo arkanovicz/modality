@@ -1,0 +1,24 @@
+strict digraph dependencies {
+  node [fontname = "Bitstream Vera Sans", fontsize = 8, shape = "record"];
+
+"AbstractAuthFilter<USER>" -> "AbstractSessionAuthFilter<USER>" [arrowtail=empty, dir=back];
+
+"AbstractSessionAuthFilter<USER>" -> "AbstractOAuthFilter<USER>" [arrowtail=empty, dir=back];
+
+"AbstractOAuthFilter<USER>" -> "AbstractOAuthFilter<Instance>" [arrowtail=vee, dir=back, style=dashed];
+
+"AbstractOAuthFilter<Instance>" -> OAuthFilter [arrowtail=empty, dir=back];
+
+"AbstractSessionAuthFilter<USER>" -> "AbstractFormAuthFilter<USER>" [arrowtail=empty, dir=back];
+
+"AbstractFormAuthFilter<USER>" -> "AbstractFormAuthFilter<Instance>" [arrowtail=vee, dir=back, style=dashed];
+
+"AbstractFormAuthFilter<Instance>" -> FormAuthFilter [arrowtail=empty, dir=back];
+
+FormAuthFilter -> RememberMeFormAuthFilter [arrowtail=empty, dir=back];
+
+RememberMeFormAuthFilter -> RememberMeCookieHandler;
+
+RememberMeCookieHandler -> RememberMeCookieHandlerImpl [arrowtail=empty, dir=back];
+
+}

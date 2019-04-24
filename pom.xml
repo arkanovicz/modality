@@ -25,11 +25,11 @@ under the License.
         <version>7</version>
     </parent>
     <groupId>com.republicate</groupId>
-    <artifactId>velocity-model</artifactId>
+    <artifactId>motion</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Lightweight ORM</description>
+    <description>J2EE MVC toolbox</description>
     <url>https://github.com/arkanovicz/velocity-model</url>
     <modules>
         <module>velocity-model-core</module>

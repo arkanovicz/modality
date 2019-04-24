@@ -34,7 +34,6 @@ under the License.
     <modules>
         <module>velocity-model-core</module>
         <module>velocity-tools-model</module>
-        <module>velocity-model-examples</module>
     </modules>
     <licenses>
         <license>
@@ -138,6 +137,23 @@ under the License.
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>test.output.dir</name>
+                            <value>${project.build.testOutputDirectory}</value>
+                        </property>
+                        <property>
+                            <name>org.slf4j.simpleLogger.defaultLogLevel</name>
+                            <value>info</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
             </plugin>
         </plugins>
     </build>

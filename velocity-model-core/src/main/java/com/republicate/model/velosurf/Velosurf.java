@@ -1,4 +1,4 @@
-package com.republicate.model.old;
+package com.republicate.model.velosurf;
 
 import com.republicate.model.Model;
 

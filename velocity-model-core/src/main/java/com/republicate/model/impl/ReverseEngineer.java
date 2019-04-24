@@ -42,7 +42,7 @@ public class ReverseEngineer
 {
     protected static Logger logger = LoggerFactory.getLogger(ReverseEngineer.class);
 
-    private static final String STOCK_DRIVERS_PATH = "com.republicate.model/drivers/";
+    private static final String STOCK_DRIVERS_PATH = "com/republicate/model/drivers/";
 
     public ReverseEngineer(DatabaseMetaData databaseMetaData, DriverInfos driverInfos)
     {

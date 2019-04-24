@@ -1,4 +1,4 @@
-package com.republicate.model;
+package com.republicate.tools.model;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;

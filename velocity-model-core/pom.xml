@@ -24,12 +24,12 @@
     <parent>
         <groupId>com.republicate</groupId>
         <artifactId>velocity-model</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>velocity-model-core</artifactId>
 
-    <name>Velocity Model</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Lightweight ORM</description>
 
     <build>
@@ -56,22 +56,6 @@
                     -->
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemProperties>
-                        <property>
-                            <name>test.output.dir</name>
-                            <value>${project.build.testOutputDirectory}</value>
-                        </property>
-                        <property>
-                            <name>org.slf4j.simpleLogger.defaultLogLevel</name>
-                            <value>info</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -79,7 +63,7 @@
         <dependency>
             <groupId>org.apache.velocity.tools</groupId>
             <artifactId>velocity-tools-generic</artifactId>
-            <version>${project.version}</version>
+            <version>${velocity-tools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atteo</groupId>
@@ -94,11 +78,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -122,6 +108,7 @@
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
+            <version>3.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

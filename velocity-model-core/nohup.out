@@ -1,0 +1,26 @@
+Apr 22, 2019 11:03:08 AM org.igoweb.util.swing.JnlpIo <clinit>
+INFO: JnlpIo: JNLP unavailable
+java.lang.NoClassDefFoundError: javax/jnlp/UnavailableServiceException
+	at java.lang.Class.getDeclaredConstructors0(Native Method)
+	at java.lang.Class.privateGetDeclaredConstructors(Class.java:2671)
+	at java.lang.Class.getConstructor0(Class.java:3075)
+	at java.lang.Class.newInstance(Class.java:412)
+	at org.igoweb.util.swing.JnlpIo.<clinit>(JnlpIo.java:53)
+	at org.igoweb.cgoban.CGoban.<init>(CGoban.java:97)
+	at org.igoweb.cgoban.CGoban.main(CGoban.java:62)
+Caused by: java.lang.ClassNotFoundException: javax.jnlp.UnavailableServiceException
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:382)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:349)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 7 more
+
+java.io.EOFException
+	at java.io.DataInputStream.readShort(DataInputStream.java:315)
+	at org.igoweb.igoweb.client.Conn.waitForMessages(Conn.java:302)
+	at java.lang.Thread.run(Thread.java:748)
+Client.loginFailed: closeExpected = true
+java.io.EOFException
+	at java.io.DataInputStream.readShort(DataInputStream.java:315)
+	at org.igoweb.igoweb.client.Conn.waitForMessages(Conn.java:302)
+	at java.lang.Thread.run(Thread.java:748)

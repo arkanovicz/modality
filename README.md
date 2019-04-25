@@ -1,6 +1,19 @@
-# velocity-webapp
+# Motion
 
-Collection of J2EE filters, servlets and tools helping to build a minimal webapp around the Apache Velocity templating engine and the Apache Velocity Tools technology.
+Collection of J2EE filters, servlets and tools helping to build lightweight [pull-MVC](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based) webapps.
+
+It's not a framework but rather a collection of modules within which you're free to cherry pick what suits you.
+
+It uses Motion Model for its Model layer, and Apache Velocity for its View layer.
+
+## Architecture
+
+Here is the dependency graph of main internal and external modules:
+
+![Motion modules](./src/site/motion-modules.svg)
+<img src="./src/site/motion-modules.svg"/>
+
+around the Apache Velocity templating engine and the Apache Velocity Tools technology.
 
 ## Content
 

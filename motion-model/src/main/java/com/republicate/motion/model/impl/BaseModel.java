@@ -3,11 +3,10 @@ package com.republicate.motion.model.impl;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.VelocityException;
+// TODO - Velocity-aware model should be a subclass
+// import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.tools.XmlUtils;
-import org.apache.velocity.tools.config.ConfigurationException;
 import com.republicate.motion.model.Attribute;
 import com.republicate.motion.model.Entity;
 import com.republicate.motion.model.Instance;
@@ -15,6 +14,7 @@ import com.republicate.motion.model.Model;
 import com.republicate.motion.model.WrappingInstance;
 import com.republicate.motion.model.config.ConfigDigester;
 import com.republicate.motion.model.config.ConfigHelper;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.config.Constants;
 import com.republicate.motion.model.filter.ValueFilterHandler;
 import com.republicate.motion.model.filter.Identifiers;
@@ -76,7 +76,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
-            Optional.ofNullable(config.getVelocityEngine()).ifPresent(this::setVelocityEngine);
+            // TODO - Velocity-aware model should be a subclass
+            // Optional.ofNullable((VelocityEngine)config.get(MODEL_VELOCITY_ENGINE)).ifPresent(this::setVelocityEngine);
             Optional.ofNullable(config.getString(MODEL_SCHEMA)).ifPresent(this::setSchema);
             Optional.ofNullable(config.getString(MODEL_IDENTIFIERS_INFLECTOR)).ifPresent(getIdentifiers()::setInflector);
             Object flatMapping = config.get(MODEL_IDENTIFIERS_MAPPING);
@@ -202,7 +203,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         }
         catch (IOException ioe)
         {
-            throw new VelocityException("could not initialize model", ioe);
+            throw new ConfigurationException("could not initialize model", ioe);
         }
         return getModel();
     }
@@ -331,6 +332,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return getModel();
     }
 
+    // TODO - Velocity-aware model should be a subclass
+    /*
     public VelocityEngine getVelocityEngine()
     {
         return velocityEngine;
@@ -341,6 +344,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         this.velocityEngine = velocityEngine;
         return getModel();
     }
+     */
 
     public Model setDataSource(String dataSourceName) throws Exception
     {
@@ -1020,7 +1024,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private ReverseMode reverseMode = ReverseMode.NONE;
 
-    private VelocityEngine velocityEngine = null;
+    // TODO - Velocity-aware model should be a subclass
+    // private VelocityEngine velocityEngine = null;
 
     private String schema = null;
 

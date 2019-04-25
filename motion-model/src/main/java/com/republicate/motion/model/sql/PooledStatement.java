@@ -41,9 +41,10 @@ public class PooledStatement extends Pooled implements RowValues
 {
     protected static Logger logger = LoggerFactory.getLogger(PooledStatement.class);
 
-    /** org.apache.velocity.tools.generic.ValueParser$ValueParserSub class, if found in the classpath. */
-    private static Class valueParserSubClass = null;
 
+    /** org.apache.velocity.tools.generic.ValueParser$ValueParserSub class, if found in the classpath. * /
+    TODO - review use case
+    private static Class valueParserSubClass = null;
     static
     {
         try
@@ -52,6 +53,7 @@ public class PooledStatement extends Pooled implements RowValues
         }
         catch(ClassNotFoundException cnfe) {}
     }
+     /*
 
     /**
      * build a new PooledStatement.
@@ -216,10 +218,12 @@ public class PooledStatement extends Pooled implements RowValues
         {
             Object param = params.get(i);
 
+            /* TODO - review use case
             if(valueParserSubClass != null && valueParserSubClass.isAssignableFrom(param.getClass()))
             {
                 param = param.toString();
             }
+            */
             preparedStatement.setObject(i + 1, param);
         }
     }

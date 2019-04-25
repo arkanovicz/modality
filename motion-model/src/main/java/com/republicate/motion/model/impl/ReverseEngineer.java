@@ -20,8 +20,8 @@ package com.republicate.motion.model.impl;
  */
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.velocity.tools.config.ConfigurationException;
 import com.republicate.motion.model.Entity;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.filter.Identifiers;
 import com.republicate.motion.model.sql.DriverInfos;
 import org.slf4j.Logger;

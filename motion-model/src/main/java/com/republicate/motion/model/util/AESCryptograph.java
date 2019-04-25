@@ -19,7 +19,7 @@ package com.republicate.motion.model.util;
  * under the License.
  */
 
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 
 /**
  * TODO - document secure random requirement

@@ -16,7 +16,7 @@ package com.republicate.motion.model.util;
  * limitations under the License.
  */
 
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package com.republicate.motion.model.filter;
 
 import org.apache.velocity.tools.ClassUtils;
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.util.GlobToRegex;
 import org.slf4j.Logger;
 

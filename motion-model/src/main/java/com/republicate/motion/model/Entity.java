@@ -19,7 +19,6 @@ package com.republicate.motion.model;
  * under the License.
  */
 
-import org.apache.velocity.exception.VelocityException;
 import com.republicate.motion.model.impl.BaseEntity;
 import com.republicate.motion.model.util.TypeUtils;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class Entity extends BaseEntity implements Iterable<Instance>
         }
         catch (SQLException sqle)
         {
-            throw new VelocityException("cannot iterate on instances of " + getName(), sqle);
+            throw new ModelException("cannot iterate on instances of " + getName(), sqle);
         }
     }
 

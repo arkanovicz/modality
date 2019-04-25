@@ -19,16 +19,10 @@ package com.republicate.motion.model.config;
  */
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.tools.ClassUtils;
-import org.apache.velocity.tools.ToolContext;
-import org.apache.velocity.tools.config.ConfigurationException;
-import org.apache.velocity.tools.generic.ValueParser;
 import org.apache.velocity.util.ExtProperties;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -49,35 +43,12 @@ public class ConfigHelper
     {
         if (values != null)
         {
-            config = new ValueParser() {{ setReadOnly(false); }};
-            Object velocityObject = values.get(ToolContext.ENGINE_KEY);
-            if (velocityObject != null && velocityObject instanceof VelocityEngine)
-            {
-                velocityEngine = (VelocityEngine)velocityObject;
-                // hack to get access to underlying RuntimeInstance,
-                // while waiting for a way to get subproperties as a whole
-                // from the engine
-                try
-                {
-                    Field ri = VelocityEngine.class.getDeclaredField("ri");
-                    ri.setAccessible(true);
-                    RuntimeInstance runtimeInstance = (RuntimeInstance)ri.get(velocityEngine);
-                    ExtProperties velModelProps = runtimeInstance.getConfiguration().subset("model");
-                    if (velModelProps != null)
-                    {
-                        config.putAll(velModelProps);
-                    }
-                }
-                catch (IllegalAccessException | NoSuchFieldException e)
-                {
-                    throw new ConfigurationException("unable to access model properties in velocity engine");
-                }
-            }
-            config.putAll(values);
+            config = ExtProperties.convertProperties(values);
+            config = config.subset("model");
         }
         else
         {
-            config = new ValueParser();
+            config = new ExtProperties();
         }
     }
 
@@ -124,9 +95,9 @@ public class ConfigHelper
         return getBoolean(key, null);
     }
 
-    public ValueParser getSubProperties(String key)
+    public ExtProperties getSubProperties(String key)
     {
-        return config.getSubkey(key);
+        return config.subset(key);
     }
 
     public <T extends Enum<T>> T getEnum(String key, Enum<T> defaultValue) throws IllegalArgumentException
@@ -244,17 +215,5 @@ public class ConfigHelper
         return ret;
     }
 
-    public VelocityEngine getVelocityEngine()
-    {
-        return velocityEngine;
-    }
-
-    public VelocityEngine getVelocityEngine(VelocityEngine defaultEngine)
-    {
-        return velocityEngine == null ? defaultEngine : velocityEngine;
-    }
-
-    private VelocityEngine velocityEngine = null;
-
-    private ValueParser config = null;
+    private ExtProperties config = null;
 }

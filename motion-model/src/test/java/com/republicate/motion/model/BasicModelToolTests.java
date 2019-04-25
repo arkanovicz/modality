@@ -20,22 +20,12 @@ package com.republicate.motion.model;
  */
 
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.context.Context;
-import org.apache.velocity.tools.ToolManager;
-import org.apache.velocity.tools.Toolbox;
-import org.apache.velocity.tools.ToolboxFactory;
-import org.apache.velocity.tools.config.ConfigurationException;
-import org.apache.velocity.tools.config.ConfigurationUtils;
-import org.apache.velocity.tools.config.FactoryConfiguration;
-import org.apache.velocity.tools.config.XmlFactoryConfiguration;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.filter.Filter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.StringWriter;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -216,17 +206,13 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void testCollision() throws Exception
     {
         DataSource dataSource = initDataSource();
-        Properties velProps = new Properties();
-        velProps.put("model.datasource", dataSource);
-        velProps.put("model.reverse", "extended");
-        velProps.put("model.identifiers.mapping", "lowercase");
-        velProps.put("model.identifiers.mapping.*.*_id", "/^.*_id/id/");
-        velProps.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        VelocityEngine engine = createVelocityEngine(velProps);
-
-        Map params = new HashMap();
-        params.put("velocityEngine", engine);
-        Model model = new Model().configure(params);
+        Properties modelProps = new Properties();
+        modelProps.put("model.datasource", dataSource);
+        modelProps.put("model.reverse", "extended");
+        modelProps.put("model.identifiers.mapping", "lowercase");
+        modelProps.put("model.identifiers.mapping.*.*_id", "/^.*_id/id/");
+        modelProps.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        Model model = new Model().configure(modelProps);
         try
         {
             model.initialize();
@@ -242,10 +228,10 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         DataSource dataSource = initDataSource();
         Properties props = new Properties();
-        props.put("datasource", dataSource);
-        props.put("reverse", "tables");
-        props.put("identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("identifiers.mapping", "lowercase");
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "tables");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping", "lowercase");
 
         Model model = new Model().configure(props).initialize();
         Instance book = model.getEntity("book").fetch(1);
@@ -271,12 +257,12 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         DataSource dataSource = initDataSource();
         Properties props = new Properties();
-        props.put("datasource", dataSource);
-        props.put("reverse", "tables");
-        props.put("identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("identifiers.mapping", "lowercase");
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "tables");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping", "lowercase");
         Filter calendar_to_time = x -> ((Calendar)x).getTime();
-        props.put("filters.write.java.util.Calendar", calendar_to_time);
+        props.put("model.filters.write.java.util.Calendar", calendar_to_time);
 
         Model model = new Model().configure(props).initialize();
         Instance book = model.getEntity("book").fetch(1);
@@ -306,22 +292,18 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testObfuscation() throws Exception
     {
-        Properties velProps = new Properties();
-        velProps.load(BasicModelToolTests.class.getClassLoader().getResourceAsStream("com/republicate/motion/motion.properties"));
-        VelocityEngine engine = createVelocityEngine(velProps);
-
         Properties props = new Properties();
-        props.put("reverse", "extended");
-        props.put("credentials.user", "sa");
-        props.put("credentials.password", "");
-        props.put("database", "jdbc:hsqldb:.");
-        props.put("identifiers.mapping.*", "lowercase");
-        props.put("identifiers.mapping.*.*_id", "snake_to_camel");
-        props.put("filters.read.book.book_id", "obfuscate");
-        props.put("filters.write.book.book_id", "deobfuscate_strings");
-        props.put("filters.read.author.author_id", "obfuscate");
-        props.put("filters.write.author.author_id", "deobfuscate");
-        props.put("velocityEngine", engine);
+        props.load(BaseBookshelfTests.getResourceReader(Model.MOTION_DEFAULTS_PATH));
+        props.put("model.reverse", "extended");
+        props.put("model.credentials.user", "sa");
+        props.put("model.credentials.password", "");
+        props.put("model.database", "jdbc:hsqldb:.");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*_id", "snake_to_camel");
+        props.put("model.filters.read.book.book_id", "obfuscate");
+        props.put("model.filters.write.book.book_id", "deobfuscate_strings");
+        props.put("model.filters.read.author.author_id", "obfuscate");
+        props.put("model.filters.write.author.author_id", "deobfuscate");
         Model model = new Model().configure(props).initialize();
         Instance book = model.getEntity("book").fetch(1);
         assertNotNull(book);
@@ -383,20 +365,16 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testBean() throws Exception
     {
-        Properties velProps = new Properties();
-        velProps.load(BasicModelToolTests.class.getClassLoader().getResourceAsStream("com/republicate/motion/model/velocity.properties"));
-        VelocityEngine engine = createVelocityEngine(velProps);
-
         Properties props = new Properties();
-        props.put("reverse", "extended");
-        props.put("credentials.user", "sa");
-        props.put("credentials.password", "");
-        props.put("database", "jdbc:hsqldb:.");
-        props.put("identifiers.mapping", "lowercase");
-        props.put("velocityEngine", engine);
-        props.put("instances.classes.book", MyBook.class);
-        props.put("instances.classes.publisher", MyPub.class);
-        props.put("instances.factory", MyFactory.class);
+        props.load(BaseBookshelfTests.getResourceReader(Model.MOTION_DEFAULTS_PATH));
+        props.put("model.reverse", "extended");
+        props.put("model.credentials.user", "sa");
+        props.put("model.credentials.password", "");
+        props.put("model.database", "jdbc:hsqldb:.");
+        props.put("model.identifiers.mapping", "lowercase");
+        props.put("model.instances.classes.book", MyBook.class);
+        props.put("model.instances.classes.publisher", MyPub.class);
+        props.put("model.instances.factory", MyFactory.class);
         Model model = new Model().configure(props).initialize();
         Instance book = model.getEntity("book").fetch(1);
         assertNotNull(book);

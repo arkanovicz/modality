@@ -1,7 +1,7 @@
 package com.republicate.motion.model.filter;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 
 import java.io.Serializable;
 import java.util.HashMap;

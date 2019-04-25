@@ -20,7 +20,6 @@ package com.republicate.motion.model.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.ClassUtils;
-import org.apache.velocity.tools.config.ConfigurationException;
 import com.republicate.motion.model.Attribute;
 import com.republicate.motion.model.Entity;
 import com.republicate.motion.model.Model;
@@ -41,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 
 /**
  * <p>A tailored minimalistic digester for XML configuration reading of the model tree.</p>

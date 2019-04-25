@@ -20,11 +20,16 @@ package com.republicate.motion.model.config;
 
 public interface Constants
 {
+    String MOTION_DEFAULTS_PATH = "com/republicate/motion/motion.properties";
+
     String MODEL_LOGGER_NAME = "logger.name";
 
     String MODEL_WRITE_ACCESS = "write";
 
     String MODEL_REVERSE_MODE = "reverse";
+
+    // TODO - Velocity-aware model should be a subclass
+    String MODEL_VELOCITY_ENGINE = "velocity_engine";
 
     String MODEL_DEFINITION = "definition";
 
@@ -54,5 +59,5 @@ public interface Constants
 
     String MODEL_INSTANCES_CLASSES = "instances.classes";
 
-    String MODEL_NAMESPACE_URI = "https://velocity.apache.org/tools/devel/model.html";
+    String MODEL_NAMESPACE_URI = "https://republicate.com/index.html";
 }

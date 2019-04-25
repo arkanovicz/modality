@@ -19,7 +19,7 @@ package com.republicate.motion.model.impl;
  * under the License.
  */
 
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.Action;
 import com.republicate.motion.model.Attribute;
 import com.republicate.motion.model.Entity;

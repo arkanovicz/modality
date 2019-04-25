@@ -19,7 +19,7 @@ package com.republicate.motion.model.sql;
  * under the License.
  */
 
-import org.apache.velocity.tools.config.ConfigurationException;
+import com.republicate.motion.model.config.ConfigurationException;
 import com.republicate.motion.model.config.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

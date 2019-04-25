@@ -1,2 +1,2 @@
-# velocity-model
+# Motion Model
 Lightweight ORM

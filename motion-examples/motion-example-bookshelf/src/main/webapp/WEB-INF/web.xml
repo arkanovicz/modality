@@ -31,12 +31,12 @@
   </resource-ref>
   <!-- context listeners -->
   <listener>
-    <listener-class>com.republicate.webapp.example.DatabaseInitializer</listener-class>
+    <listener-class>com.republicate.motion.webapp.example.DatabaseInitializer</listener-class>
   </listener>
   <!-- filters -->
   <filter>
     <filter-name>auth</filter-name>
-    <filter-class>com.republicate.webapp.auth.FormAuthFilter</filter-class>
+    <filter-class>com.republicate.motion.webapp.auth.FormAuthFilter</filter-class>
   </filter>auth.form.uri.login
   <!-- filters mapping -->
   <filter-mapping>

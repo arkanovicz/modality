@@ -6,23 +6,21 @@ It's not a framework but rather a collection of modules within which you're free
 
 It uses Motion Model for its Model layer, and Apache Velocity for its View layer.
 
+## Content
+
+    com.republicate:motion - parent project
+    +- com.republicate:motion-webapp-api - API servlet
+    +- com.republicate:motion-webapp-auth - authentication filters
+    +- com.republicate:motion-webapp-oauth - OAuth authentication filters
+    +- com.republicate:motion-tools-apiclient - API client tool
+    +- com.republicate:motion-examples - examples parent project
+        +- com.republicate:motion-example-bookshelf - Bookshelf Webapp example
+
 ## Architecture
 
 Here is the dependency graph of main internal and external modules:
 
 ![Motion modules](./src/site/motion-modules.svg)
-
-around the Apache Velocity templating engine and the Apache Velocity Tools technology.
-
-## Content
-
-    com.republicate.velocity-webapp - parent project
-    +- com.republicate.velocity-webapp-api - API servlet
-    +- com.republicate.velocity-webapp-auth - authentication filters
-    +- com.republicate.velocity-webapp-oauth - OAuth authentication filters
-    +- com.republicate.velocity-tools-apiclient - API client tool
-    +- com.republicate.velocity-webapp-examples - examples parent project
-        +- ...
 
 ## Authentication Filters
 

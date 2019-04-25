@@ -11,7 +11,6 @@ It uses Motion Model for its Model layer, and Apache Velocity for its View layer
 Here is the dependency graph of main internal and external modules:
 
 ![Motion modules](./src/site/motion-modules.svg)
-<img src="./src/site/motion-modules.svg"/>
 
 around the Apache Velocity templating engine and the Apache Velocity Tools technology.
 

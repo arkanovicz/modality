@@ -13,9 +13,9 @@ import util.ApiClient;
 
 public class GoogleTool
 {
-    private static final String clientID = "421767446751-n74g702jmqvinqtd6j61cn6jehs4n89d.apps.googleusercontent.com";
-    private static final String clientSecret = "TT-9njC-1vG6iRGfRmJ83M6V";
-    private static final String projectID = "froogz-a5d62";
+    private static final String clientID = "...";
+    private static final String clientSecret = "...";
+    private static final String projectID = "...";
     private static final String authURI = "https://accounts.google.com/o/oauth2/auth";
     private static final String tokenURI = "https://www.googleapis.com/oauth2/v4/token";
 

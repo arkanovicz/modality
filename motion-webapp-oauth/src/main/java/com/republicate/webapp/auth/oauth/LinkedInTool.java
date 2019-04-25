@@ -8,8 +8,8 @@ import util.ApiClient;
 
 public class LinkedInTool
 {
-    private static final String clientID = "86azi8ji2v7hpt";
-    private static final String clientSecret = "ZcoQiMM9yX8pNf3w";
+    private static final String clientID = "...";
+    private static final String clientSecret = "...";
     private static final String authURI = "https://www.linkedin.com/oauth/v2/authorization";
     private static final String accessTokenURI = "https://www.linkedin.com/oauth/v2/accessToken";
     private static final String userEmailAPI = "https://api.linkedin.com/v1/people/~:(email-address)";

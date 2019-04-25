@@ -9,8 +9,8 @@ import util.ApiClient;
 
 public class FacebookTool
 {
-    private static final String clientID = "555851424768824";
-    private static final String clientSecret = "efeff1df6da5e7158348ea0e05b1d117";
+    private static final String clientID = "...";
+    private static final String clientSecret = "...";
     private static final String loginURL = "http://www.facebook.com/dialog/oauth";
     private static final String accessTokenURL = "https://graph.facebook.com/oauth/access_token";
     private static final String graphURL = "https://graph.facebook.com/me";

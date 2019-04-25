@@ -12,8 +12,8 @@ import util.ApiClient;
 
 public class GithubTool
 {
-    private static final String clientId = "5d1749427d18bac267fe";
-    private static final String clientSecret = "2c066317cd563d4d5be3c3cf17dbe54e09a330b5";
+    private static final String clientId = "...";
+    private static final String clientSecret = "...";
     private static final String githubAuthorize = "https://github.com/login/oauth/authorize";
     private static final String githubAccessCode = "https://github.com/login/oauth/access_token";
     private static final String githubPrivateEmails = "https://api.github.com/user/emails";

@@ -21,11 +21,11 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.republicate</groupId>
-        <artifactId>velocity-webapp</artifactId>
+        <artifactId>motion</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>com.republicate</groupId>
-    <artifactId>velocity-tools-apiclient</artifactId>
+    <artifactId>motion-tools-apiclient</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>

@@ -19,9 +19,9 @@ import util.ApiClient;
 public class TwitterTool
 {
     private static final String apiUrl = "https://api.twitter.com";
-    private static final String callbackUrl = "https://mya.froogz.net/oauth/twitter.vhtml";
-    private static final String consumerKey = "rJyJj0vqkV2UKEPVdxm5XH52k";
-    private static final String consumerSecret = "WULOtDnsPvpHIlvUWiAGrWa2CMRn77TLNrPU32GwHIVKEXNkbd";
+    private static final String callbackUrl = "https://...";
+    private static final String consumerKey = "...";
+    private static final String consumerSecret = "...";
     private static Encoder base64Encoder = Base64.getUrlEncoder();
     private static final ChallengeTool nonceGenerator = new ChallengeTool();
     protected static Logger logger = LoggerFactory.getLogger(TwitterTool.class);

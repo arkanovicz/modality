@@ -1,4 +1,4 @@
-package com.republicate.tools.model;
+package com.republicate.motion.tools.model;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;

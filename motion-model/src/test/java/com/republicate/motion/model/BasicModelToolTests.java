@@ -51,9 +51,6 @@ import static org.junit.Assert.*;
  */
 public class BasicModelToolTests extends BaseBookshelfTests
 {
-    private static final String BLANK_MODEL = "blank_model.xml";
-    private static final String BLANK_MODEL_TOOLS = "blank_model_tools.xml";
-
     public @Test void testModelInit() throws Exception
     {
         // test model

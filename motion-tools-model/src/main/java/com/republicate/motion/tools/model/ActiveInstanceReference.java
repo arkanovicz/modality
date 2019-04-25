@@ -1,10 +1,9 @@
-package com.republicate.tools.model;
+package com.republicate.motion.tools.model;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import com.republicate.model.Instance;
-import com.republicate.tools.model.InstanceReference;
 
 public class ActiveInstanceReference extends InstanceReference
 {

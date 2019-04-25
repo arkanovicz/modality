@@ -1,4 +1,4 @@
-package com.republicate.tools.model;
+package com.republicate.motion.tools.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,24 +26,16 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
 import org.apache.velocity.tools.Toolbox;
 import org.apache.velocity.tools.ToolboxFactory;
-import org.apache.velocity.tools.config.ConfigurationException;
 import org.apache.velocity.tools.config.ConfigurationUtils;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.XmlFactoryConfiguration;
-import com.republicate.model.filter.Filter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.StringWriter;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static com.republicate.tools.model.ModelTool.MODEL_TOOLS_DEFAULTS_PATH;
 import static org.junit.Assert.*;
 
 /**
@@ -58,7 +50,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void instanciateToolbox() throws Exception
     {
         XmlFactoryConfiguration config = new XmlFactoryConfiguration();
-        config.read(MODEL_TOOLS_DEFAULTS_PATH, true);
+        config.read(ModelTool.MODEL_TOOLS_DEFAULTS_PATH, true);
         config.setProperty("datasource", initDataSource());
         ToolboxFactory factory = config.createFactory();
         Toolbox toolbox = factory.createToolbox("application");
@@ -71,7 +63,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         ToolManager manager = new ToolManager();
         manager.setVelocityEngine(createVelocityEngine((String)null));
-        FactoryConfiguration config = ConfigurationUtils.find(MODEL_TOOLS_DEFAULTS_PATH);
+        FactoryConfiguration config = ConfigurationUtils.find(ModelTool.MODEL_TOOLS_DEFAULTS_PATH);
         FactoryConfiguration modelConfig = ConfigurationUtils.find("blank_model_tools.xml");
         config.addConfiguration(modelConfig);
         manager.configure(config);
@@ -85,8 +77,9 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         DataSource dataSource = initDataSource();
         Properties velProps = new Properties();
-        velProps.put("introspector.uberspect.class", "com.republicate.tools.model.ModelUberspector, org.apache.velocity.util.introspection.UberspectImpl");
+        velProps.put("introspector.uberspect.class", "com.republicate.motion.tools.model.ModelUberspector, org.apache.velocity.util.introspection.UberspectImpl");
         VelocityEngine engine = createVelocityEngine(velProps);
+
         ModelTool model = new ModelTool();
         Map<String, Object> props = new HashMap<>();
         props.put("datasource", dataSource);
@@ -109,7 +102,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         DataSource dataSource = initDataSource();
         Properties velProps = new Properties();
-        velProps.put("introspector.uberspect.class", "com.republicate.tools.model.ModelUberspector, org.apache.velocity.util.introspection.UberspectImpl");
+        velProps.put("introspector.uberspect.class", "com.republicate.motion.tools.model.ModelUberspector, org.apache.velocity.util.introspection.UberspectImpl");
         velProps.put("model.datasource", dataSource);
         velProps.put("model.reverse", "extended");
         velProps.put("model.identifiers.mapping", "lowercase");

@@ -1,4 +1,4 @@
-package com.republicate.tools.model;
+package com.republicate.motion.tools.model;
 
 import com.republicate.model.Attribute;
 import com.republicate.model.impl.AttributeHolder;

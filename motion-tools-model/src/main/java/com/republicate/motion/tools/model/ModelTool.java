@@ -1,4 +1,4 @@
-package com.republicate.tools.model;
+package com.republicate.motion.tools.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -51,7 +51,7 @@ import java.util.Map;
 @DefaultKey("model")
 public class ModelTool extends SafeConfig implements Constants
 {
-    public static final String MODEL_TOOLS_DEFAULTS_PATH = "com/republicate/tools/model/tools.xml";
+    public static final String MODEL_TOOLS_DEFAULTS_PATH = "com/republicate/motion/tools/model/tools.xml";
 
     /**
      * Configuration entry point. Can only be called once.

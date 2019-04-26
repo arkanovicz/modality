@@ -11,7 +11,7 @@ public class RememberMeAuthFilterTests extends BaseFormAuthFilterTests
     protected RememberMeCookieHandler rememberMeCookieHandler;
 
     @Override
-    protected void recordFilterConfig()
+    protected void recordFilterConfig() throws Exception
     {
         super.recordFilterConfig();
         /* TODO - how to pass an object?

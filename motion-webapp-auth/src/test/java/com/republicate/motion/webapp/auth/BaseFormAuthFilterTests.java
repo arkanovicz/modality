@@ -45,17 +45,17 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         servletContext.setAttribute(eq(ServletUtils.VELOCITY_VIEW_KEY), anyObject(VelocityView.class));
     }
 
-    protected void recordFilterConfig()
+    protected void recordFilterConfig() throws Exception
     {
         recordFilterConfig(false, false, false);
     }
 
-    protected void recordFilterConfig(boolean redirectTowardsLogin)
+    protected void recordFilterConfig(boolean redirectTowardsLogin) throws Exception
     {
         recordFilterConfig(redirectTowardsLogin, false, false);
     }
 
-    protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests)
+    protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests) throws Exception
     {
         expect(filterConfig.getInitParameter(AbstractAuthFilter.MOTION_CONFIG_KEY)).andAnswer(eval(null));
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
@@ -87,8 +87,10 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(servletContext.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
+        /*
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
+         */
     }
 
     protected Capture<Instance> recordSuccessfullLogin() throws Exception
@@ -96,10 +98,11 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
         expect(request.getSession(false)).andAnswer(eval(null));
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
+        expect(request.getMethod()).andAnswer(eval("POST"));
         expect(request.getParameter("login")).andAnswer(eval("Nestor"));
         expect(request.getParameter("password")).andAnswer(eval("secret"));
         expect(request.getSession()).andAnswer(eval(session));
-        expect(session.getAttribute("_user_")).andAnswer(eval(null));
+        expect(session.isNew()).andAnswer(eval(true));
         Capture<Instance> user = new Capture<>();
         session.setAttribute(eq("_user_"), capture(user));
         session.setMaxInactiveInterval(0);

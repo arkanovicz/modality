@@ -152,6 +152,7 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         expect(request.getSession(false)).andAnswer(eval(session));
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getSession()).andAnswer(eval(session));
+        expect(session.isNew()).andAnswer(eval(false));
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));

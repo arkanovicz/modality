@@ -19,17 +19,17 @@ package com.republicate.motion.webapp.auth;
  * under the License.
  */
 
+import com.republicate.motion.model.config.ConfigurationException;
 import org.apache.velocity.tools.ToolContext;
-import org.apache.velocity.tools.config.ConfigurationException;
-import org.apache.velocity.tools.model.Attribute;
-import org.apache.velocity.tools.model.Instance;
-import org.apache.velocity.tools.model.Model;
-import org.apache.velocity.tools.model.context.ModelTool;
-import org.apache.velocity.tools.model.RowAttribute;
-import org.apache.velocity.tools.model.util.SlotHashMap;
-import org.apache.velocity.tools.model.util.SlotMap;
+import com.republicate.motion.model.Attribute;
+import com.republicate.motion.model.Instance;
+import com.republicate.motion.model.Model;
+import com.republicate.motion.model.RowAttribute;
+import com.republicate.motion.model.util.SlotHashMap;
+import com.republicate.motion.model.util.SlotMap;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
+import org.apache.velocity.util.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,15 +167,23 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
         if (view.hasApplicationTools())
         {
             Set<String> modelKeys = new HashSet<>();
-            // search for a model in application tools
-            for (Map.Entry<String, Class> entry : view.getApplicationToolbox().getToolClassMap().entrySet())
+            Class modelToolClass = null;
+            try
             {
-                if (ModelTool.class.isAssignableFrom(entry.getValue()))
+                modelToolClass = ClassUtils.getClass("com.republicate.motion.tools.model.ModelTool");
+            }
+            catch (ClassNotFoundException cnfe) {}
+            if (modelToolClass != null)
+            {
+                // search for a model in application tools
+                for (Map.Entry<String, Class> entry : view.getApplicationToolbox().getToolClassMap().entrySet())
                 {
-                    modelKeys.add(entry.getKey());
+                    if (modelToolClass.isAssignableFrom(entry.getValue()))
+                    {
+                        modelKeys.add(entry.getKey());
+                    }
                 }
             }
-
             String modelKey = null;
 
             if (modelId == null)

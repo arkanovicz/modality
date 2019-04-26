@@ -19,8 +19,9 @@ package com.republicate.motion.webapp.auth;
  * under the License.
  */
 
-import org.apache.velocity.tools.model.Instance;
-import org.apache.velocity.tools.model.Model;
+
+import com.republicate.motion.model.Instance;
+import com.republicate.motion.model.Model;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

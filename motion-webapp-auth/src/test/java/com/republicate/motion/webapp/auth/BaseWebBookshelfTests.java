@@ -48,7 +48,7 @@ public class BaseWebBookshelfTests extends BaseBookshelfTests
                     mocked = at.substring(dot + 1, par) + "()";
                 }
             }
-            if (at.startsWith("org.apache"))
+            if (at.startsWith("com.republicate"))
             {
                 if (at.contains("Test"))
                 {

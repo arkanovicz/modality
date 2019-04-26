@@ -33,10 +33,11 @@ under the License.
     <url>https://github.com/arkanovicz/motion/model</url>
     <modules>
         <module>motion-model</module>
-        <module>motion-tools-apiclient</module>
+<!--        <module>motion-tools-apiclient</module>-->
         <module>motion-tools-model</module>
+        <module>motion-webapp</module>
         <module>motion-webapp-auth</module>
-        <module>motion-webapp-oauth</module>
+<!--        <module>motion-webapp-oauth</module>-->
         <module>motion-examples</module>
     </modules>
     <licenses>

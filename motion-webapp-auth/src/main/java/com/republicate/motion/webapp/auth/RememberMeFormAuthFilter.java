@@ -19,10 +19,10 @@ package com.republicate.motion.webapp.auth;
  * under the License.
  */
 
+import com.republicate.motion.model.Instance;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.velocity.tools.ClassUtils;
-import org.apache.velocity.tools.model.Instance;
 import org.apache.velocity.tools.view.ServletUtils;
 
 import javax.servlet.FilterChain;

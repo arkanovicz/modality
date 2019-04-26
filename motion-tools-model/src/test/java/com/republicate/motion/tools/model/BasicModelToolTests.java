@@ -20,6 +20,7 @@ package com.republicate.motion.tools.model;
  */
 
 
+import com.republicate.motion.webapp.MotionView;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
@@ -50,7 +51,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void instanciateToolbox() throws Exception
     {
         XmlFactoryConfiguration config = new XmlFactoryConfiguration();
-        config.read(ModelTool.MODEL_TOOLS_DEFAULTS_PATH, true);
+        config.read(MotionView.MOTION_TOOLS_DEFAULTS_PATH, true);
         config.setProperty("datasource", initDataSource());
         ToolboxFactory factory = config.createFactory();
         Toolbox toolbox = factory.createToolbox("application");

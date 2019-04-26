@@ -1,6 +1,6 @@
 package com.republicate.motion.webapp.auth;
 
-import org.apache.velocity.tools.model.Instance;
+import com.republicate.motion.model.Instance;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.easymock.Capture;
@@ -21,8 +21,7 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     {
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(ServletUtils.ALT_VELOCITY_VIEW_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(ServletUtils.ALT_VELOCITY_VIEW_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(ServletUtils.ALT_VELOCITY_VIEW_KEY)).andAnswer(eval("com.republicate.motion.webapp.MotionView"));
         expect(filterConfig.getInitParameter(VelocityView.USER_OVERWRITE_KEY)).andAnswer(eval("true"));
         expect(servletContext.getInitParameter(VelocityView.PROPERTIES_KEY)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(VelocityView.PROPERTIES_KEY)).andAnswer(eval(null));
@@ -58,6 +57,11 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
 
     protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests)
     {
+        expect(filterConfig.getInitParameter(AbstractAuthFilter.MOTION_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
+        expect(servletContext.getInitParameter(AbstractAuthFilter.MOTION_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
+        expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
         expect(servletContext.getContextPath()).andReturn("/");
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));

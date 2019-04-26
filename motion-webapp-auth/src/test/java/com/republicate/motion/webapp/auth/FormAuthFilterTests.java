@@ -1,7 +1,7 @@
 package com.republicate.motion.webapp.auth;
 
-import org.apache.velocity.tools.model.Instance;
-import org.apache.velocity.tools.model.Model;
+import com.republicate.motion.model.Instance;
+import com.republicate.motion.model.Model;
 import org.apache.velocity.tools.view.ServletUtils;
 
 import org.easymock.Capture;

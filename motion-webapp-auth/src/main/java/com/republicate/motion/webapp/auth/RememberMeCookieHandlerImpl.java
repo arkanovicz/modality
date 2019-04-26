@@ -19,10 +19,10 @@ package com.republicate.motion.webapp.auth;
  * under the License.
  */
 
+import com.republicate.motion.model.*;
+import com.republicate.motion.model.util.*;
 import com.republicate.motion.webapp.util.HttpUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.velocity.tools.model.*;
-import org.apache.velocity.tools.model.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

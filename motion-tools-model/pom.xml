@@ -54,6 +54,12 @@ under the License.
             <version>${velocity-tools.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.republicate</groupId>
+            <artifactId>motion-webapp</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>

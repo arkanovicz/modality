@@ -19,6 +19,7 @@ package com.republicate.motion.webapp.auth;
  * under the License.
  */
 
+import com.republicate.motion.webapp.MotionFilter;
 import org.apache.velocity.tools.view.JeeConfig;
 import org.apache.velocity.tools.view.JeeFilterConfig;
 import org.apache.velocity.tools.view.ServletUtils;
@@ -57,11 +58,8 @@ import java.util.regex.PatternSyntaxException;
  *</ul>
  */
 
-public abstract class AbstractAuthFilter<USER> implements Filter
+public abstract class AbstractAuthFilter<USER> extends MotionFilter
 {
-    public static final String MOTION_CONFIG_KEY = "motion.config";
-    public static final String MOTION_DEFAULT_CONFIG = "com/republicate/motion/motion.properties";
-
     protected static Logger logger = LoggerFactory.getLogger("auth");
 
     // config parameters keys
@@ -109,41 +107,6 @@ public abstract class AbstractAuthFilter<USER> implements Filter
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
-    protected String findConfigParameter(String key)
-    {
-        // first search config
-        String value = getConfig().findInitParameter(key);
-
-        // then Motion properties
-        if (value == null)
-        {
-            value = motionConfig.getString(key);
-        }
-
-        return value;
-    }
-
-    private void initMotionConfig() throws ServletException
-    {
-        String motionConfigPath = Optional.ofNullable(getConfig().findInitParameter(MOTION_CONFIG_KEY)).orElse(MOTION_DEFAULT_CONFIG);
-        InputStream is = ServletUtils.getInputStream(motionConfigPath, config.getServletContext());
-        // make it mandatory for now
-        if (is == null)
-        {
-            throw new ServletException("could not find motion configuration file: " +motionConfigPath);
-        }
-        Reader rd = new InputStreamReader(is, StandardCharsets.UTF_8); // TODO make it configurable
-        Properties props = new Properties();
-        try
-        {
-            props.load(rd);
-        } catch (IOException ioe)
-        {
-            throw new ServletException("could not read motion config file: " + motionConfigPath, ioe);
-        }
-        motionConfig = ExtProperties.convertProperties(props);
-    }
-
     /* Filter interface */
 
     /**
@@ -156,8 +119,7 @@ public abstract class AbstractAuthFilter<USER> implements Filter
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
     {
-        this.config = new JeeFilterConfig(filterConfig);
-        initMotionConfig();
+        super.init(filterConfig);
         String protectedResourcesPattern = findConfigParameter(PROTECTED_RESOURCES);
         if (protectedResourcesPattern != null)
         {
@@ -207,11 +169,6 @@ public abstract class AbstractAuthFilter<USER> implements Filter
 
     }
 
-    protected JeeConfig getConfig()
-    {
-        return config;
-    }
-
     /**
      * <p>What to display in the logs for a user, like in the logs.</p>
      * <p>A child class can change it to return something like
@@ -225,9 +182,7 @@ public abstract class AbstractAuthFilter<USER> implements Filter
         return String.valueOf(user);
     }
 
-    private JeeConfig config = null;
-    private ExtProperties motionConfig = null;
-    private Pattern protectedResources = null;
+   private Pattern protectedResources = null;
 
     // for oauth
     // ...

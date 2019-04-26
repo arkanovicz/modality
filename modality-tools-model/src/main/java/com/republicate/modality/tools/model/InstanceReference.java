@@ -1,7 +1,7 @@
 package com.republicate.modality.tools.model;
 
-import com.republicate.model.Instance;
-import com.republicate.model.util.SlotMap;
+import com.republicate.modality.Instance;
+import com.republicate.modality.util.SlotMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

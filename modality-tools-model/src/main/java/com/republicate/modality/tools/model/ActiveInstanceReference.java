@@ -3,7 +3,7 @@ package com.republicate.modality.tools.model;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.republicate.model.Instance;
+import com.republicate.modality.Instance;
 
 public class ActiveInstanceReference extends InstanceReference
 {

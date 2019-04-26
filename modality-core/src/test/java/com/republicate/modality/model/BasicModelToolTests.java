@@ -1,4 +1,4 @@
-package com.republicate.modality.model;
+package com.republicate.modality;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,8 +20,8 @@ package com.republicate.modality.model;
  */
 
 
-import com.republicate.modality.model.config.ConfigurationException;
-import com.republicate.modality.model.filter.Filter;
+import com.republicate.modality.config.ConfigurationException;
+import com.republicate.modality.filter.Filter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -20,8 +20,8 @@ package com.republicate.modality.webapp.auth;
  */
 
 
-import com.republicate.modality.model.Instance;
-import com.republicate.modality.model.Model;
+import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

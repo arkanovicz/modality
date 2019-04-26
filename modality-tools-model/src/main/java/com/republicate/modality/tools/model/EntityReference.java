@@ -24,12 +24,12 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.republicate.model.Attribute;
-import com.republicate.model.Entity;
-import com.republicate.model.Instance;
-import com.republicate.model.RowAttribute;
-import com.republicate.model.RowsetAttribute;
-import com.republicate.model.ScalarAttribute;
+import com.republicate.modality.Attribute;
+import com.republicate.modality.Entity;
+import com.republicate.modality.Instance;
+import com.republicate.modality.RowAttribute;
+import com.republicate.modality.RowsetAttribute;
+import com.republicate.modality.ScalarAttribute;
 
 public class EntityReference
 {

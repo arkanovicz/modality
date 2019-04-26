@@ -19,7 +19,7 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.model.Instance;
+import com.republicate.modality.Instance;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.velocity.tools.ClassUtils;

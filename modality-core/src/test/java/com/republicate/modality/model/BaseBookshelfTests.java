@@ -1,4 +1,4 @@
-package com.republicate.modality.model;
+package com.republicate.modality;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;

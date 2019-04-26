@@ -39,7 +39,7 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>com.republicate.modality</groupId>
-            <artifactId>velocity-model-core</artifactId>
+            <artifactId>modality-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

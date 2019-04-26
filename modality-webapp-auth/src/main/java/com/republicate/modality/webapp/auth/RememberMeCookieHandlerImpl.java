@@ -19,8 +19,8 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.model.*;
-import com.republicate.modality.model.util.*;
+import com.republicate.modality.*;
+import com.republicate.modality.util.*;
 import com.republicate.modality.webapp.util.HttpUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;

@@ -19,14 +19,14 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.model.config.ConfigurationException;
+import com.republicate.modality.config.ConfigurationException;
 import org.apache.velocity.tools.ToolContext;
-import com.republicate.modality.model.Attribute;
-import com.republicate.modality.model.Instance;
-import com.republicate.modality.model.Model;
-import com.republicate.modality.model.RowAttribute;
-import com.republicate.modality.model.util.SlotHashMap;
-import com.republicate.modality.model.util.SlotMap;
+import com.republicate.modality.Attribute;
+import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
+import com.republicate.modality.RowAttribute;
+import com.republicate.modality.util.SlotHashMap;
+import com.republicate.modality.util.SlotMap;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.apache.velocity.util.ClassUtils;

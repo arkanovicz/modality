@@ -1,6 +1,6 @@
 package com.republicate.modality.webapp.auth;
 
-import com.republicate.modality.model.Instance;
+import com.republicate.modality.Instance;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.easymock.Capture;

@@ -104,26 +104,23 @@ public class BasicModelToolTests extends BaseBookshelfTests
         DataSource dataSource = initDataSource();
         Properties velProps = new Properties();
         velProps.put("introspector.uberspect.class", "com.republicate.modality.tools.model.ModelUberspector, org.apache.velocity.util.introspection.UberspectImpl");
-        velProps.put("model.datasource", dataSource);
-        velProps.put("model.reverse", "extended");
-        velProps.put("model.identifiers.mapping", "lowercase");
-        velProps.put("model.identifiers.mapping.pub*.*_id", "/^.*_id/id/");
-        velProps.put("model.identifiers.mapping.author.*_id", "/^.*_id/id/");
-        velProps.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
         VelocityEngine engine = createVelocityEngine(velProps);
 
-        Map params = new HashMap();
-        params.put("velocityEngine", engine);
         ModelTool model = new ModelTool();
-        model.configure(params);
-
+        Map<String, Object> props = new HashMap<>();
+        props.put("datasource", dataSource);
+        props.put("reverse", "full");
+        props.put("definition", "blank_model.xml");
+        props.put("identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("identifiers.mapping", "lowercase");
+        model.configure(props);
         Context context = new VelocityContext();
         context.put("model", model);
         StringWriter out = new StringWriter();
-        assertTrue(engine.evaluate(context, out, "test", "$model.book.fetch(1).publisher.id"));
-        assertEquals("1", out.toString());
+        assertTrue(engine.evaluate(context, out, "test", "$model.book.fetch(1).publisher.name"));
+        assertEquals("Green Penguin Books", out.toString());
         out = new StringWriter();
-        assertTrue(engine.evaluate(context, out, "test", "#foreach( $author in $model.book.fetch(1).authors )$author.id#end"));
+        assertTrue(engine.evaluate(context, out, "test", "#foreach( $book_author in $model.book.fetch(1).book_authors )$book_author.author.author_id#end"));
         assertEquals("12", out.toString());
     }
 

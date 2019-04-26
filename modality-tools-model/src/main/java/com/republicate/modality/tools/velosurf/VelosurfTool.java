@@ -3,10 +3,10 @@ package com.republicate.modality.tools.velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
 import org.apache.velocity.tools.generic.ValueParser;
-import com.republicate.model.Model;
+import com.republicate.modality.Model;
 import com.republicate.modality.tools.model.ModelTool;
-import com.republicate.model.config.ConfigHelper;
-import com.republicate.model.velosurf.Velosurf;
+import com.republicate.modality.config.ConfigHelper;
+import com.republicate.modality.velosurf.Velosurf;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 

@@ -1,7 +1,7 @@
 package com.republicate.modality.tools.model;
 
-import com.republicate.model.Attribute;
-import com.republicate.model.impl.AttributeHolder;
+import com.republicate.modality.Attribute;
+import com.republicate.modality.impl.AttributeHolder;
 import org.apache.velocity.util.introspection.AbstractChainableUberspector;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.VelMethod;

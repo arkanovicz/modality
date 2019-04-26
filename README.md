@@ -1,63 +1,79 @@
-# Motion
+# Modality
 
-Collection of J2EE filters, servlets and tools helping to build lightweight [pull-MVC](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based) webapps.
+Modality implements a pull model layer for a J2EE MVC architecture.
 
-It's not a framework but rather a collection of modules within which you're free to cherry pick what suits you.
+It comprises:
 
-It uses Motion Model for its Model layer, and Apache Velocity for its View layer.
+- A lightweight but highly configurable ORM 
+- An extensible XML model definition schema
 
-## Content
+## Rationale
 
-    com.republicate:motion - parent project
-    +- com.republicate:motion-webapp-api - API servlet
-    +- com.republicate:motion-webapp-auth - authentication filters
-    +- com.republicate:motion-webapp-oauth - OAuth authentication filters
-    +- com.republicate:motion-tools-apiclient - API client tool
-    +- com.republicate:motion-examples - examples parent project
-        +- com.republicate:motion-example-bookshelf - Bookshelf Webapp example
++ Pull MVC model ORM with easy syntax
++ optional reverse-enginering of 1-n and n-n joins
++ ease of use from Java as well from VTL
++ respect the SQL language
+    - no error prone persistence *at all*
+    - no limitating `.select(...).where(...)` dialect
+    - avoid dissemination of SQL code in the application
++ easily configurable, with reasonable defaults
++ keep it a lightweight tool
 
-## Architecture
+### Java API
 
-Here is the dependency graph of main internal and external modules:
-
-![Motion modules](./src/site/motion-modules.svg)
-
-## Authentication Filters
-
-See the [class diagram](src/site/dependencies.svg), and the [call graph](src/site/auth_call_graph.svg).
+TODO
 
 ### Configuration
 
-    :::properties
-    motion.auth. +-- protected = ".*" : regexp of protected resources URIs
-                 +-- session. +-- invalidate_on_logout = true : whether to invalidate session on logout
-                 |            +-- logged_key = "logged" : session attribute key for logged user
-                 |            +-- max_inactive_interval = 0 : session lifetime
-                 |            +-- redirect. +-- parameter = null : redirection query string parameter to honor after login or logout
-                 |                          +-- referrer = false : whether to redirect using referrer after login or logout
-                 |            +-- uri. +-- dologin = "login.do" : login action URI
-                 |                     +-- dologout = "logout.do" : logout action URI
-                 +-- form. +-- field. +-- login = "login" : login input form field name
-                 |         |          +-- password = "password" : password input form field name
-                 |         +-- login_redirect = false : whether to redirect unauthentified requests towards the login URI
-                 |         +-- success. +-- forward_post = false : whether to save unauthentified POST requests and forward successful logins to them
-                 |         |            +-- redirect_get = false : whether to save unauthentified GET requests and redirect successful logins to them
-                 |         +-- uri. +-- home = <auto> : home URI for unauthentified sessions, set by default to '/' resource path
-                 |                  +-- login = "login.vhtml" : login form URI
-                 |                  +-- user_home = home : home URI for logged users
-                 +-- model. +-- model_id = <auto> : model id to use
-                 |          +-- refresh_rate = 0 : session user instance refresh rate
-                 |          +-- user_by_credentials = null : model attribute returning a user given correct dredentials
-                 +-- cookie. +-- check. +-- ip = false : should the *remember me* cookie handler check IPs
-                 |           |          +-- user_agent = true : should the *remember me* cookie handler check user agents
-                 |           +-- clean_rate = 0 : rate at which obsolete cookie keys are cleaned up from the database
-                 |           +-- handler = null : provide an alternate *remember me* cookie handler
-                 |           +-- name = "remember_me" : *remember me* cookie name
-                 |           +-- domain = null : *remember me* cookie domain
-                 |           +-- max_age = 31536000 : *remember me* cookie max age
-                 |           +-- path = "/" : *remember me* cookie path
-                 +-- header TODO
-                 +-- oauth TODO
+You can either:
 
-## API Servlet
++ Start with an empty schema, and declare entities and attributes manually within it (*explicit* method).
++ Set a specific level of reverse enginering of a database schema (*implicit* method).
+
+Configuration can take place:
+
++ in a Map given to Model.configure(Map)
++ in `velocity.properties` (prefixed by `model.`), if you use the Velocity Engine. This affects all models.
++ in `tools.xml` tools's attribute (without the `model.` prefix), if you use VelocityTools. This affects a specific ModelTool.
++ in `model.xml`, the model definition file (without the `model.` prefix). This affects all tools using this ModelTool.
+
+The model definition itself is distinct from its configuration (which defines its generic behavior).
+It contains all entities (which can *or not* correspond to a database table), attributes (sql queries returning a scalar, a row or rowset)
+and actions (single or multi modification statements, always kept within a single transaction).
+
+Models can be given a string id, allowing them to be accessed in a static Java context.
+
+Once configured, the model needs to be initialized against a definition file, named by default `model.xm`.
+If a path is given using the configuration key `model.definition`, it will be searched for instead of the default. It is searched:
++ in the classpath
++ in the webapp servlet context resources when in a web environment
++ in the filesystem, and also with /WEB-INF/ prefixed when in a web environment
+
+### Use from Java
+
+A model needs a definition file, which is searched using the default name `model.xml` 
+
+Please refer to the ModelTool javadoc.
+
+maven dependency
+choose where to place configuration parameters
+choose initialization method
+
+TODO 
+
+You can use the *explicit* (control visibility of data objects in VTL) or *implicit* method (show a full schema tables in VTL).
+
+#### Explicit method
+
+Let's start with the easiest one, the implicit method.
+
+You need to set the 'model.
+
+### Features
+
++ provides both a Java API and a VTL API with an intuitive syntax without code generation
++ configurable database reverse enginering (tables, columns, joins and even n-n joins), and allows a progressive enrichment of the model in a hierarchical model definition file gathering all SQL code
++ configurable table and column names mapping
++ configurable values types mapping
++ configurable access control?
 

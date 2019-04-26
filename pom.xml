@@ -24,21 +24,21 @@ under the License.
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-    <groupId>com.republicate</groupId>
-    <artifactId>motion</artifactId>
+    <groupId>com.republicate.modality</groupId>
+    <artifactId>modality</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>J2EE MVC Toolbox for Lightweight Pull Model Webapps</description>
-    <url>https://github.com/arkanovicz/motion/model</url>
+    <url>https://github.com/arkanovicz/modality/model</url>
     <modules>
-        <module>motion-model</module>
-<!--        <module>motion-tools-apiclient</module>-->
-        <module>motion-tools-model</module>
-        <module>motion-webapp</module>
-        <module>motion-webapp-auth</module>
-<!--        <module>motion-webapp-oauth</module>-->
-        <module>motion-examples</module>
+        <module>modality-core</module>
+<!--        <module>modality-tools-apiclient</module>-->
+        <module>modality-tools-model</module>
+        <module>modality-webapp</module>
+        <module>modality-webapp-auth</module>
+<!--        <module>modality-webapp-oauth</module>-->
+        <module>modality-examples</module>
     </modules>
     <licenses>
         <license>

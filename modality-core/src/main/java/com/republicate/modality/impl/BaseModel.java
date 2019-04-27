@@ -25,6 +25,7 @@ import com.republicate.modality.sql.Credentials;
 import com.republicate.modality.sql.DriverInfos;
 import com.republicate.modality.sql.StatementPool;
 import com.republicate.modality.util.Cryptograph;
+import org.apache.velocity.util.ExtProperties;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
@@ -67,10 +68,44 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model configure(Map params)
     {
-        return configure(new ConfigHelper(params));
+        ensureConfigured(params.get("servletContext"));
+        configure(new ConfigHelper(params));
+        return getModel();
     }
 
-    protected Model configure(ConfigHelper config)
+    private void ensureConfigured()
+    {
+        ensureConfigured(null);
+    }
+
+    private void ensureConfigured(Object servletContext)
+    {
+        if (!defaultPropertiesLoaded)
+        {
+            ConfigHelper config = new ConfigHelper();
+            loadDefaultConfig(config);
+            loadUserConfig(config, servletContext);
+            configure(config);
+            defaultPropertiesLoaded = true;
+        }
+    }
+
+    private void loadDefaultConfig(ConfigHelper config)
+    {
+        URL url = ClassUtils.getResource(MODALITY_DEFAULTS_PATH, ConfigHelper.class);
+        config.setProperties(url);
+    }
+
+    private void loadUserConfig(ConfigHelper config, Object servletContext)
+    {
+        URL url = config.findURL(MODALITY_PROPERTIES, servletContext, false);
+        if (url != null)
+        {
+            config.setProperties(url);
+        }
+    }
+
+    private Model configure(ConfigHelper config)
     {
         try
         {
@@ -234,6 +269,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         this.modelId = id;
         try
         {
+            ensureConfigured();
             readDefinition(source);
             connect();
             getIdentifiers().initialize();
@@ -991,6 +1027,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     /*
      * Members
      */
+
+    private boolean defaultPropertiesLoaded = false;
 
     private String modelId = null;
 

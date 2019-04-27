@@ -23,6 +23,7 @@ import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.util.ExtProperties;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -31,6 +32,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 public class ConfigHelper
 {
@@ -48,12 +50,38 @@ public class ConfigHelper
             if (sub != null)
             {
                 config = sub;
+                Object servletContext = values.get("servletContext");
+                if (servletContext != null)
+                {
+                    config.put("servletContext", servletContext);
+                }
             }
         }
         else
         {
             config = new ExtProperties();
         }
+    }
+
+    public ConfigHelper setProperties(Map values)
+    {
+        config.putAll(values);
+        return this;
+    }
+
+    public ConfigHelper setProperties(URL properties)
+    {
+        ExtProperties props = new ExtProperties();
+        try
+        {
+            props.load(properties.openStream());
+        }
+        catch (IOException ioe)
+        {
+            throw new ConfigurationException("coud not load " + properties.toString(), ioe);
+        }
+        config.putAll(props);
+        return this;
     }
 
     public Object get(String key, Object defaultValue)
@@ -127,45 +155,63 @@ public class ConfigHelper
 
     public URL findURL(String path)
     {
+        return findURL(path, null, true);
+    }
+
+    public URL findURL(String path, boolean mandatory)
+    {
+        return findURL(path, null, mandatory);
+    }
+
+    public URL findURL(String path, Object servletContext)
+    {
+        return findURL(path, servletContext, true);
+    }
+
+    public URL findURL(String path, Object servletContext, boolean mandatory)
+    {
         URL url = null;
         boolean webContext = false;
-        if (config != null)
+
+        // check if we're a view tool:
+        // 1) we must find the  ServletContext and ServletUtils classes
+        // 2) we must have a servletContext
+        Class servletContextClass = null;
+        Class servletUtilsClass = null;
+        try
         {
-            // check if we're a view tool:
-            // 1) we must find the  ServletContext and ServletUtils classes
-            // 2) we must have a servletContext
-            Class servletContextClass = null;
-            Class servletUtilsClass = null;
-            try
+            servletContextClass = Class.forName("javax.servlet.ServletContext");
+            servletUtilsClass = Class.forName("org.apache.velocity.tools.view.ServletUtils");
+        }
+        catch (ClassNotFoundException cnfe)
+        {
+        }
+        if (servletContextClass != null && servletUtilsClass != null)
+        {
+            if (servletContext == null)
             {
-                servletContextClass = Class.forName("javax.servlet.ServletContext");
-                servletUtilsClass = Class.forName("org.apache.velocity.tools.view.ServletUtils");
+                servletContext = get("servletContext");
             }
-            catch (ClassNotFoundException cnfe)
+            if (servletContext != null && servletContextClass.isAssignableFrom(servletContext.getClass()))
             {
-            }
-            if (servletContextClass != null && servletUtilsClass != null)
-            {
-                Object servletContext = get("servletContext");
-                if (servletContext != null && servletContextClass.isAssignableFrom(servletContext.getClass()))
+                webContext = true;
+                // remember it
+                config.setProperty("servletContext", servletContext);
+                Method getURL = null;
+                try
                 {
-                    webContext = true;
-                    Method getURL = null;
-                    try
+                    getURL = servletUtilsClass.getMethod("getURL", String.class, servletContextClass);
+
+                    // only search in WEB-INF/
+                    if (!path.startsWith("/WEB-INF/"))
                     {
-                        getURL = servletUtilsClass.getMethod("getURL", String.class, servletContextClass);
-                        // first try with a /WEB-INF/ prefix
-                        if (!path.startsWith("/WEB-INF/"))
-                        {
-                            url = (URL)getURL.invoke(null, new Object[] { "/WEB-INF/" + path, servletContext });
-                        }
-                        // second try without
-                        if (url == null)
-                        {
-                            url = (URL) getURL.invoke(null, new Object[] { path, servletContext });
-                        }
+                        path = "/WEB-INF/" + path;
                     }
-                    catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
+                    url = (URL) getURL.invoke(null, new Object[] { path, servletContext });
+                }
+                catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
+                {
+                    if (mandatory)
                     {
                         throw new ConfigurationException("could not get URL for path '" + path + "'", e);
                     }
@@ -176,6 +222,7 @@ public class ConfigHelper
         {
             // check class path
             url = ClassUtils.getResource(path, ConfigHelper.class);
+
             // check filesystem
             if (url == null)
             {
@@ -186,7 +233,10 @@ public class ConfigHelper
                     {
                         url = defFile.toPath().toUri().toURL();
                     }
-                    else throw new ConfigurationException("cannot find file '" + path + "'");
+                    else if (mandatory)
+                    {
+                        throw new ConfigurationException("cannot find file '" + path + "'");
+                    }
                 }
                 catch (MalformedURLException mfue)
                 {

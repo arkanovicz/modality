@@ -56,7 +56,7 @@ import static org.junit.Assert.*;
 public class BookshelfTestsIT
 {
 
-    private static final String ROOT_URL = "http://localhost:8080/velocity-webapp-examples-bookshelf/";
+    private static final String ROOT_URL = "http://localhost:8080/modality-example-bookshelf/";
 
     public static @BeforeClass void initBookshelfTests() throws Exception {
     }
@@ -184,6 +184,6 @@ public class BookshelfTestsIT
         resp = loginForm.submit();
 
         assertEquals(200, resp.getResponseCode());
-        assertEquals("http://localhost:8080/velocity-tools-webapp-example/index.vhtml", resp.getURL().toString());
+        assertEquals("http://localhost:8080/modality-example-bookshelf/index.vhtml", resp.getURL().toString());
     }
 }

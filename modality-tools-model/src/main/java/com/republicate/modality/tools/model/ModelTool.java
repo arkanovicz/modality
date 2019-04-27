@@ -53,10 +53,10 @@ public class ModelTool extends SafeConfig implements Constants
 {
     public static final String MODEL_TOOLS_DEFAULTS_PATH = "com/republicate/modality/tools/model/tools.xml";
 
-    /**
+    /* TODO *
      * Configuration entry point. Can only be called once.
      * @param params configuration values map
-     */
+     * /
     public void configure(Map<String, Object> params)
     {
         String loggerName = new ConfigHelper(params).getString(MODEL_LOGGER_NAME);
@@ -66,6 +66,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         super.configure(params);
     }
+    */
 
     @Override
     protected void configure(ValueParser params)
@@ -76,6 +77,7 @@ public class ModelTool extends SafeConfig implements Constants
         // all those values can be changed during initialization
         // when model path is read
         model.configure(params);
+
         String key = params.getString("key");
         if (key == null || key.length() == 0)
         {

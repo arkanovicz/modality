@@ -23,10 +23,10 @@ public class AbstractAuthFilterTest extends BaseWebappMockTest
 
     protected void recordConfig()
     {
+        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
         expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
         expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
+        expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
     }
 

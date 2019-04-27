@@ -193,12 +193,10 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
             {
                 logger.debug("redirecting already logged in user {} from login page towards {}", displayUser(user), getUserHomeUri());
                 response.sendRedirect(getUserHomeUri());
+                return;
             }
         }
-        else
-        {
-            filterChain.doFilter(request, response);
-        }
+        filterChain.doFilter(request, response);
     }
 
 

@@ -57,12 +57,11 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
 
     protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests) throws Exception
     {
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
-        expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(filterConfig.getServletContext()).andAnswer(eval(servletContext));
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
+        expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(servletContext.getContextPath()).andReturn("/");
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.LOGGED_SESSION_KEY)).andAnswer(eval("_user_"));
@@ -87,10 +86,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(servletContext.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
-        /*
-        expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
-        expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
-         */
+        expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
+        expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
     }
 
     protected Capture<Instance> recordSuccessfullLogin() throws Exception

@@ -290,7 +290,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void testObfuscation() throws Exception
     {
         Properties props = new Properties();
-        props.load(BaseBookshelfTests.getResourceReader(Model.MODALITY_DEFAULTS_PATH));
+        props.load(getResourceReader(Model.MODALITY_DEFAULTS_PATH));
         props.put("model.reverse", "extended");
         props.put("model.credentials.user", "sa");
         props.put("model.credentials.password", "");
@@ -363,7 +363,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void testBean() throws Exception
     {
         Properties props = new Properties();
-        props.load(BaseBookshelfTests.getResourceReader(Model.MODALITY_DEFAULTS_PATH));
+        props.load(getResourceReader(Model.MODALITY_DEFAULTS_PATH));
         props.put("model.reverse", "extended");
         props.put("model.credentials.user", "sa");
         props.put("model.credentials.password", "");

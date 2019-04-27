@@ -20,9 +20,12 @@ package com.republicate.modality.config;
 
 public interface Constants
 {
-    String MODALITY_DEFAULTS_PATH = "com/republicate/modality/modality.properties";
+    String MODALITY_PROPERTIES = "modality.properties";
 
-    String MODEL_LOGGER_NAME = "logger.name";
+    String MODALITY_DEFAULTS_PATH = "com/republicate/modality/" + MODALITY_PROPERTIES;
+
+    // TODO
+    // String MODEL_LOGGER_NAME = "logger.name";
 
     String MODEL_WRITE_ACCESS = "write";
 

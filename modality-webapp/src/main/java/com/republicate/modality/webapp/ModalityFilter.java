@@ -5,9 +5,7 @@ import org.apache.velocity.tools.view.JeeFilterConfig;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.util.ExtProperties;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,6 +18,7 @@ public abstract class ModalityFilter implements Filter
 {
     public static final String MODALITY_CONFIG_KEY = "modality.config";
     public static final String MODALITY_DEFAULT_CONFIG = "com/republicate/modality/modality.properties";
+    public static final String MODALITY_DEFAULT_USER_CONFIG = "/WEB-INF/modality.properties";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
@@ -49,25 +48,60 @@ public abstract class ModalityFilter implements Filter
 
     private void initModalityConfig() throws ServletException
     {
-        String modalityConfigPath = Optional.ofNullable(getConfig().findInitParameter(MODALITY_CONFIG_KEY)).orElse(MODALITY_DEFAULT_CONFIG);
-        InputStream is = ServletUtils.getInputStream(modalityConfigPath, config.getServletContext());
-        // make it mandatory for now
-        if (is == null)
-        {
-            throw new ServletException("could not find modality configuration file: " +modalityConfigPath);
-        }
-        Reader rd = new InputStreamReader(is, StandardCharsets.UTF_8); // TODO make it configurable
-        Properties props = new Properties();
-        try
-        {
-            props.load(rd);
-        } catch (IOException ioe)
-        {
-            throw new ServletException("could not read modality config file: " + modalityConfigPath, ioe);
-        }
-        modalityConfig = ExtProperties.convertProperties(props);
+        initModalityDefaultConfig();
+        initModalityUserConfig();
     }
 
+    private void initModalityDefaultConfig() throws ServletException
+    {
+        modalityConfig = new ExtProperties();
+        InputStream is = ServletUtils.getInputStream(MODALITY_DEFAULT_CONFIG, config.getServletContext());
+        if (is == null)
+        {
+            throw new ServletException("could not find default modality configuration file: " + MODALITY_DEFAULT_CONFIG);
+        }
+        try
+        {
+            modalityConfig.load(is);
+        } catch (IOException ioe)
+        {
+            throw new ServletException("could configure default modality configuration file", ioe);
+        }
+    }
+
+    private void initModalityUserConfig() throws ServletException
+    {
+        String modalityConfigPath = getConfig().findInitParameter(MODALITY_CONFIG_KEY);
+        boolean mandatory = modalityConfigPath != null;
+        if (modalityConfigPath == null)
+        {
+            modalityConfigPath = MODALITY_DEFAULT_USER_CONFIG;
+        }
+        if (modalityConfigPath != null)
+        {
+            InputStream is = ServletUtils.getInputStream(modalityConfigPath, config.getServletContext());
+            if (is == null)
+            {
+                if (mandatory)
+                {
+                    throw new ServletException("could not find modality configuration file: " + modalityConfigPath);
+                }
+            }
+            else
+            {
+                ExtProperties userProps = new ExtProperties();
+                try
+                {
+                    userProps.load(is);
+                }
+                catch (IOException ioe)
+                {
+                    throw new ServletException("could not read modality config file: " + modalityConfigPath, ioe);
+                }
+                modalityConfig.putAll(userProps);
+            }
+        }
+    }
 
     private JeeConfig config = null;
     private ExtProperties modalityConfig = null;

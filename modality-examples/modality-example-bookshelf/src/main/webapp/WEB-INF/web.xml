@@ -58,6 +58,10 @@
   </servlet-mapping>
   <!-- context params -->
   <context-param>
+    <param-name>org.apache.velocity.tools.view.class</param-name>
+    <param-value>com.republicate.modality.webapp.ModalityView</param-value>
+  </context-param>
+  <context-param>
     <param-name>org.apache.velocity.tools.loadDefaults</param-name>
     <param-value>true</param-value>
   </context-param>

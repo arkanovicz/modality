@@ -30,7 +30,6 @@ public class AbstractSessionAuthFilterTest extends AbstractAuthFilterTest
     protected void recordConfig()
     {
         super.recordConfig();
-        expect(filterConfig.getServletContext()).andReturn(servletContext);
         expect(servletContext.getContextPath()).andReturn("/");
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andReturn("0");
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.LOGGED_SESSION_KEY)).andReturn("_user_");

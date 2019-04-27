@@ -1,6 +1,6 @@
 package com.republicate.modality.webapp.example;
 
-import org.apache.velocity.tools.model.Model;
+import com.republicate.modality.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

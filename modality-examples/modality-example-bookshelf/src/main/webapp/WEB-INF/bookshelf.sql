@@ -57,7 +57,7 @@ create table friend
 );
 
 insert into publisher values (1, 'Green Penguin Books'), (2, 'Serious Stuff Publishing');
-insert into book values (1, 'The Astonishing Life of Duncan Aston', '2018-05-09', 1), (2, 'Beyond the Surface of Things', 2), (3, 'Seeds and Flowers', 2);
+insert into book values (1, 'The Astonishing Life of Duncan Aston', '2018-05-09', 1), (2, 'Beyond the Surface of Things', '2012-10-18', 2), (3, 'Seeds and Flowers', '2002-04-21', 2);
 insert into author values (1, 'Graham Brigovicz'), (2, 'Robert Willhelm'), (3, 'Vanessa Hopkins'), (4, 'Kai Mattey');
 insert into book_author values (1, 1), (1, 2), (2, 3), (3, 4);
 insert into friend values (1, 'nestor', 'secret');

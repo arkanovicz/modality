@@ -5,14 +5,11 @@ import org.apache.velocity.tools.view.JeeFilterConfig;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.util.ExtProperties;
 
-import javax.servlet.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Properties;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
 
 public abstract class ModalityFilter implements Filter
 {

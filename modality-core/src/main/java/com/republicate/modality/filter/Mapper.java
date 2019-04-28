@@ -1,8 +1,8 @@
 package com.republicate.modality.filter;
 
-import org.apache.velocity.tools.ClassUtils;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.util.GlobToRegex;
+import org.apache.velocity.tools.ClassUtils;
 import org.slf4j.Logger;
 
 import java.io.Serializable;

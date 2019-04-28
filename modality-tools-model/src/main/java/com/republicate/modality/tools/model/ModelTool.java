@@ -19,11 +19,6 @@ package com.republicate.modality.tools.model;
  * under the License.
  */
 
-import org.apache.velocity.tools.Scope;
-import org.apache.velocity.tools.config.DefaultKey;
-import org.apache.velocity.tools.config.ValidScope;
-import org.apache.velocity.tools.generic.SafeConfig;
-import org.apache.velocity.tools.generic.ValueParser;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
@@ -31,8 +26,12 @@ import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
-import com.republicate.modality.config.ConfigHelper;
 import com.republicate.modality.config.Constants;
+import org.apache.velocity.tools.Scope;
+import org.apache.velocity.tools.config.DefaultKey;
+import org.apache.velocity.tools.config.ValidScope;
+import org.apache.velocity.tools.generic.SafeConfig;
+import org.apache.velocity.tools.generic.ValueParser;
 
 import java.io.Serializable;
 import java.sql.SQLException;

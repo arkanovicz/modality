@@ -1,5 +1,13 @@
 package tool;
 
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.velocity.tools.generic.JsonContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import util.ApiClient;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Base64;
@@ -8,13 +16,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.apache.commons.codec.digest.HmacAlgorithms;
-import org.apache.commons.codec.digest.HmacUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.velocity.tools.generic.JsonContent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import util.ApiClient;
 
 public class TwitterTool
 {

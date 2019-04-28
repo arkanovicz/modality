@@ -18,14 +18,14 @@ package com.republicate.modality.config;
  * under the License.
  */
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.tools.ClassUtils;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Model;
 import com.republicate.modality.impl.AttributeHolder;
 import com.republicate.modality.impl.BaseAttribute;
 import com.republicate.modality.util.TypeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.tools.ClassUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

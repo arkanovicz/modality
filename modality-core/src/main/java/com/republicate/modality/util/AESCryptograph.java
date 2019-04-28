@@ -21,17 +21,17 @@ package com.republicate.modality.util;
 
 import com.republicate.modality.config.ConfigurationException;
 
-/**
- * TODO - document secure random requirement
- */
-
+import java.nio.charset.Charset;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.Charset;
 
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
+
+/**
+ * TODO - document secure random requirement
+ */
 
 /**
  * Basic AES encryption. Please note that it uses the ECB block mode, which has the advantage

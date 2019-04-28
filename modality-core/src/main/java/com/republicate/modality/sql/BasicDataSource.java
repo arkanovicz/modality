@@ -1,11 +1,11 @@
 package com.republicate.modality.sql;
 
-import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import javax.sql.DataSource;
 
 public class BasicDataSource implements DataSource
 {

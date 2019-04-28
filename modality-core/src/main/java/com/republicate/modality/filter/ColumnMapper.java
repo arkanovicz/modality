@@ -1,7 +1,7 @@
 package com.republicate.modality.filter;
 
-import org.apache.commons.lang3.tuple.Pair;
 import com.republicate.modality.config.ConfigurationException;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.util.HashMap;

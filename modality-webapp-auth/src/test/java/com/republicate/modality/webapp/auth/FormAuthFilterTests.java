@@ -3,7 +3,6 @@ package com.republicate.modality.webapp.auth;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import org.apache.velocity.tools.view.ServletUtils;
-
 import org.easymock.Capture;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;

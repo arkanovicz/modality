@@ -19,7 +19,6 @@ package com.republicate.modality.impl;
  * under the License.
  */
 
-import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.Action;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
@@ -28,6 +27,7 @@ import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
+import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Filter;
 
 import java.beans.PropertyDescriptor;

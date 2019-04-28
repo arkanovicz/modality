@@ -25,7 +25,6 @@ import com.republicate.modality.filter.Filter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -39,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
 import static org.junit.Assert.*;
 

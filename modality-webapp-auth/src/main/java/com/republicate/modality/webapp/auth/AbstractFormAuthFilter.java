@@ -25,6 +25,10 @@ import org.apache.velocity.tools.view.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Optional;
+import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -32,10 +36,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * <p>AuthFilter specialization for form-based logins.</p>

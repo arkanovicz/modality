@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.Optional;
 import java.util.TreeMap;
 
 public abstract class AttributeHolder implements Serializable

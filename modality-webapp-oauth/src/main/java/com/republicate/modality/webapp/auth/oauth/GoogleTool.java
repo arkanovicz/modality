@@ -1,15 +1,15 @@
 package tool;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.velocity.tools.generic.JsonContent;
 import org.apache.velocity.tools.generic.JsonTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.ApiClient;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class GoogleTool
 {

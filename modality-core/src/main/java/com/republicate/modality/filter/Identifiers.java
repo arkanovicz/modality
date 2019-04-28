@@ -1,8 +1,8 @@
 package com.republicate.modality.filter;
 
+import com.republicate.modality.config.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.ClassUtils;
-import com.republicate.modality.config.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

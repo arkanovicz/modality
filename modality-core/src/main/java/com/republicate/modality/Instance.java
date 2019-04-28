@@ -19,10 +19,10 @@ package com.republicate.modality;
  * under the License.
  */
 
+import com.republicate.modality.filter.Filter;
 import com.republicate.modality.filter.ValueFilterHandler;
 import com.republicate.modality.sql.RowValues;
 import com.republicate.modality.util.ChainedMap;
-import com.republicate.modality.filter.Filter;
 import com.republicate.modality.util.SlotTreeMap;
 import com.republicate.modality.util.TypeUtils;
 

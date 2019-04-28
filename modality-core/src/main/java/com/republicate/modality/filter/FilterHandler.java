@@ -1,7 +1,7 @@
 package com.republicate.modality.filter;
 
-import org.apache.velocity.tools.ClassUtils;
 import com.republicate.modality.config.ConfigurationException;
+import org.apache.velocity.tools.ClassUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;

@@ -33,9 +33,11 @@ import org.apache.velocity.tools.config.XmlFactoryConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import javax.sql.DataSource;
 
 import static org.junit.Assert.*;
 

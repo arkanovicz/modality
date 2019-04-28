@@ -25,14 +25,14 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.tools.view.ServletUtils;
 
+import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Optional;
 
 /**
  * <p>Form authentication filter that handles a "remember me" cookie.</p>

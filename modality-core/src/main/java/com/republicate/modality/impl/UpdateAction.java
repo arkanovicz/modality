@@ -19,10 +19,10 @@ package com.republicate.modality.impl;
  * under the License.
  */
 
-import org.apache.commons.lang3.StringUtils;
 import com.republicate.modality.Action;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.sql.SQLException;

@@ -1,12 +1,12 @@
 package com.republicate.modality.webapp.auth;
 
-import static org.easymock.EasyMock.*;
-
 import com.republicate.modality.webapp.BaseWebappMockTest;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static org.easymock.EasyMock.expect;
 
 public class AbstractAuthFilterTest extends BaseWebappMockTest
 {

@@ -11,7 +11,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 
 import static org.easymock.EasyMock.*;
-import static org.easymock.EasyMock.capture;
 
 public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
 {

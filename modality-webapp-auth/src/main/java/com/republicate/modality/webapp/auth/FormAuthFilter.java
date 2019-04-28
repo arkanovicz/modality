@@ -19,31 +19,31 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.config.ConfigurationException;
-import org.apache.velocity.tools.ToolContext;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
+import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.util.SlotHashMap;
 import com.republicate.modality.util.SlotMap;
+import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.apache.velocity.util.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>Authentication filter relying on a query returning a user instance whenever his/her credentials

@@ -2,12 +2,7 @@ package com.republicate.modality.webapp.auth;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
-import org.apache.velocity.app.VelocityEngine;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.naming.spi.InitialContextFactory;
-import javax.sql.DataSource;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
@@ -15,7 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Hashtable;
-import java.util.Properties;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
+import javax.sql.DataSource;
 
 public class BaseBookshelfTests
 {

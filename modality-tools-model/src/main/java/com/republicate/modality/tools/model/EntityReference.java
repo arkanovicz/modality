@@ -19,17 +19,17 @@ package com.republicate.modality.tools.model;
  * under the License.
  */
 
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
+
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map;
 
 public class EntityReference
 {

@@ -20,14 +20,12 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.webapp.ModalityFilter;
-import org.apache.velocity.tools.view.JeeConfig;
-import org.apache.velocity.tools.view.JeeFilterConfig;
-import org.apache.velocity.tools.view.ServletUtils;
-import org.apache.velocity.util.ExtProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.Filter;
+import java.io.IOException;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -35,15 +33,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 
 /**

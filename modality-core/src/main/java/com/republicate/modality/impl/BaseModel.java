@@ -1,12 +1,5 @@
 package com.republicate.modality.impl;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-// TODO - Velocity-aware model should be a subclass
-// import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.tools.ClassUtils;
-import org.apache.velocity.tools.XmlUtils;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
@@ -16,8 +9,8 @@ import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigHelper;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.config.Constants;
-import com.republicate.modality.filter.ValueFilterHandler;
 import com.republicate.modality.filter.Identifiers;
+import com.republicate.modality.filter.ValueFilterHandler;
 import com.republicate.modality.sql.BasicDataSource;
 import com.republicate.modality.sql.ConnectionPool;
 import com.republicate.modality.sql.ConnectionWrapper;
@@ -25,14 +18,14 @@ import com.republicate.modality.sql.Credentials;
 import com.republicate.modality.sql.DriverInfos;
 import com.republicate.modality.sql.StatementPool;
 import com.republicate.modality.util.Cryptograph;
-import org.apache.velocity.util.ExtProperties;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.velocity.tools.ClassUtils;
+import org.apache.velocity.tools.XmlUtils;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -55,6 +48,13 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+// TODO - Velocity-aware model should be a subclass
+// import org.apache.velocity.app.VelocityEngine;
 
 public abstract class BaseModel extends AttributeHolder implements Constants
 {

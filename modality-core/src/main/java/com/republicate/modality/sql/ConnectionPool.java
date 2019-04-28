@@ -22,7 +22,6 @@ package com.republicate.modality.sql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,6 +29,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.sql.DataSource;
 
 /**
  *  Connection pool.

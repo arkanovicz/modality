@@ -19,11 +19,11 @@ package com.republicate.modality.impl;
  * under the License.
  */
 
-import org.apache.commons.lang3.tuple.Pair;
 import com.republicate.modality.Entity;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Identifiers;
 import com.republicate.modality.sql.DriverInfos;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

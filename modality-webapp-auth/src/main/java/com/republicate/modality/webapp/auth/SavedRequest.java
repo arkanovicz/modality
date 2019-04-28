@@ -2,8 +2,6 @@ package com.republicate.modality.webapp.auth;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +13,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
 public class SavedRequest
 {

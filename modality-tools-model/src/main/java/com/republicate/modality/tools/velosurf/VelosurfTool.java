@@ -1,18 +1,18 @@
 package com.republicate.modality.tools.velosurf;
 
+import com.republicate.modality.Model;
+import com.republicate.modality.config.ConfigHelper;
+import com.republicate.modality.tools.model.ModelTool;
+import com.republicate.modality.velosurf.Velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
 import org.apache.velocity.tools.generic.ValueParser;
-import com.republicate.modality.Model;
-import com.republicate.modality.tools.model.ModelTool;
-import com.republicate.modality.config.ConfigHelper;
-import com.republicate.modality.velosurf.Velosurf;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStreamReader;
 import java.net.URL;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 @Deprecated
 public class VelosurfTool extends ModelTool

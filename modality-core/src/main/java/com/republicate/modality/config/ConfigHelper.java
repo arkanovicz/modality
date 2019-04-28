@@ -32,7 +32,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 public class ConfigHelper
 {

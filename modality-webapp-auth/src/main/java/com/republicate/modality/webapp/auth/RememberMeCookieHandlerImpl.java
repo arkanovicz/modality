@@ -19,17 +19,21 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.*;
-import com.republicate.modality.util.*;
+import com.republicate.modality.Action;
+import com.republicate.modality.Entity;
+import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
+import com.republicate.modality.RowAttribute;
+import com.republicate.modality.util.AESCryptograph;
+import com.republicate.modality.util.Cryptograph;
+import com.republicate.modality.util.SlotHashMap;
+import com.republicate.modality.util.SlotMap;
+import com.republicate.modality.util.TypeUtils;
 import com.republicate.modality.webapp.util.HttpUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -38,6 +42,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
 {

@@ -21,6 +21,7 @@ package com.republicate.modality.impl;
 
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
+import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.sql.RowValues;
 
 import java.io.Serializable;
@@ -53,6 +54,15 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         {
             query = query.trim();
         }
+        if (resultEntityName != null)
+        {
+            Entity entity = parent.resolveEntity(resultEntityName);
+            if (entity == null)
+            {
+                throw new ConfigurationException("attribute " + getName() + " result entity not found: " + resultEntityName);
+            }
+            setResultEntity(entity);
+        }
     }
 
     public String getName()
@@ -67,7 +77,7 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
 
     protected void setResultEntity(String entityName)
     {
-        setResultEntity(parent.resolveEntity(entityName));
+        this.resultEntityName = entityName;
     }
 
     public List<String> getParameterNames()
@@ -199,7 +209,7 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
 
     private boolean caching = false;
     private AttributeHolder parent = null;
-    private Entity resultEntity = null;
+    private String resultEntityName = null;
     private String attributeName = null;
     private String query = "";
     protected List<String> parameterNames = new ArrayList<>();

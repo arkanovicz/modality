@@ -215,9 +215,11 @@ public abstract class BaseEntity extends AttributeHolder
         iterateAttribute = new RowsetAttribute("iterate", this);
         iterateAttribute.setResultEntity((Entity)this);
         iterateAttribute.addQueryPart("SELECT * FROM " + tableIdentifier);
+        iterateAttribute.initialize();
 
         countAttribute = new ScalarAttribute("getCount", this);
         countAttribute.addQueryPart("SELECT COUNT(*) FROM " + tableIdentifier);
+        countAttribute.initialize();
 
         if (sqlPrimaryKey != null && sqlPrimaryKey.size() > 0)
         {
@@ -229,16 +231,19 @@ public abstract class BaseEntity extends AttributeHolder
             fetchAttribute.setResultEntity((Entity)this);
             fetchAttribute.addQueryPart("SELECT * FROM " + tableIdentifier + " WHERE ");
             addKeyMapToAttribute(fetchAttribute);
+            fetchAttribute.initialize();
 
             delete = new Action("delete", this);
             delete.addQueryPart("DELETE FROM " + tableIdentifier + " WHERE ");
             addKeyMapToAttribute(delete);
+            delete.initialize();
 
             update = new UpdateAction(this);
             update.addQueryPart("UPDATE " + tableIdentifier + " SET ");
             update.addParameter(UpdateAction.DYNAMIC_PART);
             update.addQueryPart(" WHERE ");
             addKeyMapToAttribute(update);
+            update.initialize();
 
             insert = new Action("insert", this);
             insert.addQueryPart("INSERT INTO " + tableIdentifier + "(");
@@ -267,6 +272,7 @@ public abstract class BaseEntity extends AttributeHolder
                 insert.addParameter(param);
             }
             insert.addQueryPart(")");
+            insert.initialize();
         }
     }
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<model reverse="tables" identifiers.mapping._="lowercase" identifiers.mapping._._="lowercase">
+
+    <row name="user_by_credentials" result="user">
+        select us_id, login from user where login = <login/> and password = <password/>;
+    </row>
+
+    <action name="create_remember_me">
+        INSERT INTO remember_me (us_id, secure_key, creation) VALUES (<us_id/>, <secure_key/>, NOW());
+    </action>
+
+    <row name="check_remember_me" result="user">
+        SELECT user.us_id, user.login
+        FROM   remember_me
+          JOIN user ON user.us_id = remember_me.us_id
+        WHERE remember_me.us_id = <us_id/>
+          AND remember_me.secure_key = <secure_key/>
+          AND <![CDATA[ creation >= now() - interval 365 day;]]>
+    </row>
+
+    <action name="refresh_remember_me">
+        UPDATE remember_me
+        SET remember_me.secure_key = <secure_key/>,
+            remember_me.creation = now()
+        WHERE remember_me.us_id = <us_id/>;
+    </action>
+
+    <action name="reset_remember_me">
+        DELETE FROM remember_me
+        WHERE remember_me.us_id = <us_id/>
+          AND remember_me.secure_key = <secure_key/>
+          AND <![CDATA[ creation >= now() - interval 365 day;]]>
+    </action>
+
+    <action name="clean_remember_me"><![CDATA[
+        DELETE FROM remember_me WHERE creation < now() - interval 365 day;]]>
+    </action>
+
+</model>

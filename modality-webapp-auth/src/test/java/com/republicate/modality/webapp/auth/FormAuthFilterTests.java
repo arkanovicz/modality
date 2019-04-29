@@ -27,6 +27,7 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     {
         recordVelocityConfig(false, null);
         recordFilterConfig();
+        recordFilterRequireInit();
 
         // GET /index.vhtml, expect 403
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
@@ -49,6 +50,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     {
         recordVelocityConfig(true, "user_cred_tools.xml");
         recordFilterConfig(false);
+        recordFilterRequireInit();
+
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_model.xml")));
         recordSuccessfullLogin();
         expect(request.getParameter("redirect")).andAnswer(eval(null));
@@ -72,6 +75,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     {
         recordVelocityConfig(true, "user_cred_tools.xml");
         recordFilterConfig(true);
+        recordFilterRequireInit();
+
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_model.xml")));
 
         // GET /index.vhtml, expect 302 towards /login.vhtml
@@ -119,6 +124,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     {
         recordVelocityConfig(true, "user_cred_tools.xml");
         recordFilterConfig(true, true, true);
+
+        recordFilterRequireInit();
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_model.xml")));
 
         // GET /index.vhtml : save request and redirect to /login.vhtml
@@ -173,6 +180,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     {
         recordVelocityConfig(true, "user_cred_tools.xml");
         recordFilterConfig(true, true, true);
+        recordFilterRequireInit();
+
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_model.xml")));
 
         // POST /index.do : save request and redirect to /login.vhtml

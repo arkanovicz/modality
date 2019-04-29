@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 /**
  * <p>A tailored minimalistic digester for XML configuration reading of the model tree.</p>
@@ -108,6 +109,7 @@ public class ConfigDigester
         switch (child.getNodeType())
         {
             case Node.TEXT_NODE:
+            case Node.CDATA_SECTION_NODE:
             {
                 String queryPart = child.getNodeValue();
                 addAttributeQueryPart.invoke(attribute, queryPart);
@@ -257,7 +259,16 @@ public class ConfigDigester
 
         // search for a setter
         String setterName = getSetterName(name);
-        Method setter = ClassUtils.findSetter(setterName, bean.getClass(), ConfigDigester::isScalarType, false);
+        Predicate<Class> argumentMatcher = value instanceof String ?
+            ConfigDigester::isScalarType :
+            value instanceof Map ?
+                ConfigDigester::isMapType :
+                null;
+        if (argumentMatcher == null)
+        {
+            throw new ConfigurationException("Property " + name + " has unhandled value type " + value.getClass().getName());
+        }
+        Method setter = ClassUtils.findSetter(setterName, bean.getClass(), argumentMatcher, false);
         if (setter == null)
         {
             // search for a map-like put() method
@@ -283,7 +294,7 @@ public class ConfigDigester
         setter.setAccessible(true);
         Object argument;
         Class paramClass = setter.getParameterTypes()[setter.getParameterCount() - 1];
-        if (paramClass == String.class)
+        if (paramClass == String.class || Map.class.isAssignableFrom(paramClass))
         {
             argument = value;
         }
@@ -397,6 +408,12 @@ public class ConfigDigester
     {
         return scalarTypes.contains(typeClass) || Enum.class.isAssignableFrom(typeClass);
     }
+
+    public static boolean isMapType(Class typeClass)
+    {
+        return Map.class.isAssignableFrom(typeClass);
+    }
+
 
     private Stack<Element> xmlPath = new Stack<>();
     private Stack<Object> beanStack = new Stack<>();

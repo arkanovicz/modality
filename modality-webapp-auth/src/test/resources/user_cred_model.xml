@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <model>
     <row name="user_by_credentials">
-        select distinct 'Nestor' as login from author where <login/> = 'Nestor' and <password/> = 'secret';
+        select distinct 'Nestor' as login from author where <login/> = 'nestor' and <password/> = 'secret';
     </row>
 </model>

@@ -14,6 +14,10 @@ public abstract class TableMapper<T extends Serializable> extends Mapper<T>
     @Override
     protected void addEntry(String pattern, T leaf)
     {
+        if ("_".equals(pattern))
+        {
+            pattern = "*";
+        }
         MappingEntry mappingEntry = new MappingEntry(pattern, leaf);
         addTableEntry(pattern, mappingEntry);
     }

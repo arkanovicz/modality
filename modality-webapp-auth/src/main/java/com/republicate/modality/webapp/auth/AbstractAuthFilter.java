@@ -55,7 +55,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
 
     public static final String PROTECTED_RESOURCES = "auth.protected";
 
-    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException
     {
         return true;
     }

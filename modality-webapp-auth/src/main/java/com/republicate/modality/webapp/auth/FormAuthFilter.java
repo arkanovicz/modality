@@ -100,7 +100,7 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     }
 
     @Override
-    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException
     {
         requireModelInit();
         return true;
@@ -116,7 +116,7 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
         return login != null ? login : String.valueOf(user);
     }
 
-    private void requireModelInit()
+    private void requireModelInit() throws ServletException
     {
         if (model == null)
         {
@@ -124,41 +124,47 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
             {
                 if (model == null)
                 {
-                    // if the model has been initialized via a model tool,
-                    // make sure the model tool is ready
-                    initModelFromApplicationToolbox();
-                    if (model == null)
-                    {
-                        // No application toolbox, or nothing found within.
-                        // Just ask the repository.
-                        initModelFromRepository();
-
-                        // Still not available? Try to initialize it ourselves.
-                        if (model == null)
-                        {
-                            initNewModel();
-
-                            // otherwise bail out
-                            if (model == null)
-                            {
-                                throw new RuntimeException("ModelAuthFilter: no model found" + (modelId == null ? "" : " for model id " + modelId));
-                            }
-                        }
-                    }
-
-                    // now check the user_by_credentials attribute
-                    Attribute attr = model.getAttribute(userByCredentialsAttribute);
-                    if (attr == null)
-                    {
-                        throw new ConfigurationException("attribute does not exist: " + userByCredentialsAttribute);
-                    }
-                    if (!(attr instanceof RowAttribute))
-                    {
-                        throw new ConfigurationException("not a row attribute: " + userByCredentialsAttribute);
-                    }
+                    initModel();
                 }
             }
         }
+    }
+
+    protected void initModel() throws ServletException
+    {
+        // if the model has been initialized via a model tool,
+        // make sure the model tool is ready
+        initModelFromApplicationToolbox();
+        if (model == null)
+        {
+            // No application toolbox, or nothing found within.
+            // Just ask the repository.
+            initModelFromRepository();
+
+            // Still not available? Try to initialize it ourselves.
+            if (model == null)
+            {
+                initNewModel();
+
+                // otherwise bail out
+                if (model == null)
+                {
+                    throw new RuntimeException("ModelAuthFilter: no model found" + (modelId == null ? "" : " for model id " + modelId));
+                }
+            }
+        }
+
+        // now check the user_by_credentials attribute
+        Attribute attr = model.getAttribute(userByCredentialsAttribute);
+        if (attr == null)
+        {
+            throw new ConfigurationException("attribute does not exist: " + userByCredentialsAttribute);
+        }
+        if (!(attr instanceof RowAttribute))
+        {
+            throw new ConfigurationException("not a row attribute: " + userByCredentialsAttribute);
+        }
+
     }
 
     private void initModelFromApplicationToolbox()

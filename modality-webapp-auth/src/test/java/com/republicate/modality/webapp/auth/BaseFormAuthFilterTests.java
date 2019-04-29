@@ -83,6 +83,10 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(filterConfig.getInitParameter(FormAuthFilter.USER_BY_CRED_ATTRIBUTE)).andAnswer(eval("user_by_credentials"));
         expect(filterConfig.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
         expect(servletContext.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
+    }
+
+    protected void recordFilterRequireInit() throws Exception
+    {
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
         expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
@@ -95,7 +99,7 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(request.getSession(false)).andAnswer(eval(null));
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
         expect(request.getMethod()).andAnswer(eval("POST"));
-        expect(request.getParameter("login")).andAnswer(eval("Nestor"));
+        expect(request.getParameter("login")).andAnswer(eval("nestor"));
         expect(request.getParameter("password")).andAnswer(eval("secret"));
         expect(request.getSession()).andAnswer(eval(session));
         expect(session.isNew()).andAnswer(eval(true));

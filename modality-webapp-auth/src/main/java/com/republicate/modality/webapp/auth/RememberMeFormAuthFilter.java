@@ -86,33 +86,33 @@ import javax.servlet.http.HttpSession;
  *           INSERT INTO remember_me (us_id, ip, secure_key, creation) VALUES (&lt;us_id/&gt;, &lt;ip/&gt;, &lt;secure_key/&gt;, NOW());
  *       &lt;/action&gt;
  *
- *       &lt;row name="check_remember_me" result="user"&gt;&lt;![CDATA[
+ *       &lt;row name="check_remember_me" result="user"&gt;
  *           SELECT user.*
  *           FROM   remember_me
  *             JOIN user ON user.us_id = remember_me.us_id
  *           WHERE remember_me.us_id = &lt;us_id/&gt;
  *             AND remember_me.ip = &lt;ip/&gt;
  *             AND remember_me.secure_key = &lt;secure_key/&gt;
- *             AND creation >= now() - interval 365 day;]]&gt;
+ *             AND creation >= now() - interval 365 day;
  *       &lt;/row&gt;
  *
- *       &lt;action name="refresh_remember_me&gt;&lt;![CDATA[
+ *       &lt;action name="refresh_remember_me"&gt;
  *           UPDATE remember_me
- *           SET remember_me.secure_key = &lt;secure_key/&gt,
+ *           SET remember_me.secure_key = &lt;secure_key/&gt;,
  *               remember_me.creation = now()
  *           WHERE remember_me.us_id = &lt;us_id/&gt;
- *             AND remember_me.ip = &lt;ip/&gt;;]]&gt;
+ *             AND remember_me.ip = &lt;ip/&gt;;
  *       &lt;/action&gt;
 
- *       &lt;action name="reset_remember_me&gt;&lt;![CDATA[
+ *       &lt;action name="reset_remember_me"&gt;
  *           DELETE FROM remember_me
  *           WHERE remember_me.us_id = &lt;us_id/&gt;
  *             AND remember_me.ip = &lt;ip/&gt;
  *             AND remember_me.secure_key = &lt;secure_key/&gt;
- *             AND creation >= now() - interval 365 day;]]&gt;
+ *             AND creation >= now() - interval 365 day;
  *       &lt;/action&gt;
 
- *       &lt;action name="clean_remember_me&gt;&lt;![CDATA[
+ *       &lt;action name="clean_remember_me"&gt;&lt;![CDATA[
  *           DELETE FROM remember_me WHERE creation < now() - interval 365 day;]]&gt;
  *       &lt;/action&gt;
  *       ...
@@ -188,10 +188,16 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
             boolean checkIP = BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CHECK_IP));
             rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, checkUserAgent, checkIP);
         }
-        rememberMeCookieHandler.setModel(getModel());
         cleanRate = NumberUtils.toInt(findConfigParameter(COOKIE_CLEAN_RATE), DEFAULT_COOKIE_CLEAN_RATE);
         considerPublicRequests = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CONSIDER_PUBLIC))).orElse(true);
-     }
+    }
+
+    @Override
+    protected void initModel() throws ServletException
+    {
+        super.initModel();
+        rememberMeCookieHandler.setModel(getModel());
+    }
 
     @Override
     protected void processForbiddenRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
@@ -222,7 +228,8 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
             Instance logged = getSessionUser(request.getSession(false));
             if (logged == null)
             {
-                checkRememberMeCookie(request, response);
+                logged = checkRememberMeCookie(request, response);
+                // TODO - don't stay on loggin page if user just go logged in by cookie
             }
         }
         super.processPublicRequest(request, response, filterChain);

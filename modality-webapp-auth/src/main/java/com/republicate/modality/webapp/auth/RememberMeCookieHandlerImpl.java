@@ -67,7 +67,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         doCreateCookie = model.getAction("create_remember_me");
         if (doCreateCookie == null)
         {
-            throw new ServletException("required action 'create_remember_me' does not exist ir is not an action");
+            throw new ServletException("required action 'create_remember_me' does not exist or is not an action");
         }
         doCheckCookie = model.getRowAttribute("check_remember_me");
         if (doCheckCookie == null)
@@ -91,8 +91,19 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
             logger.warn("no reset_remember_me action provided");
         }
         doCleanCookies = model.getAction("clean_remember_me"); // may be null
-        this.cryptograph = new AESCryptograph();
+        cryptograph = new AESCryptograph();
+        String seed = getCryptographSeed(model);
+        cryptograph.init(seed);
         return this;
+    }
+
+    private String getCryptographSeed(Model model)
+    {
+        return Optional.ofNullable(
+            model.getDefinition()).map(x -> String.valueOf(x)).
+            orElse(Optional.ofNullable(model.getDatabaseURL()).filter(x -> x.length() >= 16).
+                orElse("sixteen chars..."));
+
     }
 
     @Override
@@ -114,7 +125,8 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         String decrypted;
         try
         {
-            decrypted = cryptograph.decrypt(rememberMeValue.getBytes(StandardCharsets.UTF_8));
+            byte[] bytes = TypeUtils.base64Decode(rememberMeValue);
+            decrypted = cryptograph.decrypt(bytes);
         }
         catch (Exception e)
         {
@@ -283,11 +295,6 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         return RandomStringUtils.random(15, characters);
     }
 
-    private Model getModel()
-    {
-        return model;
-    }
-
     // config
     private String cookieName = null;
     private String cookieDomain = null;
@@ -298,7 +305,6 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     private Cryptograph cryptograph;
 
     // init
-    private Model model;
     private RowAttribute doCheckCookie = null;
     private List<String> usersPrimaryKey = null;
     private Action doCreateCookie = null;

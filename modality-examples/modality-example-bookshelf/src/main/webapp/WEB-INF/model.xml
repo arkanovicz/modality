@@ -19,7 +19,8 @@
  under the License.
 -->
 
-<model xmlns:xi="http://www.w3.org/2001/XInclude" dataSource="jdbc/bookshelf" reverse="extended">
+<model xmlns:xi="http://www.w3.org/2001/XInclude" dataSource="jdbc/bookshelf" reverse="extended">.
+
     <transaction name="initBookshelf">
         <xi:include href="bookshelf.sql" parse="text"/>
     </transaction>
@@ -31,7 +32,7 @@
         There is no encryption function in HSQL, otherwise, for instance with MySQL, you would do:
         select * from user where login = <login/> and password = sha2(<password/>, 256);
      -->
-    <row name="user_by_credentials" result="user">
+    <row name="user_by_credentials">
         select * from friend where login = <login/> and password = <password/>;
     </row>
 

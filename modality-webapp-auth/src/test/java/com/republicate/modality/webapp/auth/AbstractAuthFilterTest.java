@@ -1,6 +1,7 @@
 package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.webapp.BaseWebappMockTest;
+import com.republicate.modality.webapp.ModalityFilter;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +25,11 @@ public class AbstractAuthFilterTest extends BaseWebappMockTest
     protected void recordConfig()
     {
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(ModalityFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(ModalityFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
     }
 

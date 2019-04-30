@@ -32,6 +32,11 @@ under the License.
     <description>Authentication Filters</description>
     <dependencies>
         <dependency>
+            <groupId>com.republicate.modality</groupId>
+            <artifactId>modality-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>

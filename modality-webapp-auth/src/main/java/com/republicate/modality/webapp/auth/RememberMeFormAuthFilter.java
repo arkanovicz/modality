@@ -269,6 +269,11 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
         return user;
     }
 
+    protected RememberMeCookieHandler getCookieHandler()
+    {
+        return rememberMeCookieHandler;
+    }
+
     private RememberMeCookieHandler rememberMeCookieHandler = null;
     private boolean considerPublicRequests = true;
     private int cleanRate;

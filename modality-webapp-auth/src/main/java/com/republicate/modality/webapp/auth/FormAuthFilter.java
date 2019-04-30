@@ -21,24 +21,15 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Instance;
-import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.util.SlotHashMap;
 import com.republicate.modality.util.SlotMap;
-import org.apache.velocity.tools.ToolContext;
-import org.apache.velocity.tools.view.ServletUtils;
-import org.apache.velocity.tools.view.VelocityView;
-import org.apache.velocity.util.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -68,7 +59,6 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
 {
     protected static Logger logger = LoggerFactory.getLogger("auth");
 
-    public static final String MODEL_ID =               "auth.model.model_id";
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
     public static final String USER_REFRESH_RATE =      "auth.model.refresh_rate";
 
@@ -79,24 +69,6 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     {
         super.init(filterConfig);
         userByCredentialsAttribute = Optional.ofNullable(findConfigParameter(USER_BY_CRED_ATTRIBUTE)).orElse(DEFAULT_MODEL_AUTH_USER_BY_CREDENTIALS);
-        modelId = findConfigParameter(MODEL_ID);
-    }
-
-    @Override
-    protected Instance checkCredentials(String login, String password)
-    {
-        try
-        {
-            SlotMap params = new SlotHashMap();
-            params.put("login", login);
-            params.put("password", password);
-            return model.retrieve(userByCredentialsAttribute, params);
-        }
-        catch (SQLException sqle)
-        {
-            logger.error("could not check credentials", sqle);
-            return null;
-        }
     }
 
     @Override
@@ -106,56 +78,12 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
         return true;
     }
 
-    protected String displayUser(Instance user)
-    {
-        String login = user.getString(getLoginField());
-        if (login == null && !"login".equals(getLoginField()))
-        {
-            login = user.getString("login");
-        }
-        return login != null ? login : String.valueOf(user);
-    }
-
-    private void requireModelInit() throws ServletException
-    {
-        if (model == null)
-        {
-            synchronized (this)
-            {
-                if (model == null)
-                {
-                    initModel();
-                }
-            }
-        }
-    }
-
     protected void initModel() throws ServletException
     {
-        // if the model has been initialized via a model tool,
-        // make sure the model tool is ready
-        initModelFromApplicationToolbox();
-        if (model == null)
-        {
-            // No application toolbox, or nothing found within.
-            // Just ask the repository.
-            initModelFromRepository();
-
-            // Still not available? Try to initialize it ourselves.
-            if (model == null)
-            {
-                initNewModel();
-
-                // otherwise bail out
-                if (model == null)
-                {
-                    throw new RuntimeException("ModelAuthFilter: no model found" + (modelId == null ? "" : " for model id " + modelId));
-                }
-            }
-        }
+        super.initModel();
 
         // now check the user_by_credentials attribute
-        Attribute attr = model.getAttribute(userByCredentialsAttribute);
+        Attribute attr = getModel().getAttribute(userByCredentialsAttribute);
         if (attr == null)
         {
             throw new ConfigurationException("attribute does not exist: " + userByCredentialsAttribute);
@@ -167,117 +95,33 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
 
     }
 
-    private void initModelFromApplicationToolbox()
-    {
-        VelocityView view = ServletUtils.getVelocityView(getConfig());
-        if (view.hasApplicationTools())
-        {
-            Set<String> modelKeys = new HashSet<>();
-            Class modelToolClass = null;
-            try
-            {
-                modelToolClass = ClassUtils.getClass("com.republicate.modality.tools.model.ModelTool");
-            }
-            catch (ClassNotFoundException cnfe) {}
-            if (modelToolClass != null)
-            {
-                // search for a model in application tools
-                for (Map.Entry<String, Class> entry : view.getApplicationToolbox().getToolClassMap().entrySet())
-                {
-                    if (modelToolClass.isAssignableFrom(entry.getValue()))
-                    {
-                        modelKeys.add(entry.getKey());
-                    }
-                }
-            }
-            String modelKey = null;
-
-            if (modelId == null)
-            {
-                if (modelKeys.size() > 1)
-                {
-                    throw new RuntimeException("authentication filter cannot choose between several models, please specify " + MODEL_ID + " in configuration parameters");
-                }
-                else if (!modelKeys.isEmpty())
-                {
-                    modelId = modelKey = modelKeys.iterator().next();
-                }
-            }
-            else
-            {
-                if (modelKeys.contains(modelId))
-                {
-                    modelKey = modelId;
-                }
-            }
-
-            if (modelKey != null)
-            {
-                logger.info("Found model id '{}' in application toolbox", modelKey);
-
-                // force model initialization
-                view.createContext().get(modelKey);
-
-                // get model
-                model = Model.getModel(modelKey);
-            }
-        }
-    }
-
-    protected Model getModel()
-    {
-        return model;
-    }
-
-    private void initModelFromRepository()
-    {
-        String[] ids =
-            modelId == null ?
-                new String[] { "default", "model" } :
-                new String[] { modelId };
-        String foundModel = null;
-        for (String id : ids)
-        {
-            try
-            {
-                model = Model.getModel(id);
-                foundModel = id;
-            }
-            catch (ConfigurationException e) {}
-            if (foundModel != null)
-            {
-                modelId = foundModel;
-                logger.info("Found model id '{}' in model repository", foundModel);
-            }
-        }
-    }
-
-    private void initNewModel()
+    @Override
+    protected Instance checkCredentials(String login, String password)
     {
         try
         {
-            Map params = new HashMap();
-            params.put(ToolContext.CONTEXT_KEY, getConfig().getServletContext());
-            params.put(ToolContext.ENGINE_KEY, ServletUtils.getVelocityView(getConfig()).getVelocityEngine());
-            model = new Model().configure(params);
-            if (modelId == null)
-            {
-                model.initialize();
-                modelId = model.getModelId();
-            }
-            else
-            {
-                model.initialize(modelId);
-            }
-            logger.info("Configured new model with model id '{}'", modelId);
+            SlotMap params = new SlotHashMap();
+            params.put("login", login);
+            params.put("password", password);
+            return getModel().retrieve(userByCredentialsAttribute, params);
         }
-        catch (ConfigurationException ce)
+        catch (SQLException sqle)
         {
-            logger.error("could not configure and initialize model", ce);
+            logger.error("could not check credentials", sqle);
+            return null;
         }
     }
 
-    private String modelId = null;
+
+    protected String displayUser(Instance user)
+    {
+        String login = user.getString(getLoginField());
+        if (login == null && !"login".equals(getLoginField()))
+        {
+            login = user.getString("login");
+        }
+        return login != null ? login : String.valueOf(user);
+    }
+
     private String userByCredentialsAttribute = null;
-    private Model model = null;
 }

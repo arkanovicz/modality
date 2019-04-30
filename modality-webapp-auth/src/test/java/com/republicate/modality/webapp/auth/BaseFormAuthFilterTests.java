@@ -1,6 +1,7 @@
 package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.webapp.ModalityFilter;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.easymock.Capture;
@@ -60,6 +61,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(servletContext.getContextPath()).andReturn("/");
         expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));
@@ -81,8 +84,6 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(filterConfig.getInitParameter(AbstractFormAuthFilter.REDIRECT_GET_ON_SUCCESS)).andAnswer(eval(String.valueOf(redirectGetRequests)));
         expect(filterConfig.getInitParameter(AbstractFormAuthFilter.FORWARD_POST_ON_SUCCESS)).andAnswer(eval(String.valueOf(forwardPostRequests)));
         expect(filterConfig.getInitParameter(FormAuthFilter.USER_BY_CRED_ATTRIBUTE)).andAnswer(eval("user_by_credentials"));
-        expect(filterConfig.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(FormAuthFilter.MODEL_ID)).andAnswer(eval(null));
     }
 
     protected void recordFilterRequireInit() throws Exception

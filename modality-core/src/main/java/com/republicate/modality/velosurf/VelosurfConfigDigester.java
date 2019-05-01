@@ -43,6 +43,11 @@ public class VelosurfConfigDigester extends ConfigDigester
                     name = result.substring(0, slash);
                     element.setAttribute("result", result.substring(slash + 1));
                 }
+                else
+                {
+                    name = result;
+                    element.removeAttribute("result");
+                }
                 break;
             }
             default: // nop

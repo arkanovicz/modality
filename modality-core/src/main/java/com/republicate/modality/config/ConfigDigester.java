@@ -133,7 +133,7 @@ public class ConfigDigester
     {
         String childName = getElementName(childElement);
         Object childBean;
-        if (isAttributeResult(childElement))
+        if (isAttributeResult(childName))
         {
             String attributeClassName = modelPackage + "." + StringUtils.capitalize(childName);
             Class attributeClass = null;
@@ -359,6 +359,8 @@ public class ConfigDigester
         return createChildInstance(name, ClassUtils.getClass(className));
     }
 
+    // TODO - implement useModelNamespace as below
+    /*
     private boolean isAttributeResult(Element element)
     {
         if (useModelNamespace)
@@ -369,6 +371,12 @@ public class ConfigDigester
         {
             return attributeResults.contains(element.getTagName());
         }
+    }
+    */
+
+    private boolean isAttributeResult(String elementName)
+    {
+        return attributeResults.contains(elementName);
     }
 
     private boolean isDeclaringNamespace(Element root, String namespace)

@@ -290,7 +290,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return getModel();
     }
 
-    protected final void readDefinition(InputSource source) throws Exception
+    protected void readDefinition(InputSource source) throws Exception
     {
         if (source == null)
         {
@@ -300,12 +300,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         builderFactory.setXIncludeAware(true);
         Element doc = builderFactory.newDocumentBuilder().parse(source).getDocumentElement();
         String rootTag = doc.getTagName();
-        // support the deprecated 'database' root tag
-        if ("database".equals(rootTag))
-        {
-            getLogger().warn("<database> root tag has been deprecated in favor of <model>");
-        }
-        else if (!"model".equals(rootTag))
+
+        if (!"model".equals(rootTag))
         {
             throw new ConfigurationException("expecting a <model> root tag");
         }

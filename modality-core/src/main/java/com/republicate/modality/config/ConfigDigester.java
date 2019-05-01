@@ -124,9 +124,14 @@ public class ConfigDigester
         }
     }
 
+    protected String getElementName(Element element)
+    {
+        return element.getLocalName();
+    }
+
     private void handleChildElement(Object parentBean, Element childElement) throws Exception
     {
-        String childName = childElement.getLocalName();
+        String childName = getElementName(childElement);
         Object childBean;
         if (isAttributeResult(childElement))
         {

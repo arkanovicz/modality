@@ -3,6 +3,8 @@ package com.republicate.modality.tools.velosurf;
 import com.republicate.modality.Model;
 import com.republicate.modality.config.ConfigHelper;
 import com.republicate.modality.tools.model.ModelTool;
+import com.republicate.modality.util.AESCryptograph;
+import com.republicate.modality.util.Cryptograph;
 import com.republicate.modality.velosurf.Velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
@@ -29,6 +31,12 @@ public class VelosurfTool extends ModelTool
         String credentials = params.getString("credentials");
         if (credentials != null)
         {
+            ValueParser newparams = new ValueParser()
+            {{
+                setReadOnly(false);
+            }};
+            newparams.putAll(params);
+            params = newparams;
             URL url = new ConfigHelper(params).findURL(credentials);
             try
             {
@@ -46,4 +54,16 @@ public class VelosurfTool extends ModelTool
         }
         super.configure(params);
     }
+
+    public String obfuscate(String clear)
+    {
+        return ((Velosurf)getModel()).obfuscate(clear);
+    }
+
+    public String deobfuscate(String obfuscated)
+    {
+        return ((Velosurf)getModel()).deobfuscate(obfuscated);
+
+    }
+
 }

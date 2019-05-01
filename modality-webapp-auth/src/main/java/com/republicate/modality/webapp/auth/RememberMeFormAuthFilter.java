@@ -185,7 +185,7 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
             String cookiePath = Optional.ofNullable(findConfigParameter(COOKIE_PATH)).orElse(ServletUtils.combinePath(getConfig().getServletContext().getContextPath(), DEFAULT_COOKIE_PATH));
             int cookieMaxAge = NumberUtils.toInt(findConfigParameter(COOKIE_MAX_AGE), DEFAULT_COOKIE_MAX_AGE);
             boolean checkUserAgent = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CHECK_UA))).orElse(true);
-            boolean checkIP = BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CHECK_IP));
+            boolean checkIP = BooleanUtils.toBoolean(findConfigParameter(COOKIE_CHECK_IP));
             rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, checkUserAgent, checkIP);
         }
         cleanRate = NumberUtils.toInt(findConfigParameter(COOKIE_CLEAN_RATE), DEFAULT_COOKIE_CLEAN_RATE);

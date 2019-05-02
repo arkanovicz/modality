@@ -4,8 +4,12 @@ import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Deprecated
@@ -30,6 +34,7 @@ public class VelosurfConfigDigester extends ConfigDigester
                 name = Optional.ofNullable(element.getAttribute("name"))
                     .orElseThrow(() -> new ConfigurationException("entity without name"));
                 element.removeAttribute("name");
+                handleDeprecatedAttributes("entity", element, deprecatedEntityAttributes);
                 break;
             }
             case "attribute":
@@ -48,10 +53,47 @@ public class VelosurfConfigDigester extends ConfigDigester
                     name = result;
                     element.removeAttribute("result");
                 }
+                handleDeprecatedAttributes("attribute", element, deprecatedEntityAttributes);
                 break;
             }
             default: // nop
         }
         return name;
+    }
+
+    private void handleDeprecatedAttributes(String nature, Element element, Map<String, String> deprecationMap)
+    {
+        for (Map.Entry<String, Object> attribute : getAttributesMap(element).entrySet())
+        {
+            String attrName = attribute.getKey();
+            if (deprecationMap.containsKey(attrName))
+            {
+                String replacement = deprecationMap.get(attrName);
+                if (replacement == null)
+                {
+                    logger.warn("<{}> attribute {} is deprecated", nature, attrName);
+                    element.removeAttribute(attrName);
+                }
+                else
+                {
+                    logger.warn("<{}> attribute {} is deprecated, use {}", nature, attrName, replacement);
+                    String value = element.getAttribute(attrName);
+                    element.removeAttribute(attrName);
+                    element.setAttribute(replacement, value);
+                }
+            }
+        }
+    }
+
+    private static Map<String, String> deprecatedEntityAttributes = new HashMap<String, String>();
+    private static Map<String, String> deprecatedAttributeAttributes = new HashMap<String, String>();
+    static
+    {
+        deprecatedEntityAttributes.put("caching", null);
+        deprecatedEntityAttributes.put("read-only", null);
+        deprecatedEntityAttributes.put("obfuscate", null);
+        deprecatedEntityAttributes.put("localize", null);
+
+        deprecatedAttributeAttributes.put("caching", "cached");
     }
 }

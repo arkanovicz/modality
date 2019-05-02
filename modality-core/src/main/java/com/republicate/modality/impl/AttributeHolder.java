@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public abstract class AttributeHolder implements Serializable
@@ -54,6 +55,11 @@ public abstract class AttributeHolder implements Serializable
     public Attribute getAttribute(String name)
     {
         return attributesMap.get(name); // TODO resolveCase?
+    }
+
+    public boolean isCachedAttribute(String name)
+    {
+        return Optional.ofNullable(getAttribute(name)).map(attr -> attr.getCached()).orElse(false);
     }
 
     public ScalarAttribute getScalarAttribute(String name)
@@ -85,11 +91,11 @@ public abstract class AttributeHolder implements Serializable
        Attribute attribute = getAttribute(name);
        if (attribute == null)
        {
-           throw new IllegalArgumentException("unknown baseAttribute: " + name);
+           throw new SQLException("unknown baseAttribute: " + name);
        }
        if (!(attribute instanceof ScalarAttribute))
        {
-           throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+           throw new SQLException("not a scalar baseAttribute: " + name);
        }
        return ((ScalarAttribute)attribute).evaluate(params);
     }
@@ -99,12 +105,13 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown baseAttribute: " + name);
         }
         if (!(attribute instanceof ScalarAttribute))
         {
-            throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar baseAttribute: " + name);
         }
+
         return ((ScalarAttribute)attribute).evaluate(source);
     }
 
@@ -113,11 +120,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown baseAttribute: " + name);
         }
         if (!(attribute instanceof ScalarAttribute))
         {
-            throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar baseAttribute: " + name);
         }
         return ((ScalarAttribute)attribute).evaluate(source, params);
     }
@@ -127,11 +134,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown baseAttribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar baseAttribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(params);
     }
@@ -141,11 +148,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown baseAttribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar baseAttribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(source);
     }
@@ -155,11 +162,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown baseAttribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new IllegalArgumentException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar baseAttribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(source, params);
     }
@@ -169,11 +176,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new IllegalArgumentException("not a scalar attribute: " + name);
+            throw new SQLException("not a scalar attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(params);
     }
@@ -183,11 +190,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new IllegalArgumentException("not a scalar attribute: " + name);
+            throw new SQLException("not a scalar attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(source);
     }
@@ -197,11 +204,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new IllegalArgumentException("not a scalar attribute: " + name);
+            throw new SQLException("not a scalar attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(source, params);
     }
@@ -211,11 +218,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof Action))
         {
-            throw new IllegalArgumentException("not an action attribute: " + name);
+            throw new SQLException("not an action attribute: " + name);
         }
         return ((Action)attribute).perform(params);
     }
@@ -225,11 +232,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof Action))
         {
-            throw new IllegalArgumentException("not an action attribute: " + name);
+            throw new SQLException("not an action attribute: " + name);
         }
         return ((Action)attribute).perform(source);
     }
@@ -239,11 +246,11 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new IllegalArgumentException("unknown attribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof Action))
         {
-            throw new IllegalArgumentException("not an action attribute: " + name);
+            throw new SQLException("not an action attribute: " + name);
         }
         return ((Action)attribute).perform(source, params);
     }

@@ -96,9 +96,9 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         query = query + "?";
     }
 
-    protected boolean getCaching()
+    protected boolean getCached()
     {
-        return caching;
+        return cached;
     }
 
     protected Serializable[] getParamValues(RowValues source) throws SQLException
@@ -207,7 +207,12 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         return query;
     }
 
-    private boolean caching = false;
+    protected void setCached(boolean cached)
+    {
+        this.cached = cached;
+    }
+
+    private boolean cached = false;
     private AttributeHolder parent = null;
     private String resultEntityName = null;
     private String attributeName = null;

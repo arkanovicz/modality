@@ -33,6 +33,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Instance extends SlotTreeMap
 {
@@ -93,7 +94,17 @@ public class Instance extends SlotTreeMap
 
     public Serializable evaluate(String name, Serializable... params) throws SQLException
     {
-        return entity.evaluate(name, this, params);
+        boolean doCache = params.length == 0 && entity.isCachedAttribute(name);
+        if (doCache && containsKey(name))
+        {
+            return get(name);
+        }
+        Serializable ret = entity.evaluate(name, this, params);
+        if (doCache)
+        {
+            putImpl(name, ret);
+        }
+        return ret;
     }
 
     public Instance retrieve(String name, Map params) throws SQLException
@@ -103,7 +114,17 @@ public class Instance extends SlotTreeMap
 
     public Instance retrieve(String name, Serializable... params) throws SQLException
     {
-        return entity.retrieve(name, this, params);
+        boolean doCache = params.length == 0 && entity.isCachedAttribute(name);
+        if (doCache && containsKey(name))
+        {
+            return (Instance)get(name);
+        }
+        Instance ret = entity.retrieve(name, this, params);
+        if (doCache)
+        {
+            putImpl(name, ret);
+        }
+        return ret;
     }
 
     public Iterator<Instance> query(String name, Map params) throws SQLException

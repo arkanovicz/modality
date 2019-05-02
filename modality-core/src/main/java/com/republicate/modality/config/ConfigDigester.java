@@ -166,7 +166,7 @@ public class ConfigDigester
         recurseProcessing();
     }
 
-    private Map<String, Object> getAttributesMap(Element element)
+    protected Map<String, Object> getAttributesMap(Element element)
     {
         Map<String, Object> attrMap = new TreeMap<>();
         NamedNodeMap attributes = element.getAttributes();

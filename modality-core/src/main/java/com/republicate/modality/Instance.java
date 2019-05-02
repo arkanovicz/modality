@@ -33,7 +33,6 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class Instance extends SlotTreeMap
 {
@@ -326,6 +325,19 @@ public class Instance extends SlotTreeMap
             }
         }
         return ret;
+    }
+
+    /**
+     * Test equality of two instances.
+     * @param o other instance
+     * @return equality status
+     */
+    @Override
+    public boolean equals(final Object o)
+    {
+        return (o instanceof Instance)
+            && getEntity() == ((Instance)o).getEntity()
+            && super.equals(o);
     }
 
     private void ensurePersisted()

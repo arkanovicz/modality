@@ -223,7 +223,7 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
             // handle newly logged users
             return true;
         }
-        else if (prev != user)
+        else if (!prev.equals(user))
         {
             // something got horribly wrong
             throw new ServletException("auth: invalid session state");

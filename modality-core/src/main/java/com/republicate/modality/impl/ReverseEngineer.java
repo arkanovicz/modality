@@ -104,8 +104,7 @@ public class ReverseEngineer
         ResultSet tables = null;
         try
         {
-            //tables = databaseMetaData.getTables(getCatalog(), getSchema(), null, new String[] { "TABLE", "VIEW" });
-            tables = databaseMetaData.getTables(null, null, null, new String[] { "TABLE", "VIEW" });
+            tables = databaseMetaData.getTables(getCatalog(), getSchema(), null, new String[] { "TABLE", "VIEW" });
             while (tables.next())
             {
                 String tableName = tables.getString("TABLE_NAME");

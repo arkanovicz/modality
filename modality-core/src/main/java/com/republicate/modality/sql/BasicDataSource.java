@@ -7,6 +7,21 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import javax.sql.DataSource;
 
+/**
+ * <p>Standalone data source, aka connections provider.</p>
+ * <p>When using the BasicDataSource from *inside* a webapp (i.e. *not* using JNDI):</p>
+ * <ul>
+ *     <li>If the JDBC driver livrary is present both in the container libraries and in the webapp libraries,
+ *     the driver will be automatically registered.</li>
+ *     <li>If the JDBC driver library is only present in the webapp libraries, the application *is* responsible
+ *     for registering it with the DriverManager, which boils down to calling Class.forName(driverClass).</li>
+ *     <li>If the JDBC driver library is present only in the container libraries, its use in a BasicDataSource
+ *     is impossible, you'll have to resort to configure a JNDI data source.</li>
+ * </ul>
+ * <p>It is considered a best practice to always use JNDI in a webapp, as there is a good chance to create memory
+ * leaks when the webapp is reloaded otherwise.</p>
+ */
+
 public class BasicDataSource implements DataSource
 {
     public BasicDataSource(String databaseURL)
@@ -17,12 +32,20 @@ public class BasicDataSource implements DataSource
     @Override
     public Connection getConnection() throws SQLException
     {
+        // When using the BasicDatasource in a webapp, the following call will automatically register
+        // a driver present in the webapp classpath (at the condition that the driver is *also* present
+        // in the container classpath).
+        DriverManager.getDrivers();
         return DriverManager.getConnection(databaseURL);
     }
 
     @Override
     public Connection getConnection(String user, String password) throws SQLException
     {
+        // When using the BasicDatasource in a webapp, the following call will automatically register
+        // a driver present in the webapp classpath (at the condition that the driver is *also* present
+        // in the container classpath).
+        DriverManager.getDrivers();
         return DriverManager.getConnection(databaseURL, user, password);
     }
 

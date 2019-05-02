@@ -30,30 +30,34 @@ public class VelosurfConfigDigester extends ConfigDigester
         {
             case "entity":
             {
-                logger.warn("<entity> tags are deprecated: use <xxx> tags with 'xxx' being the entity name, like in <book>...</book>");
                 name = Optional.ofNullable(element.getAttribute("name"))
                     .orElseThrow(() -> new ConfigurationException("entity without name"));
+                logger.warn("<entity name=\"{}\">...</entity> tag is deprecated: use <{}>...</{}>", name, name, name);
                 element.removeAttribute("name");
                 handleDeprecatedAttributes("entity", element, deprecatedEntityAttributes);
                 break;
             }
             case "attribute":
             {
-                logger.warn("<attribute> tags are deprecated: use <scalar name=...>, <row name=...>, <rowset name=...>");
                 String result = Optional.ofNullable(element.getAttribute("result"))
                     .orElseThrow(() -> new ConfigurationException("attribute without result type"));
                 int slash = result.indexOf('/');
                 if (slash != -1)
                 {
                     name = result.substring(0, slash);
-                    element.setAttribute("result", result.substring(slash + 1));
+                    String resultEntity = result.substring(slash + 1);
+                    element.setAttribute("result", resultEntity);
+                    String attrName = Optional.ofNullable(element.getAttribute("name")).orElse(null);
+                    logger.warn("<attribute name=\"{}\" result=\"{}/{}\">...</attribute> tag is deprecated: use <{} name=\"{}\" result=\"{}\">...</attribute>", attrName, name, resultEntity, name, attrName, resultEntity);
                 }
                 else
                 {
                     name = result;
                     element.removeAttribute("result");
+                    String attrName = Optional.ofNullable(element.getAttribute("name")).orElse(null);
+                    logger.warn("<attribute name=\"{}\" result=\"{}\">...</attribute> tag is deprecated: use <{} name=\"{}\">...</attribute>", attrName, name, name, attrName);
                 }
-                handleDeprecatedAttributes("attribute", element, deprecatedEntityAttributes);
+                handleDeprecatedAttributes("attribute", element, deprecatedAttributeAttributes);
                 break;
             }
             default: // nop

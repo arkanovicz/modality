@@ -37,13 +37,14 @@ public class VelosurfTool extends ModelTool
             }};
             newparams.putAll(params);
             params = newparams;
+            params.remove("credentials");
             URL url = new ConfigHelper(params).findURL(credentials);
             try
             {
                 DocumentBuilderFactory builderFactory = XmlUtils.createDocumentBuilderFactory();
                 builderFactory.setXIncludeAware(true);
                 Element doc = builderFactory.newDocumentBuilder().parse(new InputSource(new InputStreamReader(url.openStream()))).getDocumentElement();
-                params.put("databaseURL", doc.getAttribute("url"));
+                params.put("database", doc.getAttribute("url"));
                 params.put("credentials.user", doc.getAttribute("user"));
                 params.put("credentials.password", doc.getAttribute("password"));
             }

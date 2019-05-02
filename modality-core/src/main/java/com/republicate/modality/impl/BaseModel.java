@@ -17,6 +17,8 @@ import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.Credentials;
 import com.republicate.modality.sql.DriverInfos;
 import com.republicate.modality.sql.StatementPool;
+import com.republicate.modality.util.ConversionHandler;
+import com.republicate.modality.util.ConversionHandlerImpl;
 import com.republicate.modality.util.Cryptograph;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -489,6 +491,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     protected UserInstancesConfig getInstances()
     {
         return userInstancesConfig;
+    }
+
+    public ConversionHandler getConversionHandler()
+    {
+        return conversionHandler;
     }
 
     /*
@@ -1116,13 +1123,29 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      * Value filters
      */
 
+    /**
+     * Explicit values converters when reading from database
+     */
     protected ValueFilterHandler readFilters = null;
 
+    /**
+     * Explicit values converters when writing to database
+     */
     protected ValueFilterHandler writeFilters = null;
 
     private FiltersSet filters = new FiltersSet();
 
     private UserInstancesConfig userInstancesConfig = new UserInstancesConfig();
+
+    /**
+     * <p>Implicit values converters, used when:</p>
+     * <ul>
+     *     <li>populating a wrapped instance with database values</li>
+     *     <li>writing values to database whose driver needs strict SQL types (<code>driver.strict_column_types = true</code>)</li>
+     * </ul>
+     * <p>TODO: we may wish to distinguish those two converters, and/or to make them configurable.</p>
+     */
+    private ConversionHandler conversionHandler = new ConversionHandlerImpl();
 
     /**
      * Model repository

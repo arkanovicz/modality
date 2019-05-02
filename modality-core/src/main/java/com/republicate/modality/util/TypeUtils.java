@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class TypeUtils
 {
@@ -244,4 +247,146 @@ public class TypeUtils
         return Base64.decodeBase64(encoded);
 
     }
+
+    /**
+     * boxing helper maps for standard types
+     */
+    private static Map<Class, Class> boxingMap, unboxingMap;
+
+    static
+    {
+        boxingMap = new HashMap<Class, Class>();
+        boxingMap.put(Boolean.TYPE, Boolean.class);
+        boxingMap.put(Character.TYPE, Character.class);
+        boxingMap.put(Byte.TYPE, Byte.class);
+        boxingMap.put(Short.TYPE, Short.class);
+        boxingMap.put(Integer.TYPE, Integer.class);
+        boxingMap.put(Long.TYPE, Long.class);
+        boxingMap.put(Float.TYPE, Float.class);
+        boxingMap.put(Double.TYPE, Double.class);
+
+        unboxingMap = new HashMap<Class, Class>();
+        for (Map.Entry<Class,Class> entry : (Set<Map.Entry<Class,Class>>)boxingMap.entrySet())
+        {
+            unboxingMap.put(entry.getValue(), entry.getKey());
+        }
+    }
+
+    /**
+     * returns boxed type (or input type if not a primitive type)
+     * @param clazz input class
+     * @return boxed class
+     */
+    public static Class getBoxedClass(Class clazz)
+    {
+        Class boxed = boxingMap.get(clazz);
+        return boxed == null ? clazz : boxed;
+    }
+
+    /**
+     * returns unboxed type (or input type if not successful)
+     * @param clazz input class
+     * @return unboxed class
+     */
+    public static Class getUnboxedClass(Class clazz)
+    {
+        Class unboxed = unboxingMap.get(clazz);
+        return unboxed == null ? clazz : unboxed;
+    }
+
+    /**
+     * Determines whether a type represented by a class object is
+     * convertible to another type represented by a class object using a
+     * method invocation conversion, treating object types of primitive
+     * types as if they were primitive types (that is, a Boolean actual
+     * parameter type matches boolean primitive formal type). This behavior
+     * is because this method is used to determine applicable methods for
+     * an actual parameter list, and primitive types are represented by
+     * their object duals in reflective method calls.
+     *
+     * @param formal the formal parameter type to which the actual
+     * parameter type should be convertible
+     * @param actual the actual parameter type.
+     * @return true if either formal type is assignable from actual type,
+     * or formal is a primitive type and actual is its corresponding object
+     * type or an object type of a primitive type that can be converted to
+     * the formal type.
+     */
+    public static boolean isMethodInvocationConvertible(Class formal, Class actual)
+    {
+        /* if it's a null, it means the arg was null */
+        if (actual == null)
+        {
+            return !formal.isPrimitive();
+        }
+
+        /* Check for identity or widening reference conversion */
+        if (formal.isAssignableFrom(actual))
+        {
+            return true;
+        }
+
+        /* 2.0: Since MethodMap's comparison functions now use this method with potentially reversed arguments order,
+         * actual can be a primitive type. */
+
+        /* Check for boxing */
+        if (!formal.isPrimitive() && actual.isPrimitive())
+        {
+            Class boxed = boxingMap.get(actual);
+            if (boxed != null && boxed == formal || formal.isAssignableFrom(boxed)) return true;
+        }
+
+        if (formal.isPrimitive())
+        {
+            if (actual.isPrimitive())
+            {
+                /* check for widening primitive conversion */
+                if (formal == Short.TYPE && actual == Byte.TYPE)
+                    return true;
+                if (formal == Integer.TYPE && (
+                    actual == Byte.TYPE || actual == Short.TYPE))
+                    return true;
+                if (formal == Long.TYPE && (
+                    actual == Byte.TYPE || actual == Short.TYPE || actual == Integer.TYPE))
+                    return true;
+                if (formal == Float.TYPE && (
+                    actual == Byte.TYPE || actual == Short.TYPE || actual == Integer.TYPE ||
+                        actual == Long.TYPE))
+                    return true;
+                if (formal == Double.TYPE && (
+                    actual == Byte.TYPE || actual == Short.TYPE || actual == Integer.TYPE ||
+                        actual == Long.TYPE || actual == Float.TYPE))
+                    return true;
+            }
+            else
+            {
+                /* Check for unboxing with widening primitive conversion. */
+                if (formal == Boolean.TYPE && actual == Boolean.class)
+                    return true;
+                if (formal == Character.TYPE && actual == Character.class)
+                    return true;
+                if (formal == Byte.TYPE && actual == Byte.class)
+                    return true;
+                if (formal == Short.TYPE && (actual == Short.class || actual == Byte.class))
+                    return true;
+                if (formal == Integer.TYPE && (actual == Integer.class || actual == Short.class ||
+                    actual == Byte.class))
+                    return true;
+                if (formal == Long.TYPE && (actual == Long.class || actual == Integer.class ||
+                    actual == Short.class || actual == Byte.class))
+                    return true;
+                if (formal == Float.TYPE && (actual == Float.class || actual == Long.class ||
+                    actual == Integer.class || actual == Short.class || actual == Byte.class))
+                    return true;
+                if (formal == Double.TYPE && (actual == Double.class || actual == Float.class ||
+                    actual == Long.class || actual == Integer.class || actual == Short.class ||
+                    actual == Byte.class))
+                    return true;
+            }
+        }
+        return false;
+
+    }
+
+
 }

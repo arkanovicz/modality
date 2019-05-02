@@ -21,6 +21,7 @@ package com.republicate.modality;
 
 import com.republicate.modality.impl.BaseEntity;
 import com.republicate.modality.util.TypeUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +84,7 @@ public class Entity extends BaseEntity implements Iterable<Instance>
         return super.getWrappedInstanceGetters();
     }
 
-    protected Map<String, Method> getWrappedInstanceSetters()
+    protected Map<String, Pair<Method, Class>> getWrappedInstanceSetters()
     {
         return super.getWrappedInstanceSetters();
     }

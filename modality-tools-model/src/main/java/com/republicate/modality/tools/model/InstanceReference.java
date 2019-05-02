@@ -62,7 +62,16 @@ public class InstanceReference implements SlotMap
 
     protected Serializable putImpl(String key, Serializable value)
     {
-        return instance.put(key, value);
+        try
+        {
+            return instance.put(key, value);
+
+        }
+        catch (Exception e)
+        {
+            logger.error("could not set instance field {} to value {}", key, String.valueOf(value));
+            return null;
+        }
     }
 
     @Override
@@ -85,7 +94,14 @@ public class InstanceReference implements SlotMap
 
     public void putAllImpl(Map<? extends String, ? extends Serializable> m)
     {
-        instance.putAll(m);
+        try
+        {
+            instance.putAll(m);
+        }
+        catch (Exception e)
+        {
+            logger.error("could not set instance fields to values {}", m);
+        }
     }
 
     @Override

@@ -29,6 +29,9 @@ import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Filter;
+import com.republicate.modality.sql.SqlUtils;
+import com.republicate.modality.util.Converter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
@@ -66,12 +69,12 @@ public abstract class BaseEntity extends AttributeHolder
         this.sqlName = table;
     }
 
-    protected void addColumn(String name, String sqlName,  int type, Integer size, boolean generated)
+    protected void addColumn(String name, String sqlName,  int type, Integer size, boolean generated) throws SQLException
     {
         addColumn(new Entity.Column(name, sqlName, type, size, generated));
     }
 
-    protected void addColumn(Entity.Column column)
+    protected void addColumn(Entity.Column column) throws SQLException
     {
         Entity.Column previous = columns.put(column.name, column);
         if (previous != null)
@@ -191,7 +194,7 @@ public abstract class BaseEntity extends AttributeHolder
         return wrappedInstanceGetters;
     }
 
-    protected Map<String, Method> getWrappedInstanceSetters()
+    protected Map<String, Pair<Method, Class>> getWrappedInstanceSetters()
     {
         return wrappedInstanceSetters;
     }
@@ -361,15 +364,28 @@ public abstract class BaseEntity extends AttributeHolder
     {
         if (value != null)
         {
-            Column column = getColumn(columnName);
-            if (column != null)
-            {
-                value = column.write(value);
-            }
             Filter<Serializable> typeFilter = getModel().getFilters().getWriteFilters().getTypeEntry(value.getClass());
             if (typeFilter != null)
             {
                 value = typeFilter.apply(value);
+            }
+            Column column = getColumn(columnName);
+            if (column != null)
+            {
+                value = column.write(value);
+                if (getModel().getDriverInfos().isStrictColumnTypes())
+                {
+                    Class clazz = SqlUtils.getSqlTypeClass(column.type);
+                    if (clazz == null)
+                    {
+                        throw new SQLException("unhandled SQL type: " + column.type);
+                    }
+                    Converter converter = getModel().getConversionHandler().getNeededConverter(clazz, value.getClass());
+                    if (converter != null)
+                    {
+                        value = converter.convert(value);
+                    }
+                }
             }
         }
         return value;
@@ -391,12 +407,12 @@ public abstract class BaseEntity extends AttributeHolder
         if (properties != null)
         {
             wrappedInstanceGetters = new HashMap<String, Method>();
-            wrappedInstanceSetters = new HashMap<String, Method>();
+            wrappedInstanceSetters = new HashMap<String, Pair<Method, Class>>();
             for (PropertyDescriptor descriptor : properties)
             {
                 String name = descriptor.getName();
                 Optional.ofNullable(descriptor.getReadMethod()).ifPresent(getter -> wrappedInstanceGetters.put(name, getter));
-                Optional.ofNullable(descriptor.getWriteMethod()).ifPresent(setter -> wrappedInstanceSetters.put(name, setter));
+                Optional.ofNullable(descriptor.getWriteMethod()).ifPresent(setter -> wrappedInstanceSetters.put(name, Pair.of(setter, setter.getParameterTypes()[0])));
             }
         }
     }
@@ -437,7 +453,7 @@ public abstract class BaseEntity extends AttributeHolder
 
     private Map<String, Method> wrappedInstanceGetters = null;
 
-    private Map<String, Method> wrappedInstanceSetters = null;
+    private Map<String, Pair<Method, Class>> wrappedInstanceSetters = null;
 
     @FunctionalInterface
     protected interface InstanceBuilder

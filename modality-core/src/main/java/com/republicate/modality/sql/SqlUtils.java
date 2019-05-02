@@ -23,11 +23,15 @@ package com.republicate.modality.sql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * various SQL-related helpers.
@@ -72,4 +76,41 @@ public class SqlUtils
         }
         return columnNames;
     }
+
+    /**
+     * java.sql.Types int to class (TODO - move it to a utility class)
+     */
+    static private Map<Integer, Class> sqlTypeToClass;
+
+    /* CB TODO - a real mapping requires taking precision and scale into account! */
+    static
+    {
+        sqlTypeToClass = new HashMap<Integer, Class>();
+        sqlTypeToClass.put(Types.BIGINT, BigInteger.class);
+        sqlTypeToClass.put(Types.BOOLEAN, Boolean.class);
+        sqlTypeToClass.put(Types.CHAR, String.class);
+        sqlTypeToClass.put(Types.DATE, java.sql.Date.class);
+        sqlTypeToClass.put(Types.DECIMAL, Double.class);
+        sqlTypeToClass.put(Types.DOUBLE, Double.class);
+        sqlTypeToClass.put(Types.FLOAT, Float.class);
+        sqlTypeToClass.put(Types.INTEGER, Integer.class);
+        sqlTypeToClass.put(Types.LONGNVARCHAR, String.class);
+        sqlTypeToClass.put(Types.LONGVARCHAR, String.class);
+        sqlTypeToClass.put(Types.NCHAR, String.class);
+        sqlTypeToClass.put(Types.NUMERIC, Double.class);
+        sqlTypeToClass.put(Types.NVARCHAR, String.class);
+        sqlTypeToClass.put(Types.REAL, Float.class);
+        sqlTypeToClass.put(Types.ROWID, Long.class);
+        sqlTypeToClass.put(Types.SMALLINT, Short.class);
+        sqlTypeToClass.put(Types.TIME, java.sql.Time.class);
+        sqlTypeToClass.put(Types.TIMESTAMP, java.sql.Timestamp.class);
+        sqlTypeToClass.put(Types.TINYINT, Byte.class);
+        sqlTypeToClass.put(Types.VARCHAR, String.class);
+    }
+
+    public static Class getSqlTypeClass(int type)
+    {
+        return sqlTypeToClass.get(type);
+    }
+
 }

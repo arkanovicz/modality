@@ -61,7 +61,7 @@ public class DriverInfos implements Constants, Serializable
         setTablesCaseSensitivity(Optional.ofNullable(getTablesCaseSensitivity()).orElse(other.getTablesCaseSensitivity()));
         setSchemaQuery(Optional.ofNullable(getSchemaQuery()).orElse(other.getSchemaQuery()));
         setLastInsertIdPolicy(Optional.ofNullable(getLastInsertIdPolicyString()).orElse(Optional.ofNullable(other.getLastInsertIdPolicyString()).orElse("none")));
-        setPedanticColumnTypes(Optional.ofNullable(isPedanticColumnTypes()).orElse(Optional.ofNullable(other.isPedanticColumnTypes()).orElse(false)));
+        setStrictColumnTypes(Optional.ofNullable(isStrictColumnTypes()).orElse(Optional.ofNullable(other.isStrictColumnTypes()).orElse(false)));
         setColumnMarkers(Optional.ofNullable(hasColumnMarkers()).orElse(Optional.ofNullable(other.hasColumnMarkers()).orElse(false)));
         Pattern ignoreTablesPattern = Optional.ofNullable(getIgnoreTablesPattern()).orElse(other.getIgnoreTablesPattern());
         setIgnoreTablesPattern(ignoreTablesPattern == null ? null : ignoreTablesPattern.toString());
@@ -182,14 +182,14 @@ public class DriverInfos implements Constants, Serializable
         return lastInsertIdMethodName;
     }
 
-    public Boolean isPedanticColumnTypes()
+    public Boolean isStrictColumnTypes()
     {
-        return pedanticColumnTypes;
+        return strictColumnTypes;
     }
 
-    public void setPedanticColumnTypes(boolean pedanticColumnTypes)
+    public void setStrictColumnTypes(boolean strictColumnTypes)
     {
-        this.pedanticColumnTypes = pedanticColumnTypes;
+        this.strictColumnTypes = strictColumnTypes;
     }
 
     public Pattern getIgnoreTablesPattern()
@@ -306,8 +306,8 @@ public class DriverInfos implements Constants, Serializable
     private String lastInsertIdQuery = null;
     private String lastInsertIdMethodName = null;
 
-    /** whether the JDBC driver is pedantic about column types */
-    private Boolean pedanticColumnTypes = null;
+    /** whether the JDBC driver is strict about column types */
+    private Boolean strictColumnTypes = null;
 
     /** ignore tables matching this pattern */
     private Pattern ignoreTablesPattern = null;

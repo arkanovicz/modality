@@ -56,32 +56,34 @@ public class Instance extends SlotTreeMap
         for (String key : values.keySet())
         {
             Serializable value = values.get(key);
-            String colName = entity == null ? null : entity.translateColumnName(key);
-            if (colName == null)
-            {
-                colName = defaultNameMapper.apply(key);
-            }
-            else
-            {
-                value = entity.getColumn(colName).read(value);
-            }
-            if (value != null)
-            {
-                Filter<Serializable> filter = readFilters.getTypeEntry(value.getClass());
-                if (filter != null)
-                {
-                    value = filter.apply(value);
-                }
-            }
-            setInitialValue(colName, value);
+            setInitialValue(key, value);
         }
         setClean();
         persisted = entity != null && entity.getPrimaryKey().size() > 0;
     }
 
-    public void setInitialValue(String columnName, Serializable value)
+    public void setInitialValue(String key, Serializable value) throws SQLException
     {
-        super.put(columnName, value);
+        Filter<String> defaultNameMapper = getModel().getIdentifiers().getDefaultColumnLeaf();
+        ValueFilterHandler readFilters = getModel().getFilters().getReadFilters();
+        String colName = entity == null ? null : entity.translateColumnName(key);
+        if (colName == null)
+        {
+            colName = defaultNameMapper.apply(key);
+        }
+        else
+        {
+            value = entity.getColumn(colName).read(value);
+        }
+        if (value != null)
+        {
+            Filter<Serializable> filter = readFilters.getTypeEntry(value.getClass());
+            if (filter != null)
+            {
+                value = filter.apply(value);
+            }
+        }
+        super.put(colName, value);
     }
 
     public Serializable evaluate(String name, Map params) throws SQLException

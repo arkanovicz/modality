@@ -1,5 +1,9 @@
 package com.republicate.modality;
 
+import com.republicate.modality.util.Converter;
+import com.republicate.modality.util.TypeUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,24 +23,50 @@ public class WrappingInstance extends Instance implements Wrapper
         this.setters = Optional.ofNullable(entity.getWrappedInstanceSetters()).orElse(new HashMap<>());
     }
 
-    @Override
-    public void setInitialValue(String columnName, Serializable value)
+    private Serializable callSetter(Pair<Method, Class> setter, Serializable value)
     {
-        Method setter = setters.get(columnName);
+        Serializable ret = null;
+        Method method = setter.getLeft();
+        Class paramClass = setter.getRight();
+        try
+        {
+            if (value != null && value.getClass() != paramClass && !TypeUtils.isMethodInvocationConvertible(paramClass, value.getClass()))
+            {
+                Converter converter = getModel().getConversionHandler().getNeededConverter(paramClass, value.getClass());
+                if (converter == null)
+                {
+                    throw new RuntimeException("cannot convert object '" + value + "' of class " + value.getClass().getName() + " to class " + paramClass.getName() + " for setter " + method);
+                }
+                value = converter.convert(value);
+            }
+            Object methodRet = method.invoke(pojo, value);
+            if (methodRet != null && !(methodRet instanceof Void))
+            {
+                if (!(methodRet instanceof Serializable))
+                {
+                    throw new RuntimeException("setter '" + method + "' did return a non-serializable object");
+                }
+                ret = (Serializable)methodRet;
+            }
+        }
+        catch (IllegalAccessException | InvocationTargetException e)
+        {
+            throw new RuntimeException("could not set property using setter " + method, e);
+        }
+        return ret;
+    }
+
+    @Override
+    public void setInitialValue(String columnName, Serializable value) throws SQLException
+    {
+        Pair<Method, Class> setter = setters.get(columnName);
         if (setter == null)
         {
             super.setInitialValue(columnName, value);
         }
         else
         {
-            try
-            {
-                setter.invoke(pojo, value);
-            }
-            catch (IllegalAccessException | InvocationTargetException e)
-            {
-                throw new RuntimeException("could not set property " + columnName, e);
-            }
+            callSetter(setter, value);
         }
     }
 
@@ -64,27 +94,20 @@ public class WrappingInstance extends Instance implements Wrapper
     @Override
     protected Serializable putImpl(String key, Serializable value)
     {
-        Method setter = setters.get(key);
+        Pair<Method, Class> setter = setters.get(key);
         if (setter == null)
         {
             return super.putImpl(key, value);
         }
         else
         {
-            try
-            {
-                return (Serializable)setter.invoke(pojo, value);
-            }
-            catch (IllegalAccessException | InvocationTargetException e)
-            {
-                throw new RuntimeException("could not set property " + key, e);
-            }
+            return callSetter(setter, value);
         }
     }
 
     private Object pojo;
     private Map<String, Method> getters = null;
-    private Map<String, Method> setters = null;
+    private Map<String, Pair<Method, Class>> setters = null;
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException

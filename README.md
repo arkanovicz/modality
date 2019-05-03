@@ -31,7 +31,8 @@ It comprises:
 
 **Entities** represent the business logic concepts of the model. They often correspond to a database table.
 
-**Instances** are individual representations of entities, with specific values. They often correspond to a table row values.
+**Instances** are individual representations of entities, with specific values. They often correspond to a table row values. Apart from specific cases
+(like the logged user in the session), instances lifetime should not exceed the query.
 
 **Attributes** are named SQL queries which appear as properties of the model itself (*root attributes*) or properties of a
 specific entity instances.

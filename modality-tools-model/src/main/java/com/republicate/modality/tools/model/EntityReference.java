@@ -33,9 +33,10 @@ import java.util.Map;
 
 public class EntityReference
 {
-    public EntityReference(Entity entity)
+    public EntityReference(Entity entity, ModelTool modelReference)
     {
         this.entity = entity;
+        this.modelReference = modelReference;
     }
 
     protected Entity getEntity()
@@ -47,7 +48,7 @@ public class EntityReference
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(entity.iterate());
+            return modelReference.createInstanceReferenceIterator(entity.iterate());
         }
         catch (SQLException sqle)
         {
@@ -71,17 +72,7 @@ public class EntityReference
 
     protected InstanceReference createInstanceReference(Instance instance)
     {
-        switch (getEntity().getModel().getWriteAccess())
-        {
-            case NONE:
-            case JAVA:
-                return new InstanceReference(instance);
-            case VTL:
-                return new ActiveInstanceReference(instance);
-            default:
-                getEntity().getModel().getLogger().error("unhandled write-access enum: {}", getEntity().getModel().getWriteAccess());
-                return null;
-        }
+        return modelReference.createInstanceReference(instance);
     }
 
     public InstanceReference fetch(Serializable... key) throws SQLException
@@ -89,7 +80,7 @@ public class EntityReference
         try
         {
             Instance instance = entity.fetch(key);
-            return instance == null ? null : new InstanceReference(instance);
+            return instance == null ? null : createInstanceReference(instance);
         }
         catch (SQLException sqle)
         {
@@ -112,11 +103,11 @@ public class EntityReference
                 else if (attribute instanceof RowAttribute)
                 {
                     Instance instance = ((RowAttribute)attribute).retrieve();
-                    return instance == null ? null : new InstanceReference(instance);
+                    return instance == null ? null : createInstanceReference(instance);
                 }
                 else if (attribute instanceof RowsetAttribute)
                 {
-                    return new ModelTool.InstanceReferenceIterator(((RowsetAttribute)attribute).query());
+                    return modelReference.createInstanceReferenceIterator(((RowsetAttribute)attribute).query());
                 }
             }
             return null;
@@ -172,7 +163,7 @@ public class EntityReference
         try
         {
             Instance instance = entity.retrieve(name, params);
-            return instance == null ? null : new InstanceReference(instance);
+            return instance == null ? null : createInstanceReference(instance);
         }
         catch (SQLException sqle)
         {
@@ -186,7 +177,7 @@ public class EntityReference
         try
         {
             Instance instance = entity.retrieve(name, params);
-            return instance == null ? null : new InstanceReference(instance);
+            return instance == null ? null : createInstanceReference(instance);
         }
         catch (SQLException sqle)
         {
@@ -200,7 +191,7 @@ public class EntityReference
         try
         {
             Instance instance = entity.retrieve(name);
-            return instance == null ? null : new InstanceReference(instance);
+            return instance == null ? null : createInstanceReference(instance);
         }
         catch (SQLException sqle)
         {
@@ -213,7 +204,7 @@ public class EntityReference
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(entity.query(name, params));
+            return modelReference.createInstanceReferenceIterator(entity.query(name, params));
 
         }
         catch (SQLException sqle)
@@ -227,7 +218,7 @@ public class EntityReference
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(entity.query(name, params));
+            return modelReference.createInstanceReferenceIterator(entity.query(name, params));
 
         }
         catch (SQLException sqle)
@@ -241,7 +232,7 @@ public class EntityReference
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(entity.query(name));
+            return modelReference.createInstanceReferenceIterator(entity.query(name));
 
         }
         catch (SQLException sqle)
@@ -265,11 +256,11 @@ public class EntityReference
                 else if (attribute instanceof RowAttribute)
                 {
                     Instance instance = ((RowAttribute)attribute).retrieve(params);
-                    return instance == null ? null : new InstanceReference(instance);
+                    return instance == null ? null : createInstanceReference(instance);
                 }
                 else if (attribute instanceof RowsetAttribute)
                 {
-                    return new ModelTool.InstanceReferenceIterator(((RowsetAttribute)attribute).query(params));
+                    return modelReference.createInstanceReferenceIterator(((RowsetAttribute)attribute).query(params));
                 }
             }
             return null;
@@ -295,11 +286,11 @@ public class EntityReference
                 else if (attribute instanceof RowAttribute)
                 {
                     Instance instance = ((RowAttribute)attribute).retrieve(params);
-                    return instance == null ? null : new InstanceReference(instance);
+                    return instance == null ? null : createInstanceReference(instance);
                 }
                 else if (attribute instanceof RowsetAttribute)
                 {
-                    return new ModelTool.InstanceReferenceIterator(((RowsetAttribute)attribute).query(params));
+                    return modelReference.createInstanceReferenceIterator(((RowsetAttribute)attribute).query(params));
                 }
             }
             return null;
@@ -312,4 +303,5 @@ public class EntityReference
     }
 
     private Entity entity = null;
+    private ModelTool modelReference = null;
 }

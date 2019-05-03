@@ -16,12 +16,11 @@ public class InstanceReference implements SlotMap
 {
     protected static Logger logger = LoggerFactory.getLogger(InstanceReference.class);
 
-    public InstanceReference(Instance instance)
+    public InstanceReference(Instance instance, ModelTool modelReference)
     {
         this.instance = instance;
+        this.modelReference = modelReference;
     }
-
-    private Instance instance;
 
     @Override
     public int size()
@@ -69,7 +68,7 @@ public class InstanceReference implements SlotMap
         }
         catch (Exception e)
         {
-            logger.error("could not set instance field {} to value {}", key, String.valueOf(value));
+            handleError("could not set instance field {} to value {}", key, String.valueOf(value));
             return null;
         }
     }
@@ -77,7 +76,7 @@ public class InstanceReference implements SlotMap
     @Override
     public Serializable remove(Object key)
     {
-        logger.error("cannot change read-only instance");
+        handleError("cannot change read-only instance");
         return null;
     }
 
@@ -89,7 +88,7 @@ public class InstanceReference implements SlotMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> m)
     {
-        logger.error("cannot change read-only instance");
+        handleError("cannot change read-only instance");
     }
 
     public void putAllImpl(Map<? extends String, ? extends Serializable> m)
@@ -100,7 +99,7 @@ public class InstanceReference implements SlotMap
         }
         catch (Exception e)
         {
-            logger.error("could not set instance fields to values {}", m);
+            handleError("could not set instance fields to values {}", m, e);
         }
     }
 
@@ -141,7 +140,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -154,7 +153,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -164,11 +163,11 @@ public class InstanceReference implements SlotMap
         try
         {
             Instance inst = instance.retrieve(name, params);
-            return inst == null ? null : new InstanceReference(inst);
+            return inst == null ? null : modelReference.createInstanceReference(inst);
         }
         catch (SQLException sqle)
         {
-            logger.error("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -178,11 +177,11 @@ public class InstanceReference implements SlotMap
         try
         {
             Instance inst = instance.retrieve(name, params);
-            return inst == null ? null : new InstanceReference(inst);
+            return inst == null ? null : modelReference.createInstanceReference(inst);
         }
         catch (SQLException sqle)
         {
-            logger.error("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -191,11 +190,11 @@ public class InstanceReference implements SlotMap
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(instance.query(name, params));
+            return modelReference.createInstanceReferenceIterator(instance.query(name, params));
         }
         catch (SQLException sqle)
         {
-            logger.error("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -204,18 +203,18 @@ public class InstanceReference implements SlotMap
     {
         try
         {
-            return new ModelTool.InstanceReferenceIterator(instance.query(name, params));
+            return modelReference.createInstanceReferenceIterator(instance.query(name, params));
         }
         catch (SQLException sqle)
         {
-            logger.error("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
 
     public int perform(String name, Map params)
     {
-        logger.error("instance is read-only");
+        handleError("instance is read-only");
         return 0;
     }
 
@@ -227,7 +226,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
             return 0;
         }
 
@@ -235,7 +234,7 @@ public class InstanceReference implements SlotMap
 
     public int perform(String name, Serializable... params)
     {
-        logger.error("instance is read-only");
+        handleError("instance is read-only");
         return 0;
     }
 
@@ -247,7 +246,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
+            handleError("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
             return 0;
         }
     }
@@ -259,7 +258,7 @@ public class InstanceReference implements SlotMap
 
     public boolean delete()
     {
-        logger.error("cannot delete read-only instance");
+        handleError("cannot delete read-only instance");
         return false;
     }
 
@@ -272,14 +271,14 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not delete instance", sqle);
+            handleError("could not delete instance", sqle);
             return false;
         }
     }
 
     public boolean insert()
     {
-        logger.error("cannot insert read-only instance");
+        handleError("cannot insert read-only instance");
         return false;
     }
 
@@ -292,14 +291,14 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not insert instance", sqle);
+            handleError("could not insert instance", sqle);
             return false;
         }
     }
 
     public boolean update()
     {
-        logger.error("cannot update read-only instance");
+        handleError("cannot update read-only instance");
         return false;
     }
 
@@ -312,10 +311,23 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            logger.error("could not update instance", sqle);
+            handleError("could not update instance", sqle);
             return false;
         }
     }
 
+    protected void handleError(String message, Object... arguments)
+    {
+        // default implementation only logs
+        logger.error(message, arguments);
+    }
+
+    protected ModelTool getModelReference()
+    {
+        return modelReference;
+    }
+
+    private Instance instance;
+    private ModelTool modelReference;
 
 }

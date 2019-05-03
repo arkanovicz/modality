@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class ActiveInstanceReference extends InstanceReference
 {
-    public ActiveInstanceReference(Instance instance)
+    public ActiveInstanceReference(Instance instance, ModelTool modelReference)
     {
-        super(instance);
+        super(instance, modelReference);
     }
 
     @Override

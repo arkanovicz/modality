@@ -82,7 +82,7 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
     public static final String INVALIDATE_ON_LOGOUT =  "auth.session.invalidate_on_logout";
 
     // default values
-    private static final String DEFAULT_LOGGED_SESSION_KEY = "logged";
+    private static final String DEFAULT_LOGGED_SESSION_KEY = "logged_user";
     private static final String DEFAULT_DOLOGIN_URI = "login.do";
     private static final String DEFAULT_DOLOGOUT_URI = "logout.do";
 

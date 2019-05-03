@@ -1,6 +1,7 @@
 package com.republicate.modality.tools.model;
 
 import com.republicate.modality.Attribute;
+import com.republicate.modality.Entity;
 import com.republicate.modality.impl.AttributeHolder;
 import org.apache.velocity.util.introspection.AbstractChainableUberspector;
 import org.apache.velocity.util.introspection.Info;
@@ -66,7 +67,11 @@ public class ModelUberspector extends AbstractChainableUberspector
                 }
                 else if (obj instanceof InstanceReference)
                 {
-                    ret = getAttributeGetter(InstanceReference.class, ((InstanceReference)obj).getInstance().getEntity(), identifier);
+                    Entity entity = ((InstanceReference)obj).getInstance().getEntity();
+                    if (entity != null)
+                    {
+                        ret = getAttributeGetter(InstanceReference.class, ((InstanceReference) obj).getInstance().getEntity(), identifier);
+                    }
                 }
             }
             catch (NoSuchMethodException nsme)

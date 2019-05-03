@@ -16,12 +16,13 @@ public class VelosurfActiveInstanceReference extends ActiveInstanceReference
     }
 
     @Override
-    protected void handleError(String message, Object... arguments)
+    protected void error(String message, Object... arguments)
     {
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
         String msg = tuple.getMessage();
         Throwable err = tuple.getThrowable();
-        logger.error(msg, err);
-        ((VelosurfTool)getModelReference()).setError(message);
+        VelosurfTool modelTool = (VelosurfTool)getModelReference();
+        modelTool.getLogger().error(msg, err);
+        modelTool.setError(msg);
     }
 }

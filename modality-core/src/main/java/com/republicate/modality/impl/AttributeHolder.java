@@ -115,7 +115,7 @@ public abstract class AttributeHolder implements Serializable
         return ((ScalarAttribute)attribute).evaluate(source);
     }
 
-    protected Serializable evaluate(String name, Map source, Serializable... params) throws SQLException
+    public Serializable evaluate(String name, Map source, Serializable... params) throws SQLException
     {
         Attribute attribute = getAttribute(name);
         if (attribute == null)

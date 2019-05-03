@@ -1,9 +1,11 @@
 package com.republicate.modality.tools.velosurf;
 
+import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.config.ConfigHelper;
 import com.republicate.modality.tools.model.ActiveInstanceReference;
+import com.republicate.modality.tools.model.EntityReference;
 import com.republicate.modality.tools.model.InstanceReference;
 import com.republicate.modality.tools.model.ModelTool;
 import com.republicate.modality.util.AESCryptograph;
@@ -12,6 +14,7 @@ import com.republicate.modality.velosurf.Velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
 import org.apache.velocity.tools.generic.ValueParser;
+import org.slf4j.Logger;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 import org.w3c.dom.Element;
@@ -73,6 +76,12 @@ public class VelosurfTool extends ModelTool
     }
 
     @Override
+    protected EntityReference createEntityReference(Entity entity)
+    {
+        return new VelosurfEntityReference(entity, this);
+    }
+
+    @Override
     protected InstanceReference createInstanceReference(Instance instance)
     {
         switch (getModel().getWriteAccess())
@@ -89,13 +98,19 @@ public class VelosurfTool extends ModelTool
     }
 
     @Override
-    protected void handleError(String message, Object... arguments)
+    protected void error(String message, Object... arguments)
     {
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
         String msg = tuple.getMessage();
         Throwable err = tuple.getThrowable();
         getLog().error(msg, err);
         setError(msg);
+    }
+
+    @Override
+    protected Logger getLogger() // give package access to logger
+    {
+        return getLog();
     }
 
     public void setError(String message)

@@ -32,6 +32,7 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.ValidScope;
 import org.apache.velocity.tools.generic.SafeConfig;
 import org.apache.velocity.tools.generic.ValueParser;
+import org.slf4j.Logger;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -104,7 +105,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not evaluate property {}", name, sqle);
+            error("could not evaluate property {}", name, sqle);
             return null;
         }
     }
@@ -117,7 +118,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not evaluate property {}", name, sqle);
+            error("could not evaluate property {}", name, sqle);
             return null;
         }
     }
@@ -131,7 +132,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not retrieve property {}", name, sqle);
+            error("could not retrieve property {}", name, sqle);
             return null;
         }
     }
@@ -145,7 +146,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not retrieve property {}", name, sqle);
+            error("could not retrieve property {}", name, sqle);
             return null;
         }
     }
@@ -154,11 +155,11 @@ public class ModelTool extends SafeConfig implements Constants
     {
         try
         {
-            return new InstanceReferenceIterator(getModel().query(name, params));
+            return createInstanceReferenceIterator(getModel().query(name, params));
         }
         catch (SQLException sqle)
         {
-            handleError("could not iterate property {}", name, sqle);
+            error("could not iterate property {}", name, sqle);
             return null;
         }
     }
@@ -167,11 +168,11 @@ public class ModelTool extends SafeConfig implements Constants
     {
         try
         {
-            return new InstanceReferenceIterator(getModel().query(name, params));
+            return createInstanceReferenceIterator(getModel().query(name, params));
         }
         catch (SQLException sqle)
         {
-            handleError("could not iterate property {}", name, sqle);
+            error("could not iterate property {}", name, sqle);
             return null;
         }
     }
@@ -189,7 +190,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not perform action {}", name, sqle);
+            error("could not perform action {}", name, sqle);
             return 0;
         }
     }
@@ -207,7 +208,7 @@ public class ModelTool extends SafeConfig implements Constants
         }
         catch (SQLException sqle)
         {
-            handleError("could not perform action {}", name, sqle);
+            error("could not perform action {}", name, sqle);
             return 0;
         }
     }
@@ -230,21 +231,26 @@ public class ModelTool extends SafeConfig implements Constants
                 }
                 else if (attribute instanceof RowsetAttribute)
                 {
-                    return new InstanceReferenceIterator(((RowsetAttribute)attribute).query());
+                    return createInstanceReferenceIterator(((RowsetAttribute)attribute).query());
                 }
             }
             Entity entity = model.getEntity(key);
             if (entity != null)
             {
-                return new EntityReference(entity, this);
+                return createEntityReference(entity);
             }
             return null;
         }
         catch (SQLException sqle)
         {
-            handleError("could not get property {}", key, sqle);
+            error("could not get property {}", key, sqle);
             return null;
         }
+    }
+
+    protected EntityReference createEntityReference(Entity entity)
+    {
+        return new EntityReference(entity, this);
     }
 
     protected InstanceReference createInstanceReference(Instance instance)
@@ -257,7 +263,7 @@ public class ModelTool extends SafeConfig implements Constants
             case VTL:
                 return new ActiveInstanceReference(instance, this);
             default:
-                handleError("unhandled write-access enum: {}", getModel().getWriteAccess());
+                error("unhandled write-access enum: {}", getModel().getWriteAccess());
                 return null;
         }
     }
@@ -267,10 +273,15 @@ public class ModelTool extends SafeConfig implements Constants
         return new InstanceReferenceIterator(query);
     }
 
-    protected void handleError(String message, Object... arguments)
+    protected void error(String message, Object... arguments)
     {
         // default implementation only logs
-        getLog().error(message, arguments);
+        getLogger().error(message, arguments);
+    }
+
+    protected Logger getLogger() // give package access to logger
+    {
+        return getLog();
     }
 
     private Model model = null;

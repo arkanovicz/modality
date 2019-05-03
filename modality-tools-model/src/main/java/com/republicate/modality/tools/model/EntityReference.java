@@ -22,6 +22,7 @@ package com.republicate.modality.tools.model;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
@@ -31,7 +32,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EntityReference
+public class EntityReference extends Reference
 {
     public EntityReference(Entity entity, ModelTool modelReference)
     {
@@ -52,7 +53,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("cannot iterate on instances of " + entity.getName(), sqle);
+            error("cannot iterate on instances of " + entity.getName(), sqle);
             return null;
         }
     }
@@ -65,7 +66,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not get {} count", entity.getName(), sqle);
+            error("could not get {} count", entity.getName(), sqle);
             return 0;
         }
     }
@@ -73,6 +74,19 @@ public class EntityReference
     protected InstanceReference createInstanceReference(Instance instance)
     {
         return modelReference.createInstanceReference(instance);
+    }
+
+    public InstanceReference newInstance()
+    {
+        if (getEntity() != null && getEntity().getModel().getWriteAccess() == Model.WriteAccess.VTL)
+        {
+            return modelReference.createInstanceReference(getEntity().newInstance());
+        }
+        else
+        {
+            error("cannot create instance from read-only entity");
+            return null;
+        }
     }
 
     public InstanceReference fetch(Serializable... key) throws SQLException
@@ -84,7 +98,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not fetch instance of {}", entity.getName(), sqle);
+            error("could not fetch instance of {}", entity.getName(), sqle);
             return null;
         }
     }
@@ -114,7 +128,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not get property {}.{}", entity.getName(), key, sqle);
+            error("could not get property {}.{}", entity.getName(), key, sqle);
             return null;
         }
     }
@@ -127,7 +141,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not evaluate property {}.{}", entity.getName(), name, sqle);
+            error("could not evaluate property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -140,7 +154,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not evaluate property {}.{}", entity.getName(), name, sqle);
+            error("could not evaluate property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -153,7 +167,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not evaluate property {}.{}", entity.getName(), name, sqle);
+            error("could not evaluate property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -167,7 +181,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not retrieve property {}.{}", entity.getName(), name, sqle);
+            error("could not retrieve property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -181,7 +195,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not retrieve property {}.{}", entity.getName(), name, sqle);
+            error("could not retrieve property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -195,7 +209,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not retrieve property {}.{}", entity.getName(), name, sqle);
+            error("could not retrieve property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -209,7 +223,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not query property {}.{}", entity.getName(), name, sqle);
+            error("could not query property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -223,7 +237,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not query property {}.{}", entity.getName(), name, sqle);
+            error("could not query property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -237,7 +251,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not query property {}.{}", entity.getName(), name, sqle);
+            error("could not query property {}.{}", entity.getName(), name, sqle);
             return null;
         }
     }
@@ -267,7 +281,7 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not get property {}.{}", entity.getName(), key, sqle);
+            error("could not get property {}.{}", entity.getName(), key, sqle);
             return null;
         }
     }
@@ -297,9 +311,15 @@ public class EntityReference
         }
         catch (SQLException sqle)
         {
-            entity.getLogger().error("could not get property {}.{}", entity.getName(), key, sqle);
+            error("could not get property {}.{}", entity.getName(), key, sqle);
             return null;
         }
+    }
+
+    @Override
+    protected ModelTool getModelReference()
+    {
+        return modelReference;
     }
 
     private Entity entity = null;

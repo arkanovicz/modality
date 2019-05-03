@@ -88,7 +88,7 @@ public class Instance extends SlotTreeMap
 
     public Serializable evaluate(String name, Map params) throws SQLException
     {
-        return entity.evaluate(name, params == null ? this : new ChainedMap(this, params));
+        return entity.evaluate(name, params == null ? (Map)this : new ChainedMap(this, params));
     }
 
     public Serializable evaluate(String name, Serializable... params) throws SQLException
@@ -98,7 +98,7 @@ public class Instance extends SlotTreeMap
         {
             return get(name);
         }
-        Serializable ret = entity.evaluate(name, this, params);
+        Serializable ret = entity.evaluate(name, (Map)this, params);
         if (doCache)
         {
             putImpl(name, ret);
@@ -108,7 +108,7 @@ public class Instance extends SlotTreeMap
 
     public Instance retrieve(String name, Map params) throws SQLException
     {
-        return entity.retrieve(name, params == null ? this : new ChainedMap(this, params));
+        return entity.retrieve(name, params == null ? (Map)this : new ChainedMap(this, params));
     }
 
     public Instance retrieve(String name, Serializable... params) throws SQLException
@@ -118,7 +118,7 @@ public class Instance extends SlotTreeMap
         {
             return (Instance)get(name);
         }
-        Instance ret = entity.retrieve(name, this, params);
+        Instance ret = entity.retrieve(name, (Map)this, params);
         if (doCache)
         {
             putImpl(name, ret);
@@ -128,12 +128,12 @@ public class Instance extends SlotTreeMap
 
     public Iterator<Instance> query(String name, Map params) throws SQLException
     {
-        return entity.query(name, params == null ? this : new ChainedMap(this, params));
+        return entity.query(name, params == null ? (Map)this : new ChainedMap(this, params));
     }
 
     public Iterator<Instance> query(String name, Serializable... params) throws SQLException
     {
-        return entity.query(name, this, params);
+        return entity.query(name, (Map)this, params);
     }
 
     public int perform(String name, Map params) throws SQLException
@@ -142,7 +142,7 @@ public class Instance extends SlotTreeMap
         {
             throw new SQLException("instance is read-only");
         }
-        return entity.perform(name, params == null ? this : new ChainedMap(this, params));
+        return entity.perform(name, params == null ? (Map)this : new ChainedMap(this, params));
     }
 
     public int perform(String name, Serializable... params) throws SQLException
@@ -151,7 +151,7 @@ public class Instance extends SlotTreeMap
         {
             throw new SQLException("instance is read-only");
         }
-        return entity.perform(name, this, params);
+        return entity.perform(name, (Map)this, params);
     }
 
     public String getString(String name)

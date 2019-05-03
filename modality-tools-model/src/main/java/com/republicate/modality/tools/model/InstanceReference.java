@@ -12,10 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class InstanceReference implements SlotMap
+public class InstanceReference extends Reference implements SlotMap
 {
-    protected static Logger logger = LoggerFactory.getLogger(InstanceReference.class);
-
     public InstanceReference(Instance instance, ModelTool modelReference)
     {
         this.instance = instance;
@@ -55,7 +53,7 @@ public class InstanceReference implements SlotMap
     @Override
     public Serializable put(String key, Serializable value)
     {
-        logger.error("cannot change read-only instance");
+        error("cannot change read-only instance");
         return null;
     }
 
@@ -68,7 +66,7 @@ public class InstanceReference implements SlotMap
         }
         catch (Exception e)
         {
-            handleError("could not set instance field {} to value {}", key, String.valueOf(value));
+            error("could not set instance field {} to value {}", key, String.valueOf(value));
             return null;
         }
     }
@@ -76,7 +74,7 @@ public class InstanceReference implements SlotMap
     @Override
     public Serializable remove(Object key)
     {
-        handleError("cannot change read-only instance");
+        error("cannot change read-only instance");
         return null;
     }
 
@@ -88,7 +86,7 @@ public class InstanceReference implements SlotMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> m)
     {
-        handleError("cannot change read-only instance");
+        error("cannot change read-only instance");
     }
 
     public void putAllImpl(Map<? extends String, ? extends Serializable> m)
@@ -99,14 +97,14 @@ public class InstanceReference implements SlotMap
         }
         catch (Exception e)
         {
-            handleError("could not set instance fields to values {}", m, e);
+            error("could not set instance fields to values {}", m, e);
         }
     }
 
     @Override
     public void clear()
     {
-        logger.error("cannot change read-only instance");
+        error("cannot change read-only instance");
     }
 
     public void clearImpl()
@@ -140,7 +138,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -153,7 +151,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not evaluate instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -167,7 +165,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -181,7 +179,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not retrieve instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -194,7 +192,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
@@ -207,14 +205,14 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not query instance property {}.{}", instance.getEntity().getName(), name, sqle);
             return null;
         }
     }
 
     public int perform(String name, Map params)
     {
-        handleError("instance is read-only");
+        error("instance is read-only");
         return 0;
     }
 
@@ -226,7 +224,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
             return 0;
         }
 
@@ -234,7 +232,7 @@ public class InstanceReference implements SlotMap
 
     public int perform(String name, Serializable... params)
     {
-        handleError("instance is read-only");
+        error("instance is read-only");
         return 0;
     }
 
@@ -246,7 +244,7 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
+            error("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
             return 0;
         }
     }
@@ -258,7 +256,7 @@ public class InstanceReference implements SlotMap
 
     public boolean delete()
     {
-        handleError("cannot delete read-only instance");
+        error("cannot delete read-only instance");
         return false;
     }
 
@@ -271,14 +269,14 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not delete instance", sqle);
+            error("could not delete instance", sqle);
             return false;
         }
     }
 
     public boolean insert()
     {
-        handleError("cannot insert read-only instance");
+        error("cannot insert read-only instance");
         return false;
     }
 
@@ -291,14 +289,14 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not insert instance", sqle);
+            error("could not insert instance", sqle);
             return false;
         }
     }
 
     public boolean update()
     {
-        handleError("cannot update read-only instance");
+        error("cannot update read-only instance");
         return false;
     }
 
@@ -311,17 +309,12 @@ public class InstanceReference implements SlotMap
         }
         catch (SQLException sqle)
         {
-            handleError("could not update instance", sqle);
+            error("could not update instance", sqle);
             return false;
         }
     }
 
-    protected void handleError(String message, Object... arguments)
-    {
-        // default implementation only logs
-        logger.error(message, arguments);
-    }
-
+    @Override
     protected ModelTool getModelReference()
     {
         return modelReference;

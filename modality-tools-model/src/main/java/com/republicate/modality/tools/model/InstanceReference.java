@@ -322,6 +322,8 @@ public class InstanceReference extends Reference implements SlotMap
             return false;
         }
     }
+    public boolean upsert()
+    {
         error("cannot insert read-only instance");
         return false;
     }

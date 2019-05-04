@@ -249,11 +249,6 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
-    protected Instance getInstance()
-    {
-        return instance;
-    }
-
     public boolean delete()
     {
         error("cannot delete read-only instance");
@@ -326,7 +321,12 @@ public class InstanceReference extends Reference implements SlotMap
         return instance.toString();
     }
 
-    private Instance instance;
-    private ModelTool modelReference;
+    protected Instance getInstance()
+    {
+        return instance;
+    }
 
+    private Instance instance;
+
+    private ModelTool modelReference;
 }

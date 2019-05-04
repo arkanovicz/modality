@@ -102,7 +102,7 @@ public abstract class BaseEntity extends AttributeHolder
         return (BitSet)primaryKeyMask.clone();
     }
 
-    public BitSet getNonKeyMask()
+    public BitSet getNonPrimaryKeyMask()
     {
         BitSet ret = (BitSet)primaryKeyMask.clone();
         ret.flip(0, columns.size());

@@ -306,6 +306,11 @@ public class ModelTool extends SafeConfig implements Constants
             return createInstanceReference(iterator.next());
         }
 
+        protected Iterator<Instance> getInnerIterator()
+        {
+            return iterator;
+        }
+
         private Iterator<Instance> iterator;
     }
 }

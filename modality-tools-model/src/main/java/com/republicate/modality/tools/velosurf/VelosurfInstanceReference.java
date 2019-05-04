@@ -24,4 +24,11 @@ public class VelosurfInstanceReference extends InstanceReference
         modelTool.getLogger().error(msg, err);
         modelTool.setError(msg);
     }
+
+    @Override
+    protected Instance getInstance()
+    {
+        // to give access to package
+        return super.getInstance();
+    }
 }

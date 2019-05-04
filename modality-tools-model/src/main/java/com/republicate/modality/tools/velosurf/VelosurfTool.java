@@ -10,6 +10,7 @@ import com.republicate.modality.tools.model.InstanceReference;
 import com.republicate.modality.tools.model.ModelTool;
 import com.republicate.modality.util.AESCryptograph;
 import com.republicate.modality.util.Cryptograph;
+import com.republicate.modality.util.SlotMap;
 import com.republicate.modality.velosurf.Velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
@@ -21,7 +22,17 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.URL;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 @Deprecated
@@ -128,5 +139,94 @@ public class VelosurfTool extends ModelTool
         error.remove();
     }
 
-    ThreadLocal<String> error = new ThreadLocal<>();
+    public class VelosurfInstanceReferenceIterator extends ModelTool.InstanceReferenceIterator
+    {
+        public VelosurfInstanceReferenceIterator(Iterator<Instance> iterator)
+        {
+            super(iterator);
+        }
+
+        // TODO - some of those methods could be useful in RowIterator and/or ModelTool.InstanceReferenceIterator
+
+        public List<InstanceReference> getRows()
+        {
+            List<InstanceReference> ret = new ArrayList<>();
+            while (hasNext())
+            {
+                ret.add(next());
+            }
+            return ret;
+        }
+
+        public List<Serializable> getScalars()
+        {
+            List<Serializable> ret = new ArrayList<>();
+            while (hasNext())
+            {
+                InstanceReference instance = next();
+                Serializable value = instance.entrySet().iterator().next().getValue();
+                ret.add(value);
+            }
+            return ret;
+        }
+
+        public Set<Serializable> getSet()
+        {
+            Set<Serializable> ret = new TreeSet<>();
+            while (hasNext())
+            {
+                InstanceReference instance = next();
+                Serializable value = instance.entrySet().iterator().next().getValue();
+                ret.add(value);
+            }
+            return ret;
+        }
+
+        public Map<Serializable, Serializable> getMap()
+        {
+            throw new UnsupportedOperationException("not supported");
+        }
+
+        public Map<Serializable, InstanceReference> getInstanceMap()
+        {
+            Map<Serializable, InstanceReference> ret = new HashMap<>();
+            while (hasNext())
+            {
+                VelosurfInstanceReference instance = (VelosurfInstanceReference)next();
+                Serializable key[] = instance.getInstance().getPrimaryKey();
+                if (key != null && key.length == 1)
+                {
+                    ret.put(key[0], instance);
+                }
+                else
+                {
+                    try
+                    {
+                        throw new SQLException("wrong key size");
+                    }
+                    catch (SQLException sqle)
+                    {
+                        error("cannot get instance map", sqle);
+                        return null;
+                    }
+                }
+            }
+            return ret;
+        }
+    }
+
+    public Object put(String key, Object value)
+    {
+        try
+        {
+            throw new SQLFeatureNotSupportedException("ModelTool is read-only");
+        }
+        catch (SQLException sqle)
+        {
+            error("cannot set value", sqle);
+            return null;
+        }
+    }
+
+    private ThreadLocal<String> error = new ThreadLocal<>();
 }

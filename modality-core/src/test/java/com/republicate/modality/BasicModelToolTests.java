@@ -439,6 +439,29 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertNotNull(wrapped);
     }
 
+    public @Test void testUpsert() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        Entity book = model.getEntity("book");
+        assertNotNull(book);
+        Instance oneBook = book.fetch(1);
+        assertNotNull(oneBook);
+        String title = oneBook.getString("title");
+        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+        oneBook.put("title", "foo");
+        oneBook.upsert();
+        assertEquals("foo", book.fetch(1).getString("title"));
+        oneBook = book.newInstance(oneBook);
+        oneBook.put("title", title);
+        oneBook.upsert();
+        assertFalse(oneBook.isDirty());
+        assertEquals(title, book.fetch(1).getString("title"));
+    }
+
     @BeforeClass
     public static void populateDataSource() throws Exception
     {

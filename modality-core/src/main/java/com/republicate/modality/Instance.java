@@ -33,6 +33,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Instance extends SlotTreeMap
 {
@@ -59,7 +60,7 @@ public class Instance extends SlotTreeMap
             setInitialValue(key, value);
         }
         setClean();
-        persisted = entity != null && entity.getPrimaryKey().size() > 0;
+        persisted = entity != null && entity.getPrimaryKey().size() > 0 && entity.getPrimaryKey().stream().noneMatch(Objects::isNull);
     }
 
     public void setInitialValue(String key, Serializable value) throws SQLException
@@ -257,6 +258,11 @@ public class Instance extends SlotTreeMap
         ensureNotPersisted();
         entity.insert(this);
         persisted = entity != null && entity.getPrimaryKey().size() > 0;
+        // the next call is necessary for the following use case:
+        // $book.put(...)
+        // $book.delete()
+        // $bok.insert()
+        setClean();
     }
 
     public void update() throws SQLException
@@ -273,6 +279,37 @@ public class Instance extends SlotTreeMap
         entity.update(this);
     }
 
+    public void upsert() throws SQLException
+    {
+        if (!canWrite)
+        {
+            throw new SQLException("instance is read-only");
+        }
+
+        Serializable[] pk;
+        if (entity != null && (entity.getPrimaryKey()).size() > 0 && Arrays.stream(pk = getPrimaryKey()).noneMatch(Objects::isNull))
+        {
+            // TODO - some vendors support upsert
+            Instance prev = entity.fetch(pk);
+            if (prev == null)
+            {
+                persisted = false;
+                insert();
+            }
+            else
+            {
+                prev.putAll(this);
+                prev.update();
+                persisted = true;
+                setClean();
+            }
+        }
+        else
+        {
+            throw new SQLException("cannot upsert instance: no or invalid primary key: " + this);
+        }
+    }
+
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> map)
     {
@@ -287,7 +324,13 @@ public class Instance extends SlotTreeMap
             Serializable[] newpk = getPrimaryKey();
             if (Arrays.equals(pk, newpk))
             {
-                entity.getNonKeyMask().stream().filter(col -> map.containsKey(entity.getColumn(col).name)).forEach(col -> dirtyFlags.set(col));
+                entity.getNonPrimaryKeyMask().stream()
+                    .filter(col ->
+                    {
+                        String colName = entity.getColumn(col).name;
+                        return !Objects.equals(get(colName), map.get(colName));
+                    })
+                    .forEach(col -> dirtyFlags.set(col));
             }
             else
             {

@@ -309,6 +309,23 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
+    protected boolean upsertImpl()
+    {
+        try
+        {
+            instance.upsert();
+            return true;
+        }
+        catch (SQLException sqle)
+        {
+            error("could not upsert instance", sqle);
+            return false;
+        }
+    }
+        error("cannot insert read-only instance");
+        return false;
+    }
+
     @Override
     protected ModelTool getModelReference()
     {

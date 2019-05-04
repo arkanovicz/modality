@@ -66,4 +66,10 @@ public class ActiveInstanceReference extends InstanceReference
         return super.updateImpl();
     }
 
+    @Override
+    public boolean upsert()
+    {
+        return super.upsertImpl();
+    }
+
 }

@@ -21,10 +21,18 @@ public class HttpUtils
 
     public static Cookie getCookie(HttpServletRequest request, String cookieName)
     {
-        return Arrays.stream(request.getCookies())
-            .filter(cookie -> cookie.getName().equals(cookieName))
-            .findFirst()
-            .orElse(null);
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null)
+        {
+            return null;
+        }
+        else
+        {
+            return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieName))
+                .findFirst()
+                .orElse(null);
+        }
     }
 
 }

@@ -189,6 +189,13 @@ public abstract class BaseEntity extends AttributeHolder
         return instanceBuilder.create();
     }
 
+    public Instance newInstance(Map values)
+    {
+        Instance instance = instanceBuilder.create();
+        instance.putAll(values);
+        return instance;
+    }
+
     protected Map<String, Method> getWrappedInstanceGetters()
     {
         return wrappedInstanceGetters;
@@ -421,7 +428,6 @@ public abstract class BaseEntity extends AttributeHolder
     {
         return countAttribute;
     }
-
     protected RowAttribute getFetchAttribute()
     {
         return fetchAttribute;
@@ -436,13 +442,14 @@ public abstract class BaseEntity extends AttributeHolder
     private Map<String, String> columnsMapping = new HashMap<>();
     private LinkedHashMap<String, Entity.Column> columns = new LinkedHashMap<>();
     private List<String> columnNames = null; // redundant with 'columns' field, but needed for random access
-    private List<String> sqlPrimaryKey = null;
 
+    private List<String> sqlPrimaryKey = null;
     private List<Entity.Column> primaryKey = null;
     private BitSet primaryKeyMask = null;
     private ScalarAttribute countAttribute = null;
     private RowAttribute fetchAttribute = null;
     private RowsetAttribute iterateAttribute = null;
+
     private Action delete = null;
 
     private Action insert = null;

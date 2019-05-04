@@ -89,6 +89,20 @@ public class EntityReference extends Reference
         }
     }
 
+    public InstanceReference newInstance(Map values)
+    {
+        if (getEntity() != null && getEntity().getModel().getWriteAccess() == Model.WriteAccess.VTL)
+        {
+            return modelReference.createInstanceReference(getEntity().newInstance(values));
+        }
+        else
+        {
+            error("cannot create instance from read-only entity");
+            return null;
+        }
+    }
+
+
     public InstanceReference fetch(Serializable... key) throws SQLException
     {
         try

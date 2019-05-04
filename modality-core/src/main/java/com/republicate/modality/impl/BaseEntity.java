@@ -468,7 +468,7 @@ public abstract class BaseEntity extends AttributeHolder
         Instance create();
     }
 
-    public static class Column
+    public static class Column implements Serializable
     {
         public Column(String name, String sqlName, int type, Integer size, boolean generated)
         {

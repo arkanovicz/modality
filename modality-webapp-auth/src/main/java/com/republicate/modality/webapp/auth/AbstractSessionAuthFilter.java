@@ -109,6 +109,19 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
     }
 
     @Override
+    protected boolean isProtectedURI(String uri)
+    {
+        if (uri.equals(getDoLoginURI()))
+        {
+            return true;
+        }
+        else
+        {
+            return super.isProtectedURI(uri);
+        }
+    }
+
+    @Override
     protected USER getAuthentifiedUser(HttpServletRequest request) throws ServletException
     {
         // check session

@@ -60,7 +60,7 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
         expect(request.getHeader("Referer")).andAnswer(eval(null));
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
-        response.setStatus(200);
+        response.sendRedirect("/index.vhtml");
 
         replayAll();
 

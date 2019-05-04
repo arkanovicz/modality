@@ -70,7 +70,6 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
 
     private static final String DEFAULT_FORM_LOGIN_FIELD = "login";
     private static final String DEFAULT_FORM_PASSWORD_FIELD = "password";
-    private static final String DEFAULT_FORM_LOGIN_URI = "login.vhtml";
 
     private static final String SAVED_REQUEST_SESSION_KEY = "org.apache.velocity.tools.auth.form.saved_request";
 
@@ -81,7 +80,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         final String contextPath = getConfig().getServletContext().getContextPath();
         loginField = Optional.ofNullable(findConfigParameter(LOGIN_FIELD)).orElse(DEFAULT_FORM_LOGIN_FIELD);
         passwordField = Optional.ofNullable(findConfigParameter(PASSWORD_FIELD)).orElse(DEFAULT_FORM_PASSWORD_FIELD);
-        loginURI = ServletUtils.combinePath(contextPath, Optional.ofNullable(findConfigParameter(LOGIN_URI)).orElse(DEFAULT_FORM_LOGIN_URI));
+        loginURI = ServletUtils.combinePath(contextPath, Optional.ofNullable(findConfigParameter(LOGIN_URI)).orElse(null));
         homeURI = ServletUtils.combinePath(contextPath, Optional.ofNullable(findConfigParameter(HOME_URI)).orElse(findIndex()));
         userHomeURI = Optional.ofNullable(findConfigParameter(USER_HOME_URI)).map(path -> ServletUtils.combinePath(contextPath, path)).orElse(homeURI);
         redirectTowardsLogin = BooleanUtils.toBoolean(findConfigParameter(REDIRECT_TOWARDS_LOGIN));
@@ -113,7 +112,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     protected boolean isProtectedURI(String uri)
     {
         /* never protect the login page itself */
-        if (uri.equals(loginURI))
+        if (uri.equals(getLoginURI()))
         {
             return false;
         }
@@ -149,31 +148,28 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     {
         // prioritize query string explicit redirection
         String redirection = getQueryStringRedirection(request);
+        SavedRequest savedRequest = null;
         if (redirection != null)
         {
             logger.debug("redirecting newly logged in user {} towards {}", displayUser(user), redirection);
             response.sendRedirect(redirection);
         }
-        else if (redirectTowardsLogin && (onSuccessRedirectGET || onSuccessForwardPOST))
+        else if (redirectTowardsLogin && (onSuccessRedirectGET || onSuccessForwardPOST) && (savedRequest = getSavedRequest(request)) != null)
         {
-            SavedRequest savedRequest = getSavedRequest(request);
-            if (savedRequest != null)
+            switch (savedRequest.getMethod())
             {
-                switch (savedRequest.getMethod())
-                {
-                    case "GET":
-                        logger.debug("redirecting newly logged in user {} towards {}", displayUser(user), savedRequest.getRequestURI());
-                        String url = savedRequest.getRequestURI() + Optional.ofNullable(savedRequest.getQueryString()).map(s -> "?" + URLEncoder.encode(s)).orElse("");
-                        response.sendRedirect(url);
-                        break;
-                    case "POST":
-                        logger.debug("forwarding newly logged in user {} towards {}", displayUser(user), savedRequest.getRequestURI());
-                        ForwardedRequest forwardedRequest = new ForwardedRequest(request, response, savedRequest);
-                        request.getRequestDispatcher(savedRequest.getRequestURI()).forward(forwardedRequest, response);
-                        break;
-                    default:
-                        throw new ServletException("unhandled method: " + savedRequest.getMethod());
-                }
+                case "GET":
+                    logger.debug("redirecting newly logged in user {} towards {}", displayUser(user), savedRequest.getRequestURI());
+                    String url = savedRequest.getRequestURI() + Optional.ofNullable(savedRequest.getQueryString()).map(s -> "?" + URLEncoder.encode(s)).orElse("");
+                    response.sendRedirect(url);
+                    break;
+                case "POST":
+                    logger.debug("forwarding newly logged in user {} towards {}", displayUser(user), savedRequest.getRequestURI());
+                    ForwardedRequest forwardedRequest = new ForwardedRequest(request, response, savedRequest);
+                    request.getRequestDispatcher(savedRequest.getRequestURI()).forward(forwardedRequest, response);
+                    break;
+                default:
+                    throw new ServletException("unhandled method: " + savedRequest.getMethod());
             }
         }
         else
@@ -183,10 +179,21 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     }
 
     @Override
+    protected String getRedirection(HttpServletRequest request) throws IOException
+    {
+        String redirection = super.getRedirection(request);
+        if (redirection == null && request.getRequestURI().equals(getDoLoginURI()))
+        {
+            redirection = getHomeURI();
+        }
+        return redirection;
+    }
+
+    @Override
     protected void processPublicRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
         // if redirectTowardsLogin is active and user is logged, redirect from login page to index page
-        if (redirectTowardsLogin && request.getRequestURI().equals(getLoginURI()))
+        if (redirectTowardsLogin && request.getRequestURI().equals(getLoginURI()) && !getLoginURI().equals(getUserHomeUri()))
         {
             USER user = getSessionUser(request.getSession(false));
             if (user != null)

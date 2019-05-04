@@ -109,6 +109,12 @@ public class VelosurfTool extends ModelTool
     }
 
     @Override
+    public Iterator<InstanceReference> createInstanceReferenceIterator(Iterator<Instance> query)
+    {
+        return new VelosurfInstanceReferenceIterator(query);
+    }
+
+    @Override
     protected void error(String message, Object... arguments)
     {
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);

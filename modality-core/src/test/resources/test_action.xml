@@ -7,5 +7,17 @@
         <action name="rename">
             update book set title = <new_title/> where book_id = <book_id/>
         </action>
+        <action name="good_transaction">
+            declare local temporary table buffer (title varchar(200)) on commit preserve rows;
+            insert into buffer select title from book where book_id = <book_id/>;
+            update book set title = 'something else' where book_id = <book_id/>;
+            update book set title = (select title from buffer) where book_id = <book_id/>;
+        </action>
+        <action name="bad_transaction">
+            declare local temporary table buffer (title varchar(200)) on commit preserve rows;
+            insert into buffer select title from book where book_id = <book_id/>;
+            update book set title = 'something else' where book_id = <book_id/>;
+            update book set title = (select title from buffer) where book_id = <book_id/> and some illegal sql;
+        </action>
     </book>
 </model>

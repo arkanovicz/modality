@@ -11,7 +11,10 @@ public abstract class Reference
 
     protected void error(String message, Object... arguments)
     {
+        // The default implementation just log the error.
         getModelReference().getLogger().error(message, arguments);
+
+        // TODO - this is a good insertion point for a pluggable error handler
     }
 
 }

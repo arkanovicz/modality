@@ -27,6 +27,9 @@ import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
+import com.republicate.modality.Transaction;
+import com.republicate.modality.config.ConfigurationException;
+import com.republicate.modality.sql.SqlUtils;
 import org.slf4j.Logger;
 
 import java.io.Serializable;
@@ -46,8 +49,29 @@ public abstract class AttributeHolder implements Serializable
 
     protected void initializeAttributes()
     {
-        for (Attribute attribute : attributesMap.values())
+        for (Map.Entry<String, Attribute> entry : attributesMap.entrySet())
         {
+            Attribute attribute = entry.getValue();
+            if (attribute instanceof Action)
+            {
+                // promote Action to Transaction if needed
+                String query;
+                try
+                {
+                    query = attribute.getQuery();
+                }
+                catch (SQLException sqle)
+                {
+                    throw new ConfigurationException("unknown error", sqle);
+                }
+                if (SqlUtils.hasMultipleStatements(query, getModel().getDriverInfos().getIdentifierQuoteChar()))
+                {
+                    String key = entry.getKey();
+                    Transaction transaction = new Transaction(key, (Action)attribute);
+                    entry.setValue(transaction);
+                    attribute = transaction;
+                }
+            }
             attribute.initialize();
         }
     }

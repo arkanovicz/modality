@@ -200,6 +200,52 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals(title, oneBook.getString("title"));
     }
 
+    public @Test void testGoodTransaction() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        Entity book = model.getEntity("book");
+        assertNotNull(book);
+        Instance oneBook = book.fetch(1);
+        assertNotNull(oneBook);
+        String title = oneBook.getString("title");
+        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+        int count = oneBook.perform("good_transaction");
+        assertEquals(3, count);
+        oneBook.refresh();
+        String newtitle = oneBook.getString("title");
+        assertEquals(title, newtitle);
+    }
+
+    public @Test void testBadTransaction() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        Entity book = model.getEntity("book");
+        assertNotNull(book);
+        Instance oneBook = book.fetch(1);
+        assertNotNull(oneBook);
+        String title = oneBook.getString("title");
+        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+        try
+        {
+            int count = oneBook.perform("bad_transaction");
+            fail("expecting SQLException");
+        }
+        catch (SQLException sqle)
+        {
+        }
+        oneBook.refresh();
+        String newtitle = oneBook.getString("title");
+        assertEquals(title, newtitle);
+    }
+
     public @Test void testCollision() throws Exception
     {
         DataSource dataSource = initDataSource();

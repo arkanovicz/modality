@@ -202,9 +202,19 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         return paramValues;
     }
 
-    protected String getQuery() throws SQLException
+    public String getQuery() throws SQLException
     {
         return query;
+    }
+
+    protected void setParameterNames(List<String> parameterNames)
+    {
+        this.parameterNames = parameterNames;
+    }
+
+    protected void setQuery(String query)
+    {
+        this.query = query;
     }
 
     protected void setCached(boolean cached)

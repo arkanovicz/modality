@@ -26,6 +26,7 @@ It comprises:
 + fully configurable mapping of values
 + works with any JDBC-compliant data source
 + instances (rows) can be mapped to any POJO
++ connections and prepared statements pooling
 
 ## Main Concepts
 

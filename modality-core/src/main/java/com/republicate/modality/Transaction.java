@@ -1,7 +1,10 @@
 package com.republicate.modality;
 
+import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.impl.AttributeHolder;
 import com.republicate.modality.sql.ConnectionWrapper;
+import com.republicate.modality.sql.SqlUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -14,6 +17,20 @@ public class Transaction extends Action
     public Transaction(String name, AttributeHolder parent)
     {
         super(name, parent);
+    }
+
+    public Transaction(String name, Action action)
+    {
+        super(name, action.getParent());
+        setParameterNames(action.getParameterNames());
+        try
+        {
+            setQuery(action.getQuery());
+        }
+        catch (SQLException sqle)
+        {
+            throw new ConfigurationException("unknown error", sqle);
+        }
     }
 
     @Override
@@ -56,18 +73,24 @@ public class Transaction extends Action
         }
     }
 
-    private List<String> getStatements() throws SQLException
+    protected List<String> getStatements() throws SQLException
     {
-        List<String> statements = new ArrayList<>();
-        String[] elements = getQuery().split(";");
-        for (String element : elements)
-        {
-            element = element.trim();
-            if (element.length() > 0)
-            {
-                statements.add(element);
-            }
-        }
         return statements;
     }
+
+    @Override
+    protected void initialize()
+    {
+        try
+        {
+            statements = SqlUtils.splitStatements(getQuery(), getModel().getDriverInfos().getIdentifierQuoteChar());
+        }
+        catch (SQLException sqle)
+        {
+            throw new ConfigurationException("unknown error", sqle);
+        }
+    }
+
+    private List<String> statements = new ArrayList<>();
+    private List<List<String>> parameterNamesLists = new ArrayList<>();
 }

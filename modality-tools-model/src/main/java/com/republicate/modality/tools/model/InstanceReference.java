@@ -320,6 +320,12 @@ public class InstanceReference extends Reference implements SlotMap
         return modelReference;
     }
 
+    @Override
+    public String toString()
+    {
+        return instance.toString();
+    }
+
     private Instance instance;
     private ModelTool modelReference;
 

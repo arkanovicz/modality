@@ -127,4 +127,51 @@ public class WrappingInstance extends Instance implements Wrapper
     {
         return iface.isAssignableFrom(pojo.getClass());
     }
+
+    @Override
+    public String toString()
+    {
+        // merge map properties and wrapper properties
+        StringBuilder builder = new StringBuilder();
+        builder.append('{');
+        boolean first = true;
+        for (Map.Entry<String, Serializable> entry : entrySet())
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                builder.append(", ");
+            }
+            builder.append(entry.getKey()).append('=').append(entry.getValue());
+        }
+        for (Map.Entry<String, Method> entry : getters.entrySet())
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                builder.append(", ");
+            }
+            builder.append(entry.getKey()).append('=');
+            String value = null;
+            try
+            {
+                value = String.valueOf(entry.getValue().invoke(pojo));
+            }
+            catch (IllegalAccessException | InvocationTargetException e)
+            {
+                value = e.getClass().getName();
+            }
+            builder.append(value);
+        }
+        builder.append('}');
+        return builder.toString();
+    }
+
+
 }

@@ -21,9 +21,9 @@
 
 <model xmlns:xi="http://www.w3.org/2001/XInclude" dataSource="jdbc/bookshelf" reverse="extended">.
 
-    <transaction name="initBookshelf">
+    <action name="initBookshelf">
         <xi:include href="bookshelf.sql" parse="text"/>
-    </transaction>
+    </action>
 
     <!-- no need to declare entities: entities, key columns and foreign keys will be reverse enginered -->
 

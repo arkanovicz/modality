@@ -28,6 +28,7 @@ public class ValueFilterHandler extends FilterHandler<Serializable>
         addStockObject("deobfuscate_strings", x -> x != null && x instanceof String ? cryptograph.decrypt(TypeUtils.base64Decode(x)) : x);
         addStockObject("base64_encode", x -> TypeUtils.base64Encode(x));
         addStockObject("base64_decode", x -> TypeUtils.base64Decode(x));
+        addStockObject("mask", x -> null);
     }
 
     @Override
@@ -39,7 +40,6 @@ public class ValueFilterHandler extends FilterHandler<Serializable>
         }
         return super.getStockObject(key);
     }
-
 
     @Override
     protected Logger getLogger()

@@ -20,6 +20,7 @@ package com.republicate.modality.sql;
  */
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,4 +114,97 @@ public class SqlUtils
         return sqlTypeToClass.get(type);
     }
 
+    public static List<String> splitStatements(String query, Character identifierQuoteChar)
+    {
+        List<String> ret = new ArrayList<>();
+        int state = 0;
+        boolean afterHyphen = false;
+        StringBuilder currentQuery = new StringBuilder();
+        for (int i = 0; i < query.length(); ++i)
+        {
+            Character c = query.charAt(i);
+            currentQuery.append(c);
+            switch (state)
+            {
+                case 0: // normal
+                {
+                    switch (c)
+                    {
+                        case '-':
+                        {
+                            if (afterHyphen)
+                            {
+                                afterHyphen = false;
+                                state = 1; // switch to comment
+                            }
+                            else
+                            {
+                                afterHyphen = true;
+                            }
+                            break;
+                        }
+                        case '\'':
+                        {
+                            state = 3; // switch to string literal
+                            break;
+                        }
+                        case ';':
+                        {
+                            String nextQuery = currentQuery.toString().trim();
+                            if (nextQuery.length() > 0)
+                            {
+                                ret.add(nextQuery);
+                                currentQuery = new StringBuilder();
+                            }
+                            break;
+                        }
+                        default:
+                        {
+                            if (c == identifierQuoteChar)
+                            {
+                                state = 2; // switch to identifier
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 1: // comment
+                {
+                    if (c == '\n')
+                    {
+                        state = 0; // switch back to normal
+                    }
+                    break;
+                }
+                case 2: // identifier
+                {
+                    if (c == identifierQuoteChar)
+                    {
+                        state = 0; // switch back to normal
+                    }
+                    break;
+                }
+                case 3: // string literal
+                {
+                    if (c == '\'')
+                    {
+                        state = 0; // switch back to normal
+                    }
+                    break;
+                }
+            }
+        }
+        String nextQuery = currentQuery.toString().trim();
+        if (nextQuery.length() > 0)
+        {
+            ret.add(nextQuery);
+        }
+        return ret;
+    }
+
+    public static boolean hasMultipleStatements(String query, Character identifierQuoteChar)
+    {
+        return splitStatements(query, identifierQuoteChar).size() > 1;
+    }
 }

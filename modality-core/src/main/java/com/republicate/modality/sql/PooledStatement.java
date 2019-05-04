@@ -96,9 +96,14 @@ public class PooledStatement extends Pooled implements RowValues
     {
         try
         {
+            int count = 0;
             setParamValues(paramValues);
             getConnection().enterBusyState();
-            return preparedStatement.executeUpdate();
+            if (!preparedStatement.execute())
+            {
+                count = preparedStatement.getUpdateCount();
+            }
+            return count;
         }
         finally
         {

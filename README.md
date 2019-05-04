@@ -36,14 +36,16 @@ It comprises:
 (like the logged user in the session), instances lifetime should not exceed the query.
 
 **Attributes** are named SQL queries which appear as properties of the model itself (*root attributes*) or properties of a
-specific entity instances.
+specific entity instances. There are three types of attributes:
 
-**Actions** are named SQL queries performing an atomic or transactionnal database change.
++ **Scalar** attributes, corresponding to the **`evaluate()`** method, returning a scalar (string, number, boolean).
++ **Row** attributes, corresponding to the **`retrieve()`** method, returning an instance.
++ **Rowset** attributes, corresponding to the ``query()`` method, returning an iterator over instances.
 
-### Java API
+**Actions**, corresponding to the ``perform()`` method,  are named SQL queries performing an atomic or transactionnal database change.
+Actions with more than one statement are **Transactions**. Actions return the number of changed database rows.
 
-Both the `Model` and `Instance` objects can return scalar values with `evaluate()`, a single instance with `retrieve()`, or a collection with `query()`. Actions
-are triggered by the `perform()` method.
+Each of the above methods can be invoked from the model object itself or from an instance, and can take additional query parameter arguments.
 
 ### Configuration
 

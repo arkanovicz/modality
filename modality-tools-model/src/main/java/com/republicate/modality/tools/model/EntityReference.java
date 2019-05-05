@@ -102,6 +102,19 @@ public class EntityReference extends Reference
         }
     }
 
+    public InstanceReference fetch(Map key) throws SQLException
+    {
+        try
+        {
+            Instance instance = entity.fetch(key);
+            return instance == null ? null : createInstanceReference(instance);
+        }
+        catch (SQLException sqle)
+        {
+            error("could not fetch instance of {}", entity.getName(), sqle);
+            return null;
+        }
+    }
 
     public InstanceReference fetch(Serializable... key) throws SQLException
     {

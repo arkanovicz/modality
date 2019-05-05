@@ -55,11 +55,6 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
 
     public static final String PROTECTED_RESOURCES = "auth.protected";
 
-    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException
-    {
-        return true;
-    }
-
     protected boolean isProtectedURI(String uri)
     {
         if (protectedResources != null)
@@ -82,7 +77,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
         return authenticate(request);
     }
 
-    protected abstract USER authenticate(HttpServletRequest request);
+    protected abstract USER authenticate(HttpServletRequest request) throws ServletException;
 
     protected void processProtectedRequest(USER logged, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
@@ -128,11 +123,6 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
     {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpServletResponse response = (HttpServletResponse)servletResponse;
-
-        if (!preFilter(request, response, chain))
-        {
-            return;
-        }
 
         if (isProtectedURI(request.getRequestURI()))
         {

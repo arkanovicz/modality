@@ -15,11 +15,6 @@ participant RememberMeFormAuthFilter
 ' initial call
 Filter -> AbstractAuthFilter ++ : <b>doFilter(req,resp,chain)</b>
 
-  ' pre filter
-  AbstractAuthFilter -> FormAuthFilter ++ : <b>preFilter</b>(req, resp, chain)
-    rnote over FormAuthFilter : require model\ninitialization
-  return
-  
   ' is protected
   AbstractAuthFilter -> AbstractFormAuthFilter : <b>isProtectedURI</b>(uri)
     activate AbstractFormAuthFilter

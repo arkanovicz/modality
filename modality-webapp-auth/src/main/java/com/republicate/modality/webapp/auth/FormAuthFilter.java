@@ -72,12 +72,6 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     }
 
     @Override
-    protected boolean preFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException
-    {
-        requireModelInit();
-        return true;
-    }
-
     protected void initModel() throws ServletException
     {
         super.initModel();
@@ -96,7 +90,7 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     }
 
     @Override
-    protected Instance checkCredentials(String login, String password)
+    protected Instance checkCredentials(String login, String password) throws ServletException
     {
         try
         {

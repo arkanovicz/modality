@@ -11,6 +11,8 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 
+import javax.servlet.ServletException;
+
 import static org.easymock.EasyMock.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -20,6 +22,11 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
     public static void populateDataSource() throws Exception
     {
         BaseBookshelfTests.populateDataSource();
+    }
+
+    private FormAuthFilter createFilter()
+    {
+        return new FormAuthFilter() { @Override protected void initModel() throws ServletException { super.initModel();}};
     }
 
     @Test
@@ -40,8 +47,9 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
         new Model().setDataSource(initDataSource()).initialize("model", getResource("user_cred_model.xml"));
-        FormAuthFilter filter = new FormAuthFilter();
+        FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
     }
 
@@ -65,8 +73,9 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        FormAuthFilter filter = new FormAuthFilter();
+        FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
     }
 
@@ -112,8 +121,9 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        FormAuthFilter filter = new FormAuthFilter();
+        FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
@@ -167,8 +177,9 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        FormAuthFilter filter = new FormAuthFilter();
+        FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
@@ -206,8 +217,9 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        FormAuthFilter filter = new FormAuthFilter();
+        FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
 

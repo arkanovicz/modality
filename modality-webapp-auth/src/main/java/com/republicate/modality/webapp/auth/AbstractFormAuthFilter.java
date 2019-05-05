@@ -89,7 +89,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     }
 
     @Override
-    protected USER authenticate(HttpServletRequest request)
+    protected USER authenticate(HttpServletRequest request) throws ServletException
     {
         if (request.getMethod().equals("POST"))
         {
@@ -103,7 +103,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         }
     }
 
-    protected abstract USER checkCredentials(String login, String password);
+    protected abstract USER checkCredentials(String login, String password) throws ServletException;
 
     /**
      * Check if a specific request needs login protection

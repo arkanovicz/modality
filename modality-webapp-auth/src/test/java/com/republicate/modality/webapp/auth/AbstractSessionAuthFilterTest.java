@@ -3,6 +3,7 @@ package com.republicate.modality.webapp.auth;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,7 +14,7 @@ public class AbstractSessionAuthFilterTest extends AbstractAuthFilterTest
     protected class AuthSessionFilter extends AbstractSessionAuthFilter<String>
     {
         @Override
-        protected String authenticate(HttpServletRequest request)
+        protected String authenticate(HttpServletRequest request) throws ServletException
         {
             return request.getParameter("Good-Login");
         }

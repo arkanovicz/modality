@@ -8,6 +8,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
 import static org.easymock.EasyMock.*;
@@ -39,6 +40,14 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
     }
 
     static Cookie cookie = null;
+
+    private RememberMeFormAuthFilter createFilter()
+    {
+        return new RememberMeFormAuthFilter() { @Override protected void initModel() throws ServletException
+        { super.initModel();}};
+    }
+
+
 
     @Test
     public void testFormLoginSetcookie() throws Exception
@@ -97,8 +106,9 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        RememberMeFormAuthFilter filter = new RememberMeFormAuthFilter();
+        RememberMeFormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
@@ -143,8 +153,9 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
-        RememberMeFormAuthFilter filter = new RememberMeFormAuthFilter();
+        RememberMeFormAuthFilter filter = createFilter();
         filter.init(filterConfig);
+        filter.initModel();
         filter.doFilter(request, response, filterChain);
 
         verifyAll();

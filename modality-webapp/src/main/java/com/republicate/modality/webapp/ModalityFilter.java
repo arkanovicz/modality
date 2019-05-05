@@ -262,8 +262,9 @@ public abstract class ModalityFilter implements Filter
         }
     }
 
-    protected Model getModel()
+    protected Model getModel() throws ServletException
     {
+        requireModelInit();
         return model;
     }
 

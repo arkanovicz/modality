@@ -4,6 +4,7 @@ import com.republicate.modality.webapp.BaseWebappMockTest;
 import com.republicate.modality.webapp.ModalityFilter;
 import org.junit.Test;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

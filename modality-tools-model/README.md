@@ -63,6 +63,12 @@ You'll potentially need a new `/WEB-INF/modality.properties`.
 + Don't set parameter values in the model itself. You'll get `java.sql.SQLFeatureNotSupportedException: ModelTool is read-only` messages in the log.
 + The `.order` and `.refine` features have been dropped.
 + The `Instance.setColumnValues()` method has been dropped.
++ Since Velocity Engine 2.2 (unreleased at the time of writing), you can locate log messages in templates. For instance when using the webapp-slf4j-logger:
+    
+          <context-param>
+              <param-name>webapp-slf4j-logger.format</param-name>
+              <param-value>%logger [%level] [%ip] %message @%file:%line:%column</param-value>
+          </context-param>
 
 ### Testing
 

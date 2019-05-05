@@ -74,7 +74,11 @@ public class Instance extends SlotTreeMap
         }
         else
         {
-            value = entity.getColumn(colName).read(value);
+            Entity.Column column = entity.getColumn(colName);
+            if (column != null)
+            {
+                value = entity.getColumn(colName).read(value);
+            }
         }
         if (value != null)
         {

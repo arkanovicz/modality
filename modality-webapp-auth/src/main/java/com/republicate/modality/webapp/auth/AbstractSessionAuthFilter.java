@@ -163,13 +163,14 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
             // weird case we have to take into account:
             // an authentified user requesting the dologin uri
             USER newUser = authenticate(request);
-            if (!user.equals(newUser))
+            if (newUser != null && !user.equals(newUser))
             {
                 setSessionUser(newUser, session);
                 logger.debug("user logged out: {}", displayUser(user));
-                logger.debug("user logged in: {}", displayUser(newUser));
+                user = newUser;
+                logger.debug("user logged in: {}", displayUser(user));
             }
-            processPostLoginRequest(newUser, request, response, chain);
+            processPostLoginRequest(user, request, response, chain);
         }
         else if (uri.equals(getDoLogoutURI()))
         {

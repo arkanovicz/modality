@@ -151,13 +151,27 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
     protected void processProtectedRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException
     {
         HttpSession session = request.getSession();
+        String uri;
         if (checkSessionUser(user, session))
         {
             setSessionUser(user, session);
             logger.debug("user logged in: {}", displayUser(user));
             processPostLoginRequest(user, request, response, chain);
         }
-        else if (request.getRequestURI().equals(getDoLogoutURI()))
+        else if ((uri = request.getRequestURI()).equals(getDoLoginURI()))
+        {
+            // weird case we have to take into account:
+            // an authentified user requesting the dologin uri
+            USER newUser = authenticate(request);
+            if (!user.equals(newUser))
+            {
+                setSessionUser(newUser, session);
+                logger.debug("user logged out: {}", displayUser(user));
+                logger.debug("user logged in: {}", displayUser(newUser));
+            }
+            processPostLoginRequest(newUser, request, response, chain);
+        }
+        else if (uri.equals(getDoLogoutURI()))
         {
             // handle logout requests
             clearSessionUser(user, session);

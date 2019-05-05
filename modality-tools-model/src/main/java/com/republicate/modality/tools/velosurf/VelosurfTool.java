@@ -4,13 +4,9 @@ import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.config.ConfigHelper;
-import com.republicate.modality.tools.model.ActiveInstanceReference;
 import com.republicate.modality.tools.model.EntityReference;
 import com.republicate.modality.tools.model.InstanceReference;
 import com.republicate.modality.tools.model.ModelTool;
-import com.republicate.modality.util.AESCryptograph;
-import com.republicate.modality.util.Cryptograph;
-import com.republicate.modality.util.SlotMap;
 import com.republicate.modality.velosurf.Velosurf;
 import org.apache.velocity.tools.XmlUtils;
 import org.apache.velocity.tools.config.ConfigurationException;
@@ -95,17 +91,7 @@ public class VelosurfTool extends ModelTool
     @Override
     protected InstanceReference createInstanceReference(Instance instance)
     {
-        switch (getModel().getWriteAccess())
-        {
-            case NONE:
-            case JAVA:
-                return new InstanceReference(instance, this);
-            case VTL:
-                return new ActiveInstanceReference(instance, this);
-            default:
-                getModel().getLogger().error("unhandled write-access enum: {}", getModel().getWriteAccess());
-                return null;
-        }
+        return new VelosurfInstanceReference(instance, this);
     }
 
     @Override

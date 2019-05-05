@@ -255,17 +255,7 @@ public class ModelTool extends SafeConfig implements Constants
 
     protected InstanceReference createInstanceReference(Instance instance)
     {
-        switch (getModel().getWriteAccess())
-        {
-            case NONE:
-            case JAVA:
-                return new InstanceReference(instance, this);
-            case VTL:
-                return new ActiveInstanceReference(instance, this);
-            default:
-                error("unhandled write-access enum: {}", getModel().getWriteAccess());
-                return null;
-        }
+        return new InstanceReference(instance, this);
     }
 
     public Iterator<InstanceReference> createInstanceReferenceIterator(Iterator<Instance> query)

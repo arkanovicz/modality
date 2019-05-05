@@ -1,9 +1,8 @@
 package com.republicate.modality.tools.model;
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 import com.republicate.modality.util.SlotMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -18,6 +17,7 @@ public class InstanceReference extends Reference implements SlotMap
     {
         this.instance = instance;
         this.modelReference = modelReference;
+        this.canWrite = modelReference.getModel().getWriteAccess() == Model.WriteAccess.VTL;
     }
 
     @Override
@@ -53,32 +53,11 @@ public class InstanceReference extends Reference implements SlotMap
     @Override
     public Serializable put(String key, Serializable value)
     {
-        error("cannot change read-only instance");
-        return null;
-    }
-
-    protected Serializable putImpl(String key, Serializable value)
-    {
-        try
-        {
-            return instance.put(key, value);
-
-        }
-        catch (Exception e)
-        {
-            error("could not set instance field {} to value {}", key, String.valueOf(value));
-            return null;
-        }
+        return instance.put(key, value);
     }
 
     @Override
     public Serializable remove(Object key)
-    {
-        error("cannot change read-only instance");
-        return null;
-    }
-
-    protected Serializable removeImpl(Object key)
     {
         return instance.remove(key);
     }
@@ -86,28 +65,11 @@ public class InstanceReference extends Reference implements SlotMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> m)
     {
-        error("cannot change read-only instance");
-    }
-
-    public void putAllImpl(Map<? extends String, ? extends Serializable> m)
-    {
-        try
-        {
-            instance.putAll(m);
-        }
-        catch (Exception e)
-        {
-            error("could not set instance fields to values {}", m, e);
-        }
+        instance.putAll(m);
     }
 
     @Override
     public void clear()
-    {
-        error("cannot change read-only instance");
-    }
-
-    public void clearImpl()
     {
         instance.clear();
     }
@@ -212,8 +174,15 @@ public class InstanceReference extends Reference implements SlotMap
 
     public int perform(String name, Map params)
     {
-        error("instance is read-only");
-        return 0;
+        if (canWrite)
+        {
+            return performImpl(name, params);
+        }
+        else
+        {
+            error("instance is read-only");
+            return 0;
+        }
     }
 
     protected int performImpl(String name, Map params)
@@ -227,13 +196,19 @@ public class InstanceReference extends Reference implements SlotMap
             error("could not perform instance action {}.{}", instance.getEntity().getName(), name, sqle);
             return 0;
         }
-
     }
 
     public int perform(String name, Serializable... params)
     {
-        error("instance is read-only");
-        return 0;
+        if (canWrite)
+        {
+            return performImpl(name, params);
+        }
+        else
+        {
+            error("instance is read-only");
+            return 0;
+        }
     }
 
     protected int performImpl(String name, Serializable... params)
@@ -251,8 +226,15 @@ public class InstanceReference extends Reference implements SlotMap
 
     public boolean delete()
     {
-        error("cannot delete read-only instance");
-        return false;
+        if (canWrite)
+        {
+            return deleteImpl();
+        }
+        else
+        {
+            error("cannot delete read-only instance");
+            return false;
+        }
     }
 
     protected boolean deleteImpl()
@@ -271,8 +253,15 @@ public class InstanceReference extends Reference implements SlotMap
 
     public boolean insert()
     {
-        error("cannot insert read-only instance");
-        return false;
+        if (canWrite)
+        {
+            return insertImpl();
+        }
+        else
+        {
+            error("cannot insert read-only instance");
+            return false;
+        }
     }
 
     protected boolean insertImpl()
@@ -291,8 +280,15 @@ public class InstanceReference extends Reference implements SlotMap
 
     public boolean update()
     {
-        error("cannot update read-only instance");
-        return false;
+        if (canWrite)
+        {
+            return updateImpl();
+        }
+        else
+        {
+            error("cannot update read-only instance");
+            return false;
+        }
     }
 
     protected boolean updateImpl()
@@ -309,6 +305,19 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
+    public boolean upsert()
+    {
+        if (canWrite)
+        {
+            return upsertImpl();
+        }
+        else
+        {
+            error("cannot insert read-only instance");
+            return false;
+        }
+    }
+
     protected boolean upsertImpl()
     {
         try
@@ -321,11 +330,6 @@ public class InstanceReference extends Reference implements SlotMap
             error("could not upsert instance", sqle);
             return false;
         }
-    }
-    public boolean upsert()
-    {
-        error("cannot insert read-only instance");
-        return false;
     }
 
     @Override
@@ -348,4 +352,6 @@ public class InstanceReference extends Reference implements SlotMap
     private Instance instance;
 
     private ModelTool modelReference;
+
+    private boolean canWrite;
 }

@@ -60,8 +60,8 @@ You'll potentially need a new `/WEB-INF/modality.properties`.
 
 ### In the templates
 
-+ You can still call an attribute as if it were a method, as before. Paramters can now also be specified in their natural order instead of inside a map.
-+ Don't set parameter values in the model itself. You'll get `java.sql.SQLFeatureNotSupportedException: ModelTool is read-only` messages in the log.
++ You can still call an attribute as if it were a method, as before. Paramaters can now also be specified in their natural order instead of inside a map.
++ Don't set parameter values in the model itself, like in `#set($db.param = ...)`. You'll get `java.sql.SQLFeatureNotSupportedException: ModelTool is read-only` messages in the log.
 + The `.order` and `.refine` features have been dropped.
 + The `Instance.setColumnValues()` method has been dropped.
 + Since Velocity Engine 2.2 (unreleased at the time of writing), you can locate log messages in templates. For instance when using the webapp-slf4j-logger:

@@ -1,6 +1,7 @@
 package com.republicate.modality.tools.velosurf;
 
 import com.republicate.modality.Attribute;
+import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.impl.RowIterator;
 import com.republicate.modality.tools.model.InstanceReference;
@@ -48,23 +49,30 @@ public class VelosurfInstanceReference extends InstanceReference
             try
             {
                 String name = (String) key;
-                Attribute attribute = getInstance().getEntity().getAttribute(name);
-                switch (attribute.getQueryMethodName())
+                Entity entity = getInstance().getEntity();
+                if (entity != null)
                 {
-                    case "evaluate":
-                        result = getInstance().evaluate(name);
-                        break;
-                    case "retrieve":
-                        result = getInstance().retrieve(name);
-                        break;
-                    case "query":
-                        result = (RowIterator)getInstance().query(name);
-                        break;
-                    case "perform":
-                        result = getInstance().perform(name);
-                        break;
-                    default:
-                        error("unhandled attribute verb");
+                    Attribute attribute = entity.getAttribute(name);
+                    if (attribute != null)
+                    {
+                        switch (attribute.getQueryMethodName())
+                        {
+                            case "evaluate":
+                                result = getInstance().evaluate(name);
+                                break;
+                            case "retrieve":
+                                result = getInstance().retrieve(name);
+                                break;
+                            case "query":
+                                result = (RowIterator) getInstance().query(name);
+                                break;
+                            case "perform":
+                                result = getInstance().perform(name);
+                                break;
+                            default:
+                                error("unhandled attribute verb");
+                        }
+                    }
                 }
             }
             catch (SQLException sqle)

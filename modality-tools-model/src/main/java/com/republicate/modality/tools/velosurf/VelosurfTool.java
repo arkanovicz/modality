@@ -101,16 +101,6 @@ public class VelosurfTool extends ModelTool
     }
 
     @Override
-    protected void error(String message, Object... arguments)
-    {
-        FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
-        String msg = tuple.getMessage();
-        Throwable err = tuple.getThrowable();
-        getLog().error(msg, err);
-        setError(msg);
-    }
-
-    @Override
     protected Logger getLogger() // give package access to logger
     {
         return getLog();
@@ -118,17 +108,17 @@ public class VelosurfTool extends ModelTool
 
     public void setError(String message)
     {
-        error.set(message);
+        setLastError(message);
     }
 
     public String getError()
     {
-        return error.get();
+        return getLastError();
     }
 
     public void clearError()
     {
-        error.remove();
+        clearLastError();
     }
 
     public class VelosurfInstanceReferenceIterator extends ModelTool.InstanceReferenceIterator
@@ -219,6 +209,4 @@ public class VelosurfTool extends ModelTool
             return null;
         }
     }
-
-    private ThreadLocal<String> error = new ThreadLocal<>();
 }

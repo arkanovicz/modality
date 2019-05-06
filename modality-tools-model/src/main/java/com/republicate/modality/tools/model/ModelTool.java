@@ -303,4 +303,21 @@ public class ModelTool extends SafeConfig implements Constants
 
         private Iterator<Instance> iterator;
     }
+
+    protected void setLastError(String message)
+    {
+        lastError.set(message);
+    }
+
+    public String getLastError()
+    {
+        return lastError.get();
+    }
+
+    public void clearLastError()
+    {
+        lastError.remove();
+    }
+
+    private ThreadLocal<String> lastError = new ThreadLocal<>();
 }

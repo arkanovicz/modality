@@ -344,7 +344,7 @@ public class EntityReference extends Reference
     }
 
     @Override
-    protected ModelTool getModelReference()
+    protected ModelTool getModelTool()
     {
         return modelReference;
     }

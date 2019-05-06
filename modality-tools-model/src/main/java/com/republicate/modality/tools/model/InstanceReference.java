@@ -333,7 +333,7 @@ public class InstanceReference extends Reference implements SlotMap
     }
 
     @Override
-    protected ModelTool getModelReference()
+    protected ModelTool getModelTool()
     {
         return modelReference;
     }

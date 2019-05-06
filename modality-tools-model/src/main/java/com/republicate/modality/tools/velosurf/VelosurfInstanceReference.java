@@ -21,17 +21,6 @@ public class VelosurfInstanceReference extends InstanceReference
     }
 
     @Override
-    protected void error(String message, Object... arguments)
-    {
-        FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
-        String msg = tuple.getMessage();
-        Throwable err = tuple.getThrowable();
-        VelosurfTool modelTool = (VelosurfTool)getModelReference();
-        modelTool.getLogger().error(msg, err);
-        modelTool.setError(msg);
-    }
-
-    @Override
     protected Instance getInstance()
     {
         // to give access to package

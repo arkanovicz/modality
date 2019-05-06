@@ -662,22 +662,27 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         String upstreamAttributeName;
         if (fkColumns.size() == 1)
         {
-            // take fk column name with _id suffix stripped out
-            upstreamAttributeName = fkColumns.get(0).toLowerCase(Locale.ROOT);
-            if (upstreamAttributeName.length() > 3 && upstreamAttributeName.endsWith("_id"))
-            {
-                upstreamAttributeName = upstreamAttributeName.substring(0, upstreamAttributeName.length() - 3);
-            }
-            // except if the resulting is an abbreviation of the target pk entity name
-            if (pkEntity.getName().startsWith(upstreamAttributeName))
+            // if fk column name equals pk column name, take pk table name
+            // else take fk column name with '_id' stripped off
+            if (fkColumns.get(0).equals(pkEntity.getPrimaryKey().get(0)))
             {
                 upstreamAttributeName = pkEntity.getName();
+            }
+            else
+            {
+                // take fk column name with _id suffix stripped out
+                upstreamAttributeName = fkColumns.get(0).toLowerCase(Locale.ROOT);
+                if (upstreamAttributeName.length() > 3 && upstreamAttributeName.endsWith("_id"))
+                {
+                    upstreamAttributeName = upstreamAttributeName.substring(0, upstreamAttributeName.length() - 3);
+                }
             }
         }
         else
         {
             upstreamAttributeName = pkEntity.getName(); // hope it's a singular
         }
+
         Attribute previous = fkEntity.getAttribute(upstreamAttributeName);
         if (previous != null)
         {

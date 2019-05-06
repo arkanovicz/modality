@@ -664,7 +664,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             // if fk column name equals pk column name, take pk table name
             // else take fk column name with '_id' stripped off
-            if (fkColumns.get(0).equals(pkEntity.getPrimaryKey().get(0)))
+            if (fkColumns.get(0).equals(pkEntity.getPrimaryKey().get(0).name))
             {
                 upstreamAttributeName = pkEntity.getName();
             }

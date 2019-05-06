@@ -686,7 +686,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         Attribute previous = fkEntity.getAttribute(upstreamAttributeName);
         if (previous != null)
         {
-            getLogger().warn("explicit declaration of attribute {}.{} supersedes implicit imported key from {}", fkEntity.getName(), upstreamAttributeName, pkEntity.getName());
+            getLogger().debug("explicit declaration of attribute {}.{} supersedes implicit imported key from {}", fkEntity.getName(), upstreamAttributeName, pkEntity.getName());
         }
         else
         {
@@ -700,7 +700,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         Attribute previous = pkEntity.getAttribute(downstreamAttributeName);
         if (previous != null)
         {
-            getLogger().warn("explicit declaration of attribute {}.{} supersedes implicit exported key towards {}", pkEntity.getName(), downstreamAttributeName, fkEntity.getName());
+            getLogger().debug("explicit declaration of attribute {}.{} supersedes implicit exported key towards {}", pkEntity.getName(), downstreamAttributeName, fkEntity.getName());
         }
         else
         {
@@ -714,7 +714,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         Attribute previous = leftEntity.getAttribute(joinAttributeName);
         if (previous != null)
         {
-            getLogger().warn("explicit declaration of attribute {}.{} supersedes implicit extended join {}", leftEntity.getName(), joinAttributeName, rightEntity.getName());
+            getLogger().debug("explicit declaration of attribute {}.{} supersedes implicit extended join {}", leftEntity.getName(), joinAttributeName, rightEntity.getName());
         }
         else
         {

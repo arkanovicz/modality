@@ -174,6 +174,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         }
         else
         {
+            clearSavedRequest(request);
             super.processPostLoginRequest(user, request, response, filterChain);
         }
     }
@@ -210,7 +211,8 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     @Override
     protected void processPostLogoutRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
-        if (redirectTowardsLogin && getLoginURI() != null)
+        clearSavedRequest(request);
+        if (getQueryStringRedirection(request) == null && redirectTowardsLogin && getLoginURI() != null)
         {
             response.sendRedirect(getLoginURI());
         }
@@ -226,9 +228,15 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         if (onSuccessRedirectGET && method.equals("GET") || onSuccessForwardPOST && method.equals("POST"))
         {
             SavedRequest savedRequest = new SavedRequest(request);
-            HttpSession session = request.getSession();
-            session.setAttribute(SAVED_REQUEST_SESSION_KEY, savedRequest);
+            saveRequest(request, savedRequest);
         }
+    }
+
+    protected void saveRequest(HttpServletRequest request, SavedRequest savedRequest)
+    {
+        HttpSession session = request.getSession();
+        session.setAttribute(SAVED_REQUEST_SESSION_KEY, savedRequest);
+        logger.debug("saved request");
     }
 
     protected SavedRequest getSavedRequest(HttpServletRequest request)
@@ -238,14 +246,18 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         if (savedRequest != null)
         {
             session.removeAttribute(SAVED_REQUEST_SESSION_KEY);
+            logger.debug("found saved request");
         }
         return savedRequest;
     }
 
     private void clearSavedRequest(HttpServletRequest request)
     {
-        HttpSession session = request.getSession();
-        session.removeAttribute(SAVED_REQUEST_SESSION_KEY);
+        HttpSession session = request.getSession(false);
+        if (session != null)
+        {
+            session.removeAttribute(SAVED_REQUEST_SESSION_KEY);
+        }
     }
 
     private String findIndex()

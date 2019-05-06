@@ -27,8 +27,34 @@ public class SavedRequest
         serverPort = request.getServerPort();
         requestURI = request.getRequestURI();
         queryString = request.getQueryString();
+
+        // - headers
+        headers = new Hashtable<String, String>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements())
+        {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            String previousValue = headers.put(headerName, headerValue);
+            if (previousValue != null)
+            {
+                AbstractFormAuthFilter.logger.warn("saved request cannot handle redundant headers (header: {})", headerName);
+            }
+        }
+
+        // redundant with headers, but handy
         contentType = request.getContentType();
         characterEncoding = request.getCharacterEncoding();
+
+        // attributes
+        attributes = new Hashtable<String, Object>();
+        Enumeration<String> attributeNames = request.getAttributeNames();
+        while (attributeNames.hasMoreElements())
+        {
+            String attributeName = attributeNames.nextElement();
+            Object attributeValue = request.getAttribute(attributeName);
+            attributes.put(attributeName, attributeValue);
+        }
 
         if (method.equals("POST"))
         {
@@ -39,28 +65,6 @@ public class SavedRequest
             pathInfo = request.getPathInfo();
             pathTranslated = request.getPathTranslated();
 
-            // - attributes
-            attributes = new Hashtable<String, Object>();
-            Enumeration<String> attributeNames = request.getAttributeNames();
-            while (attributeNames.hasMoreElements())
-            {
-                String attributeName = attributeNames.nextElement();
-                Object attributeValue = request.getAttribute(attributeName);
-                attributes.put(attributeName, attributeValue);
-            }
-            // - headers
-            headers = new Hashtable<String, String>();
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements())
-            {
-                String headerName = headerNames.nextElement();
-                String headerValue = request.getHeader(headerName);
-                String previousValue = headers.put(headerName, headerValue);
-                if (previousValue != null)
-                {
-                    AbstractFormAuthFilter.logger.warn("saved request cannot handle redundant headers (header: {})", headerName);
-                }
-            }
             // - body
             try
             {
@@ -212,7 +216,9 @@ public class SavedRequest
         }
     }
 
-    // some setters
+    // some setters...
+    // a filter inheriting from AbstractAuthFormFilter can override getSavedRequest
+
     public void setRequestURI(String uri)
     {
         this.requestURI = uri;
@@ -233,8 +239,8 @@ public class SavedRequest
     private String servletPath = null;
     private String pathInfo = null;
     private String pathTranslated = null;
-    private String contentType = null; // redundant with headers
-    private String characterEncoding = null; // redundant with headers
+    private String contentType = null;
+    private String characterEncoding = null;
     private Hashtable<String, Object> attributes = null;
     private Hashtable<String, String> headers = null;
     private byte[] body = null;

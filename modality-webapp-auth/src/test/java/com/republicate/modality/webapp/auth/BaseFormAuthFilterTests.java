@@ -110,6 +110,21 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         return user;
     }
 
+    private final Enumeration<String> emptyEnumeration = new Enumeration<String>()
+    {
+        @Override
+        public boolean hasMoreElements()
+        {
+            return false;
+        }
+
+        @Override
+        public String nextElement()
+        {
+            return null;
+        }
+    };
+
     protected Capture<SavedRequest> recordGETRequestCapture(String uri) throws Exception
     {
         expect(request.getMethod()).andAnswer(eval("GET"));
@@ -118,8 +133,10 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(request.getServerPort()).andAnswer(eval(8080));
         expect(request.getRequestURI()).andAnswer(eval(uri));
         expect(request.getQueryString()).andAnswer(eval(null));
+        expect(request.getHeaderNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getContentType()).andAnswer(eval("text/html"));
         expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
+        expect(request.getAttributeNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getSession()).andAnswer(eval(session));
         Capture<SavedRequest> savedRequest = new Capture<SavedRequest>();
         session.setAttribute(eq("org.apache.velocity.tools.auth.form.saved_request"), capture(savedRequest));
@@ -128,35 +145,20 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
 
     protected Capture<SavedRequest> recordPOSTRequestCapture(String uri) throws Exception
     {
-        Enumeration<String> emptyEnumeration = new Enumeration<String>()
-        {
-            @Override
-            public boolean hasMoreElements()
-            {
-                return false;
-            }
-
-            @Override
-            public String nextElement()
-            {
-                return null;
-            }
-        };
-
         expect(request.getMethod()).andAnswer(eval("POST"));
         expect(request.getScheme()).andAnswer(eval("http"));
         expect(request.getServerName()).andAnswer(eval("localhost"));
         expect(request.getServerPort()).andAnswer(eval(8080));
         expect(request.getRequestURI()).andAnswer(eval(uri));
         expect(request.getQueryString()).andAnswer(eval(null));
+        expect(request.getHeaderNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getContentType()).andAnswer(eval("application/x-www-form-urlencoded"));
         expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
+        expect(request.getAttributeNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getContextPath()).andAnswer(eval(""));
         expect(request.getServletPath()).andAnswer(eval(uri));
         expect(request.getPathInfo()).andAnswer(eval(null));
         expect(request.getPathTranslated()).andAnswer(eval(null));
-        expect(request.getAttributeNames()).andAnswer(eval(emptyEnumeration));
-        expect(request.getHeaderNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getInputStream()).andAnswer(eval(null));
         expect(request.getSession()).andAnswer(eval(session));
         Capture<SavedRequest> savedRequest = new Capture<SavedRequest>();

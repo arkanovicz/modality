@@ -63,6 +63,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_model.xml")));
         recordSuccessfullLogin();
         expect(request.getParameter("redirect")).andAnswer(eval(null));
+        expect(request.getSession(false)).andAnswer(eval(session));
+        session.removeAttribute("org.apache.velocity.tools.auth.form.saved_request");
         expect(request.getParameter("redirect")).andAnswer(eval(null));
         expect(request.getHeader("Referer")).andAnswer(eval(null));
         expect(request.getRequestURI()).andAnswer(eval("/login.do"));
@@ -105,6 +107,8 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         // POST /login.do
         Capture<Instance> user = recordSuccessfullLogin();
         expect(request.getParameter("redirect")).andAnswer(eval(null));
+        expect(request.getSession(false)).andAnswer(eval(session));
+        session.removeAttribute("org.apache.velocity.tools.auth.form.saved_request");
         expect(request.getParameter("redirect")).andAnswer(eval(null));
         // we're cheating, here, because the real referrer is login.vhtml
         // but we're just testing referrer redirection

@@ -71,7 +71,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     private static final String DEFAULT_FORM_LOGIN_FIELD = "login";
     private static final String DEFAULT_FORM_PASSWORD_FIELD = "password";
 
-    private static final String SAVED_REQUEST_SESSION_KEY = "org.apache.velocity.tools.auth.form.saved_request";
+    protected static final String SAVED_REQUEST_SESSION_KEY = "org.apache.velocity.tools.auth.form.saved_request";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
@@ -159,8 +159,8 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
             switch (savedRequest.getMethod())
             {
                 case "GET":
-                    logger.debug("redirecting newly logged in user {} towards {}", displayUser(user), savedRequest.getRequestURI());
-                    String url = savedRequest.getRequestURI() + Optional.ofNullable(savedRequest.getQueryString()).map(s -> "?" + URLEncoder.encode(s)).orElse("");
+                    String url = savedRequest.getRequestURI() + Optional.ofNullable(savedRequest.getQueryString()).map(s -> "?" + s).orElse("");
+                    logger.debug("redirecting newly logged in user {} towards {}", displayUser(user), url);
                     response.sendRedirect(url);
                     break;
                 case "POST":
@@ -231,7 +231,7 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
         }
     }
 
-    private SavedRequest getSavedRequest(HttpServletRequest request)
+    protected SavedRequest getSavedRequest(HttpServletRequest request)
     {
         HttpSession session = request.getSession();
         SavedRequest savedRequest = (SavedRequest)session.getAttribute(SAVED_REQUEST_SESSION_KEY);

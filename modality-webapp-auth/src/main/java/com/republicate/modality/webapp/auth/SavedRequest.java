@@ -22,8 +22,14 @@ public class SavedRequest
     {
         // save enough info for a redirect
         method = request.getMethod();
+        scheme = request.getScheme();
+        serverName = request.getServerName();
+        serverPort = request.getServerPort();
         requestURI = request.getRequestURI();
         queryString = request.getQueryString();
+        contentType = request.getContentType();
+        characterEncoding = request.getCharacterEncoding();
+
         if (method.equals("POST"))
         {
             // save enough info for a forward, that is:
@@ -32,7 +38,7 @@ public class SavedRequest
             servletPath = request.getServletPath();
             pathInfo = request.getPathInfo();
             pathTranslated = request.getPathTranslated();
-            requestURL = request.getRequestURL();
+
             // - attributes
             attributes = new Hashtable<String, Object>();
             Enumeration<String> attributeNames = request.getAttributeNames();
@@ -67,27 +73,6 @@ public class SavedRequest
             catch (IOException ioe)
             {
                 AbstractFormAuthFilter.logger.error("could not save request content", ioe);
-            }
-            // - and some pre-parsing
-            parameters = new HashMap<>();
-            if (queryString != null)
-            {
-                addtoParameters(queryString.split("&"));
-            }
-            if (request.getContentType().startsWith("application/x-www-form-urlencoded"))
-            {
-                String charset = request.getCharacterEncoding();
-                String decoded;
-                try
-                {
-                    decoded = URLDecoder.decode(new String(body, charset));
-                }
-                catch (UnsupportedEncodingException uee)
-                {
-                    AbstractFormAuthFilter.logger.error("could not parse request body", uee);
-                    decoded = "";
-                }
-                addtoParameters(decoded.split("&"));
             }
         }
     }
@@ -127,9 +112,26 @@ public class SavedRequest
         return requestURI;
     }
 
+    public String getContentType()
+    {
+        return contentType;
+    }
+
+    public String getCharacterEncoding()
+    {
+        return characterEncoding;
+    }
+
     public StringBuffer getRequestURL()
     {
-        return requestURL;
+        StringBuffer url = new StringBuffer();
+        url.append(scheme).append("://").append(serverName);
+        if ( (!"http".equals(scheme)) || (serverPort != 80) && (!"https".equals(scheme)) || (serverPort != 443) )
+        {
+            url.append(':').append(serverPort);
+        }
+        url.append(requestURI);
+        return url;
     }
 
     public String getServletPath()
@@ -149,10 +151,30 @@ public class SavedRequest
 
     public Map<String, String[]> getParameters()
     {
+        Map<String, String[]> parameters = new Hashtable<>();
+        if (queryString != null)
+        {
+            addtoParameters(parameters, queryString.split("&"));
+        }
+        if (getContentType().startsWith("application/x-www-form-urlencoded"))
+        {
+            String charset = getCharacterEncoding();
+            String decoded;
+            try
+            {
+                decoded = URLDecoder.decode(new String(body, charset));
+            }
+            catch (UnsupportedEncodingException uee)
+            {
+                AbstractFormAuthFilter.logger.error("could not parse request body", uee);
+                decoded = "";
+            }
+            addtoParameters(parameters, decoded.split("&"));
+        }
         return parameters;
     }
 
-    private void addtoParameters(String[] params)
+    private void addtoParameters(Map<String, String[]> parameters, String[] params)
     {
         Arrays.stream(params).map(param ->
             {
@@ -190,16 +212,30 @@ public class SavedRequest
         }
     }
 
+    // some setters
+    public void setRequestURI(String uri)
+    {
+        this.requestURI = uri;
+    }
+
+    public void setQueryString(String queryString)
+    {
+        this.queryString = queryString;
+    }
+
     private String method = null;
+    private String scheme = null;
+    private int serverPort = 0;
+    private String serverName = null;
     private String requestURI = null;
     private String queryString = null;
     private String contextPath = null;
     private String servletPath = null;
     private String pathInfo = null;
     private String pathTranslated = null;
-    private StringBuffer requestURL = null;
+    private String contentType = null; // redundant with headers
+    private String characterEncoding = null; // redundant with headers
     private Hashtable<String, Object> attributes = null;
     private Hashtable<String, String> headers = null;
-    private Map<String, String[]> parameters = null;
     private byte[] body = null;
 }

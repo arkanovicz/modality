@@ -113,8 +113,13 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     protected Capture<SavedRequest> recordGETRequestCapture(String uri) throws Exception
     {
         expect(request.getMethod()).andAnswer(eval("GET"));
+        expect(request.getScheme()).andAnswer(eval("http"));
+        expect(request.getServerName()).andAnswer(eval("localhost"));
+        expect(request.getServerPort()).andAnswer(eval(8080));
         expect(request.getRequestURI()).andAnswer(eval(uri));
         expect(request.getQueryString()).andAnswer(eval(null));
+        expect(request.getContentType()).andAnswer(eval("text/html"));
+        expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
         expect(request.getSession()).andAnswer(eval(session));
         Capture<SavedRequest> savedRequest = new Capture<SavedRequest>();
         session.setAttribute(eq("org.apache.velocity.tools.auth.form.saved_request"), capture(savedRequest));
@@ -139,17 +144,20 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         };
 
         expect(request.getMethod()).andAnswer(eval("POST"));
+        expect(request.getScheme()).andAnswer(eval("http"));
+        expect(request.getServerName()).andAnswer(eval("localhost"));
+        expect(request.getServerPort()).andAnswer(eval(8080));
         expect(request.getRequestURI()).andAnswer(eval(uri));
         expect(request.getQueryString()).andAnswer(eval(null));
+        expect(request.getContentType()).andAnswer(eval("application/x-www-form-urlencoded"));
+        expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
         expect(request.getContextPath()).andAnswer(eval(""));
         expect(request.getServletPath()).andAnswer(eval(uri));
         expect(request.getPathInfo()).andAnswer(eval(null));
         expect(request.getPathTranslated()).andAnswer(eval(null));
-        expect(request.getRequestURL()).andAnswer(eval(new StringBuffer("http://model-tests" + uri)));
         expect(request.getAttributeNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getHeaderNames()).andAnswer(eval(emptyEnumeration));
         expect(request.getInputStream()).andAnswer(eval(null));
-        expect(request.getContentType()).andAnswer(eval("whatever/whatever"));
         expect(request.getSession()).andAnswer(eval(session));
         Capture<SavedRequest> savedRequest = new Capture<SavedRequest>();
         session.setAttribute(eq("org.apache.velocity.tools.auth.form.saved_request"), capture(savedRequest));

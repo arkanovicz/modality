@@ -304,20 +304,20 @@ public class ModelTool extends SafeConfig implements Constants
         private Iterator<Instance> iterator;
     }
 
-    protected void setLastError(String message)
+    protected static void setLastError(String message)
     {
         lastError.set(message);
     }
 
-    public String getLastError()
+    public static String getLastError()
     {
         return lastError.get();
     }
 
-    public void clearLastError()
+    public static void clearLastError()
     {
         lastError.remove();
     }
 
-    private ThreadLocal<String> lastError = new ThreadLocal<>();
+    private static ThreadLocal<String> lastError = new ThreadLocal<>();
 }

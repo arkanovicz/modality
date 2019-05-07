@@ -206,6 +206,7 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
         {
             // redirection after login
             logger.debug("logged in user redirected towards {}: {}", redirection, displayUser(user));
+            // test
             response.sendRedirect(redirection);
         }
         else

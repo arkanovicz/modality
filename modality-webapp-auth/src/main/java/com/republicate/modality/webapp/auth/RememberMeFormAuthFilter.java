@@ -55,6 +55,7 @@ import javax.servlet.http.HttpSession;
  *     servlet context path).</li>
  *     <li><code>auth.cookie.max_age</code> - Max age of the Remember Me cookie, defaults to 31536000 (one year).</li>
  *     <li><code>auth.cookie.check_ip</code> - Whether to check request IP, defaults to true.</li>
+ *     <li><code>auth.cookie.secure</code> - Whether to use a secure cookie, defaults to true.</li>
  *     <li><code>auth.cookie.handler</code> - either a class name or a living instance of a class extending <code>RememberMeCookieHandler</code> ;
  *     all previous parameters are ignored, next ones are taken into account. The default handler is <code>RememberMeCookieHandlerImpl</code></li>
  *     <li><code>auth.cookie.clean_rate</code> - Rate at which expired entries are cleared from the database,
@@ -133,6 +134,7 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     public static final String COOKIE_HANDLER =         "auth.cookie.handler";
     public static final String COOKIE_CLEAN_RATE =      "auth.cookie.clean_rate";
     public static final String COOKIE_CONSIDER_PUBLIC = "auth.cookie.consider_public_requests";
+    public static final String COOKIE_SECURE =          "auth.cookie.secure";
 
     private static final String DEFAULT_COOKIE_NAME =       "remember_me";
     private static final String DEFAULT_COOKIE_PATH =       "/";
@@ -184,9 +186,10 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
             String cookieDomain = findConfigParameter(COOKIE_DOMAIN);
             String cookiePath = Optional.ofNullable(findConfigParameter(COOKIE_PATH)).orElse(ServletUtils.combinePath(getConfig().getServletContext().getContextPath(), DEFAULT_COOKIE_PATH));
             int cookieMaxAge = NumberUtils.toInt(findConfigParameter(COOKIE_MAX_AGE), DEFAULT_COOKIE_MAX_AGE);
+            boolean cookieSecure = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_SECURE))).orElse(true);
             boolean checkUserAgent = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CHECK_UA))).orElse(true);
             boolean checkIP = BooleanUtils.toBoolean(findConfigParameter(COOKIE_CHECK_IP));
-            rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, checkUserAgent, checkIP);
+            rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, cookieSecure, checkUserAgent, checkIP);
         }
         cleanRate = NumberUtils.toInt(findConfigParameter(COOKIE_CLEAN_RATE), DEFAULT_COOKIE_CLEAN_RATE);
         considerPublicRequests = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CONSIDER_PUBLIC))).orElse(true);
@@ -238,6 +241,7 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     @Override
     protected void processPostLoginRequest(Instance user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
+        getModel(); // force model initialization
         rememberMeCookieHandler.setRememberMe(user, request, response);
         super.processPostLoginRequest(user, request, response, filterChain);
     }
@@ -245,12 +249,14 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     @Override
     protected void processPostLogoutRequest(Instance user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
+        getModel(); // force model initialization
         rememberMeCookieHandler.resetRememberMe(user, request, response);
         super.processPostLogoutRequest(user, request, response, filterChain);
     }
 
     protected Instance checkRememberMeCookie(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
+        getModel(); // force model initialization
         Instance user = rememberMeCookieHandler.getRememberMe(request);
         if (user != null)
         {

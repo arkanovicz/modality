@@ -50,12 +50,13 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
 {
     protected static Logger logger = LoggerFactory.getLogger("remember-me");
 
-    public RememberMeCookieHandlerImpl(String cookieName, String cookieDomain, String cookiePath, int cookieMaxAge, boolean checkUserAgent, boolean checkIP)
+    public RememberMeCookieHandlerImpl(String name, String domain, String path, int maxAge, boolean secure, boolean checkUserAgent, boolean checkIP)
     {
-        this.cookieName = cookieName;
-        this.cookieDomain = cookieDomain;
-        this.cookiePath = cookiePath;
-        this.cookieMaxAge = cookieMaxAge;
+        this.cookieName = name;
+        this.cookieDomain = domain;
+        this.cookiePath = path;
+        this.cookieMaxAge = maxAge;
+        this.cookieSecure = secure;
         this.checkUserAgent = checkUserAgent;
         this.checkIP = checkIP;
     }
@@ -129,7 +130,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         }
         catch (Exception e)
         {
-            logger.debug("remember_me cookie decryption failed");
+            logger.debug("remember_me cookie decryption failed", e);
             return null;
         }
         // the expected format is: userKey#ip#ua#secureKey
@@ -283,7 +284,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         cookie.setPath(cookiePath);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(cookieMaxAge);
-        cookie.setSecure(true);
+        cookie.setSecure(cookieSecure);
         return cookie;
     }
 
@@ -295,10 +296,11 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     }
 
     // config
-    private String cookieName = null;
-    private String cookieDomain = null;
-    private String cookiePath = null;
-    private int cookieMaxAge = 0;
+    private String cookieName;
+    private String cookieDomain;
+    private String cookiePath;
+    private int cookieMaxAge;
+    private boolean cookieSecure;
     private boolean checkUserAgent;
     private boolean checkIP;
     private Cryptograph cryptograph;

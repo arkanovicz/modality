@@ -20,6 +20,8 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.webapp.auth.helpers.RememberMeCookieHandler;
+import com.republicate.modality.webapp.auth.helpers.RememberMeCookieHandlerImpl;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.velocity.tools.ClassUtils;

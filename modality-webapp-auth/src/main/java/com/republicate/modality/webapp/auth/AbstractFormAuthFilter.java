@@ -20,15 +20,19 @@ package com.republicate.modality.webapp.auth;
  */
 
 
+import com.republicate.modality.webapp.auth.helpers.ForwardedRequest;
+import com.republicate.modality.webapp.auth.helpers.SavedRequest;
+import com.republicate.modality.webapp.util.DateParseException;
+import com.republicate.modality.webapp.util.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.velocity.tools.view.ServletUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -57,8 +61,6 @@ import javax.servlet.http.HttpSession;
 
 public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFilter<USER>
 {
-    protected static Logger logger = LoggerFactory.getLogger("auth");
-
     public static final String LOGIN_FIELD =             "auth.form.field.login";
     public static final String PASSWORD_FIELD =          "auth.form.field.password";
     public static final String LOGIN_URI =               "auth.form.uri.login";
@@ -306,10 +308,4 @@ public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFi
     private boolean redirectTowardsLogin = false;
     private boolean onSuccessRedirectGET = false;
     private boolean onSuccessForwardPOST = false;
-
-    protected static Cookie parseCookie(String setCookie)
-    {
-        return new Cookie("TODO", "TODO");
-    }
-
 }

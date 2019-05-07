@@ -25,6 +25,8 @@ import com.republicate.modality.RowAttribute;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.util.SlotHashMap;
 import com.republicate.modality.util.SlotMap;
+import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
+import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,20 +47,16 @@ import javax.servlet.http.HttpServletResponse;
  * &lt;/row&gt;</code></pre>
  * <p>Configuration parameters:</p>
  * <ul>
- *     <li>org.apache.velocity.tools.model.web.<b>model_id</b>&nbsp;model id ; if not provided, the filter
- *     will search for a ModelTool in the application toolbox, and then for the "default" or "model" id.</li>
- *     <li>org.apache.velocity.tools.model.web.<b>user_by_credentials</b>&nbsp;row attribute name to use ;
+ *     <li>auth.model.<b>user_by_credentials</b>&nbsp;row attribute name to use ;
  *     defaults to <code>user_by_credentials</code>.</li>
- *     <li>org.apache.velocity.tools.model.web.<b>refresh_rate</b>&nbsp;user instance refresh rate in seconds;
+ *     <li>auth.model.<b>refresh_rate</b>&nbsp;user instance refresh rate in seconds;
  *     defaults to 0 (aka never)</li>
  * </ul>
- * <p>As usual, configuration parameters can be filter's init-params or global context-params.</p>
+ * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
 public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
 {
-    protected static Logger logger = LoggerFactory.getLogger("auth");
-
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
     public static final String USER_REFRESH_RATE =      "auth.model.refresh_rate";
 
@@ -68,44 +66,23 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
-        userByCredentialsAttribute = Optional.ofNullable(findConfigParameter(USER_BY_CRED_ATTRIBUTE)).orElse(DEFAULT_MODEL_AUTH_USER_BY_CREDENTIALS);
+        String userByCredentialsAttribute = Optional.ofNullable(findConfigParameter(USER_BY_CRED_ATTRIBUTE)).orElse(DEFAULT_MODEL_AUTH_USER_BY_CREDENTIALS);
+        credentialsChecker = new CredentialsCheckerImpl(userByCredentialsAttribute);
     }
 
     @Override
     protected void initModel() throws ServletException
     {
         super.initModel();
-
-        // now check the user_by_credentials attribute
-        Attribute attr = getModel().getAttribute(userByCredentialsAttribute);
-        if (attr == null)
-        {
-            throw new ConfigurationException("attribute does not exist: " + userByCredentialsAttribute);
-        }
-        if (!(attr instanceof RowAttribute))
-        {
-            throw new ConfigurationException("not a row attribute: " + userByCredentialsAttribute);
-        }
-
+        credentialsChecker.setModel(getModel());
     }
 
     @Override
     protected Instance checkCredentials(String login, String password) throws ServletException
     {
-        try
-        {
-            SlotMap params = new SlotHashMap();
-            params.put("login", login);
-            params.put("password", password);
-            return getModel().retrieve(userByCredentialsAttribute, params);
-        }
-        catch (SQLException sqle)
-        {
-            logger.error("could not check credentials", sqle);
-            return null;
-        }
+        getModel(); // force model initialization
+        return credentialsChecker.checkCredentials(login, password);
     }
-
 
     protected String displayUser(Instance user)
     {
@@ -117,5 +94,5 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
         return login != null ? login : String.valueOf(user);
     }
 
-    private String userByCredentialsAttribute = null;
+    private CredentialsChecker<Instance> credentialsChecker = null;
 }

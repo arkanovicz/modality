@@ -2,6 +2,7 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Instance;
 import com.republicate.modality.webapp.ModalityFilter;
+import com.republicate.modality.webapp.auth.helpers.SavedRequest;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.easymock.Capture;

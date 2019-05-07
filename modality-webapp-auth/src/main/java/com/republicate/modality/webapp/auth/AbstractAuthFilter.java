@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
  * <li><code>auth.protected</code> - regular expression meant to match all resources URIs which are to be protected ;
  * by default all mapped resources are protected.
  *</ul>
+ * <p>Configuration parameters can be specified in the <code>modality.properties</code> file, or as init-param or context-param in the <code>web.xml</code> webapp descriptor.</p>
  */
 
 public abstract class AbstractAuthFilter<USER> extends ModalityFilter
@@ -95,7 +96,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
 
     /**
      * <p>Filter initialization.</p>
-     * <p>Child classes should start with <code>super.init(cilterConfig);</code>.</p>
+     * <p>Child classes should start with <code>super.init(filterConfig);</code>.</p>
      * <p>Once parent has been initialized, <code>getConfig()</code> returns a JeeConfig.</p>
      * @param filterConfig filter config
      * @throws ServletException in case of error

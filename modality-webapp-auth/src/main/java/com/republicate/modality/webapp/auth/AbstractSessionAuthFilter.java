@@ -68,8 +68,6 @@ import javax.servlet.http.HttpSession;
 
 public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter<USER>
 {
-    protected static Logger logger = LoggerFactory.getLogger("auth");
-
     // config parameters keys
 
     public static final String LOGGED_SESSION_KEY =    "auth.session.logged_key";
@@ -88,7 +86,7 @@ public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter
 
     /**
      * <p>Filter initialization.</p>
-     * <p>Child classes should start with <code>super.init(cilterConfig);</code>.</p>
+     * <p>Child classes should start with <code>super.init(filterConfig);</code>.</p>
      * <p>Once parent has been initialized, <code>getConfig()</code> returns a JeeConfig.</p>
      * @param filterConfig filter config
      * @throws ServletException in case of error

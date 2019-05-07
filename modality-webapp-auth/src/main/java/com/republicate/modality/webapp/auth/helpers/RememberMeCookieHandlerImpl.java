@@ -1,4 +1,4 @@
-package com.republicate.modality.webapp.auth;
+package com.republicate.modality.webapp.auth.helpers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

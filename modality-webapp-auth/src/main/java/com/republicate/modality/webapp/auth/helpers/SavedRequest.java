@@ -1,6 +1,9 @@
-package com.republicate.modality.webapp.auth;
+package com.republicate.modality.webapp.auth.helpers;
 
+import com.republicate.modality.webapp.auth.AbstractFormAuthFilter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public class SavedRequest
 {
+    protected static Logger logger = LoggerFactory.getLogger("auth");
+
     public SavedRequest(HttpServletRequest request)
     {
         // save enough info for a redirect
@@ -38,7 +43,7 @@ public class SavedRequest
             String previousValue = headers.put(headerName, headerValue);
             if (previousValue != null)
             {
-                AbstractFormAuthFilter.logger.warn("saved request cannot handle redundant headers (header: {})", headerName);
+                logger.warn("saved request cannot handle redundant headers (header: {})", headerName);
             }
         }
 
@@ -76,7 +81,7 @@ public class SavedRequest
             }
             catch (IOException ioe)
             {
-                AbstractFormAuthFilter.logger.error("could not save request content", ioe);
+                logger.error("could not save request content", ioe);
             }
         }
     }
@@ -170,7 +175,7 @@ public class SavedRequest
             }
             catch (UnsupportedEncodingException uee)
             {
-                AbstractFormAuthFilter.logger.error("could not parse request body", uee);
+                logger.error("could not parse request body", uee);
                 decoded = "";
             }
             addtoParameters(parameters, decoded.split("&"));

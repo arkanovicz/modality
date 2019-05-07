@@ -1,7 +1,10 @@
-package com.republicate.modality.webapp.auth;
+package com.republicate.modality.webapp.auth.helpers;
 
+import com.republicate.modality.webapp.util.CookieParser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -24,11 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ForwardedRequest extends HttpServletRequestWrapper
 {
+    protected static Logger logger = LoggerFactory.getLogger("auth");
+
     public ForwardedRequest(HttpServletRequest forwardedRequest, HttpServletResponse response, SavedRequest savedRequest)
     {
         super(forwardedRequest);
         this.savedRequest = savedRequest;
-        additionalCookies = response.getHeaders("Set-Cookie").stream().map(AbstractFormAuthFilter::parseCookie).collect(Collectors.toList());
+        additionalCookies = response.getHeaders("Set-Cookie").stream().map(CookieParser::parseCookie).collect(Collectors.toList());
     }
 
     @Override
@@ -221,7 +226,7 @@ public class ForwardedRequest extends HttpServletRequestWrapper
         }
         catch (UnsupportedEncodingException uee)
         {
-            AbstractFormAuthFilter.logger.error("could not get request reader", uee);
+            logger.error("could not get request reader", uee);
             return null;
         }
     }

@@ -65,35 +65,37 @@ public class HTTPDigestAuthFilter extends AbstractHTTPDigestAuthFilter<Instance>
     }
 
     @Override
-    protected String getUserRealmPasswordMD5(String login)
+    protected String getUserRealmPasswordMD5(String login) throws AuthenticationException
     {
         try
         {
+            getModel(); // force initialization
             SlotMap params = new SlotHashMap();
             params.put("realm", getRealm());
             params.put("login", login);
             return digestByLoginAttribute.getString(params);
         }
-        catch (SQLException sqle)
+        catch (SQLException | ServletException e)
         {
-            logger.error("could not check credentials", sqle);
+            logger.error("could not get user digest", e);
             return null;
         }
     }
 
     @Override
-    protected Instance getUserInstance(String login)
+    protected Instance getUserInstance(String login) throws AuthenticationException
     {
         try
         {
+            getModel(); // force initialization
             SlotMap params = new SlotHashMap();
             params.put("realm", getRealm());
             params.put("login", login);
             return userByLoginAttribute.retrieve(params);
         }
-        catch (SQLException sqle)
+        catch (SQLException | ServletException e)
         {
-            logger.error("could not check credentials", sqle);
+            logger.error("could not get user instance", e);
             return null;
         }
     }

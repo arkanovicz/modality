@@ -26,7 +26,7 @@ public class NonceStore
 
     public boolean checkNonce(final String nonce, final Integer nc)
     {
-        return Optional.ofNullable(noncesMap.get(nonce)).filter(info -> nc == null || nc > info.sequence).map(info -> { info.sequence = nc; return true; }).orElse(false);
+        return Optional.ofNullable(noncesMap.get(nonce)).filter(info -> nc == null || nc > info.sequence).map(info -> { if (nc != null) info.sequence = nc; return true; }).orElse(false);
     }
 
     LinkedHashMap<String, NonceInfo> noncesMap = new LinkedHashMap<String, NonceInfo>()

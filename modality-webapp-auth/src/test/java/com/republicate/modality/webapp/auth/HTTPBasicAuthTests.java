@@ -22,48 +22,25 @@ import com.republicate.modality.webapp.ModalityFilter;
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
 import org.eclipse.jetty.servlet.ServletTester;
 
-public class HTTPBasicAuthTests extends BaseBookshelfTests
+public class HTTPBasicAuthTests extends BaseHTTPAuthTests
 {
-    ServletTester tester;
-
-    public static class MyFilterConfig implements FilterConfig
+    public static class MyFilterConfig extends MyAbstractFilterConfig
     {
         public MyFilterConfig(ServletContext servletContext)
         {
-            this.servletContext = servletContext;
+            super(servletContext);
         }
 
         @Override
-        public String getFilterName()
+        protected String[][] getConfigValues()
         {
-            return HTTPBasicAuthFilter.class.getName();
+           return  new String[][] {
+               { ModalityFilter.MODEL_ID, "model" },
+               { AbstractAuthFilter.REALM, "TESTS" },
+               { AbstractAuthFilter.PROTECTED_RESOURCES, ".*" },
+               { HTTPBasicAuthFilter.USER_BY_CRED_ATTRIBUTE, "user_by_credentials" },
+           };
         }
-
-        @Override
-        public ServletContext getServletContext()
-        {
-            return servletContext;
-        }
-
-        @Override
-        public String getInitParameter(String name)
-        {
-            return map.get(name);
-        }
-
-        @Override
-        public Enumeration<String> getInitParameterNames()
-        {
-            return new IteratorEnumeration<String>(map.keySet().iterator());
-        }
-
-        private ServletContext servletContext;
-        private Map<String, String> map = Stream.of(new String[][] {
-            { ModalityFilter.MODEL_ID, "model" },
-            { AbstractAuthFilter.REALM, "TESTS" },
-            { AbstractAuthFilter.PROTECTED_RESOURCES, ".*" },
-            { HTTPBasicAuthFilter.USER_BY_CRED_ATTRIBUTE, "user_by_credentials" },
-        }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
     }
 
     public static class MyFilter extends HTTPBasicAuthFilter
@@ -80,53 +57,10 @@ public class HTTPBasicAuthTests extends BaseBookshelfTests
         }
     }
 
-    private static String GOOD_CONTENT = "this is a protected text";
-
-    public static class EndpointServlet extends HttpServlet
+    @Override
+    protected Class getFilterClass()
     {
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-        {
-            try
-            {
-                resp.getWriter().println(GOOD_CONTENT);
-            }
-            catch (IOException e)
-            {
-                try
-                {
-                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                }
-                catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-    /* ------------------------------------------------------------ */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        BaseBookshelfTests.populateDataSource();
-        Model model = new Model().setDataSource(initDataSource()).initialize("model", getResource("user_cred_auth.xml"));
-
-        tester = new ServletTester();
-        tester.setContextPath("/");
-        EnumSet<DispatcherType> dispatch = EnumSet.of(DispatcherType.REQUEST);
-        tester.addFilter(MyFilter.class, "/*", dispatch);
-        tester.addServlet(EndpointServlet.class, "/*");
-        tester.start();
-    }
-
-    /* ------------------------------------------------------------ */
-    protected void tearDown() throws Exception
-    {
-        tester.stop();
-        tester=null;
-        super.tearDown();
+        return MyFilter.class;
     }
 
     public void testWWWAuthenticate() throws Exception

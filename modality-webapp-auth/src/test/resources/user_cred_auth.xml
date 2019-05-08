@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <model reverse="full">
+
     <row name="user_by_credentials" result="USER">
         select us_id, login from user where login = <login/> and password = <password/> and <realm/> = 'TESTS';
     </row>
+
+    <!-- no md5 function in HSQLDB
+    <scalar name="digest_by_login">
+        select md5(concat(login, ':', <realm/>, ':', password)) as digest from user where login = <login/> and <realm/> = 'TESTS';
+    </scalar>
+    -->
+
+    <scalar name="digest_by_login">
+        select '2fd15fc3020e9e7b5021580eb7c8336d' as digest from user where login = <login/> and <realm/> = 'TESTS';
+    </scalar>
+
+    <row name="user_by_login" result="USER">
+        select user.* as digest from user where login = <login/> and <realm/> = 'TESTS';
+    </row>
+
 </model>

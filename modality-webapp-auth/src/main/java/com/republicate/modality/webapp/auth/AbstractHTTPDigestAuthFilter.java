@@ -58,11 +58,12 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
     {
         String authHeader = request.getHeader("Authenticate");
         USER ret = null;
-        if (authHeader != null && authHeader.startsWith("Basic "))
+        SlotMap authParams = null;
+        if (authHeader != null)
         {
             try
             {
-                SlotMap authParams = getAuthenticationParams(authHeader);
+                authParams = getAuthenticationParams(authHeader);
                 String response = (String)authParams.get("response");
                 String nonce = (String)authParams.get("nonce");
                 Integer nc = (Integer)authParams.get("nc");
@@ -84,10 +85,14 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
                         }
                     }
                 }
+                if (ret == null)
+                {
+                    logger.debug("Digest authentication failed for params: " + authParams);
+                }
             }
             catch (AuthenticationException ae)
             {
-                logger.debug("Digest authentication failed", ae);
+                logger.debug("Digest authentication failed for params: " + authParams, ae);
             }
         }
         return ret;
@@ -114,7 +119,7 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
             String value = part.substring(eq + 1);
             if (value.startsWith("\"") && value.endsWith("\""))
             {
-                value = value.substring(1, value.length() - 2);
+                value = value.substring(1, value.length() - 1);
             }
             switch (key)
             {
@@ -134,13 +139,14 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
                     hasQOP = true;
                     break;
                 case "algorithm":
-                    if (algorithm != null && !algorithm.equals(value))
+                    if (algorithm != null && !algorithm.equals(value) || !"MD5".equals(value) && !"MD5-sess".equals(value))
                     {
-                        throw new AuthenticationException("invalid Digest authentication: (invalid algorithm: " + value);
+                        throw new AuthenticationException("invalid Digest authentication: invalid algorithm: " + value);
                     }
+                    ret.put(key, value);
                     break;
                 case "domain": // not checked for now - TODO
-                case "URI":
+                case "uri":
                 case "nonce":
                 case "cnonce":
                 case "username":
@@ -170,8 +176,15 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
         {
             if (!ret.containsKey(param))
             {
-                throw new AuthenticationException("invalid Digest authentication: missing authaurization param: " + param);
+                throw new AuthenticationException("invalid Digest authentication: missing authentication param: " + param);
             }
+        }
+        // cnonce is also required if algorithm is MD5-sess
+        String algo = Optional.ofNullable((String)ret.get("algorithm")).orElse(algorithm);
+        if ("MLD5-sess".equals(algo) && !ret.containsKey("cnonce"))
+        {
+            throw new AuthenticationException("invalid Digest authentication: missing authentication param: cnonce");
+
         }
         return ret;
     }
@@ -198,20 +211,21 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
         {
             String cnonce = (String)authParams.get("cnonce");
             int nc = (Integer)authParams.get("nc");
-            String concat = HA1 + ':' + nonce + ':' + nc + ':' + cnonce + ':' + qop + ':' + HA2;
+            String hexNC = String.format("%08x", nc);
+            String concat = HA1 + ':' + nonce + ':' + hexNC + ':' + cnonce + ':' + qop + ':' + HA2;
             response = Digester.toHexMD5String(concat);
         }
         USER user = getUserInstance(username);
         return Pair.of(response, user);
     }
 
-    protected abstract String getUserRealmPasswordMD5(String login);
+    protected abstract String getUserRealmPasswordMD5(String login) throws AuthenticationException;
 
-    protected abstract USER getUserInstance(String login);
+    protected abstract USER getUserInstance(String login) throws AuthenticationException;
 
     private String calcHA1(SlotMap authParams, String md5) throws AuthenticationException
     {
-        String algorithm = Optional.ofNullable((String)authParams.get("algorithm")).orElse(DEFAULT_ALGORITHM);
+        String algorithm = (String)authParams.get("algorithm");
         String ha1;
         if (algorithm == null || algorithm.equals("MD5"))
         {
@@ -279,6 +293,6 @@ public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFil
 
     private String domain = null;
     private String algorithm = null;
-    private NonceStore nonceStore = null;
+    private NonceStore nonceStore = new NonceStore();
 }
 

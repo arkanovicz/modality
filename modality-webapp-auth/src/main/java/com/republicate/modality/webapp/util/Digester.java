@@ -1,11 +1,17 @@
 package com.republicate.modality.webapp.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Digester
 {
+    protected static Logger logger = LoggerFactory.getLogger("auth");
+
     public static String toHexMD5String(String target)
     {
         return toHexString(md5, target.getBytes(StandardCharsets.UTF_8));
@@ -48,4 +54,17 @@ public class Digester
     private static MessageDigest md5;
 
     private static MessageDigest sha1;
+
+    static
+    {
+        try
+        {
+            md5 = MessageDigest.getInstance("MD5");
+            sha1 = MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException nsae)
+        {
+            logger.error("could not initialize Digester algorithms", nsae);
+        }
+    }
 }

@@ -34,7 +34,7 @@ public abstract class AbstractHTTPBasicAuthFilter<USER> extends AbstractAuthFilt
             int sep = clear.indexOf(':');
             if (sep == -1)
             {
-                logger.debug("invalid Basic authotization: {}", clear);
+                logger.debug("invalid Basic authentication: {}", clear);
             }
             else
             {
@@ -45,7 +45,7 @@ public abstract class AbstractHTTPBasicAuthFilter<USER> extends AbstractAuthFilt
         }
         else
         {
-            logger.debug("invalid Basic authotization: {}", authHeader);
+            logger.debug("invalid Basic authentication: {}", authHeader);
         }
         return ret;
     }

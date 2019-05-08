@@ -81,7 +81,7 @@ public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
     protected Instance checkCredentials(String login, String password) throws ServletException
     {
         getModel(); // force model initialization
-        return credentialsChecker.checkCredentials(login, password);
+        return credentialsChecker.checkCredentials(getRealm(), login, password);
     }
 
     protected String displayUser(Instance user)

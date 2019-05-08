@@ -17,9 +17,9 @@ public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
 {
     protected static Logger logger = LoggerFactory.getLogger("auth");
 
-    public CredentialsCheckerImpl(String userByCredentialsAttribute)
+    public CredentialsCheckerImpl(String userByCredentials)
     {
-        this.userByCredentialsAttribute = userByCredentialsAttribute;
+        this.userByCredentials = userByCredentials;
     }
 
     @Override
@@ -27,28 +27,24 @@ public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
     {
         this.model = model;
 
-        // now check the user_by_credentials attribute
-        Attribute attr = model.getAttribute(userByCredentialsAttribute);
-        if (attr == null)
+        userByCredentialsAttribute = model.getRowAttribute(userByCredentials);
+        if (userByCredentialsAttribute == null)
         {
-            throw new ConfigurationException("attribute does not exist: " + userByCredentialsAttribute);
-        }
-        if (!(attr instanceof RowAttribute))
-        {
-            throw new ConfigurationException("not a row attribute: " + userByCredentialsAttribute);
+            throw new ConfigurationException("attribute does not exist: " + userByCredentials);
         }
         return this;
     }
 
     @Override
-    public Instance checkCredentials(String login, String password) throws ServletException
+    public Instance checkCredentials(String realm, String login, String password) throws ServletException
     {
         try
         {
             SlotMap params = new SlotHashMap();
+            params.put("realm", realm);
             params.put("login", login);
             params.put("password", password);
-            return getModel().retrieve(userByCredentialsAttribute, params);
+            return getModel().retrieve(userByCredentials, params);
         }
         catch (SQLException sqle)
         {
@@ -63,5 +59,6 @@ public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
     }
 
     private Model model = null;
-    private String userByCredentialsAttribute = null;
+    private String userByCredentials = null;
+    private RowAttribute userByCredentialsAttribute = null;
 }

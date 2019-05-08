@@ -12,6 +12,6 @@ public interface CredentialsChecker<USER>
         return this;
     }
 
-    USER checkCredentials(String login, String password) throws ServletException;
+    USER checkCredentials(String realm, String login, String password) throws ServletException;
 
 }

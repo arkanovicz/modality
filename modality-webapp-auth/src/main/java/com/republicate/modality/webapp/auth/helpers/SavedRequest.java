@@ -1,23 +1,22 @@
 package com.republicate.modality.webapp.auth.helpers;
 
-import com.republicate.modality.webapp.auth.AbstractFormAuthFilter;
+import com.republicate.modality.webapp.util.HttpUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+
+import static com.republicate.modality.webapp.util.HttpUtils.toByteArray;
 
 public class SavedRequest
 {
@@ -76,7 +75,7 @@ public class SavedRequest
                 ServletInputStream servletInputStream = request.getInputStream();
                 if (servletInputStream != null)
                 {
-                    body = toByteArray(request.getInputStream());
+                    body = HttpUtils.toByteArray(request.getInputStream());
                 }
             }
             catch (IOException ioe)
@@ -204,21 +203,6 @@ public class SavedRequest
             parameters.put(pair.getKey(), values);
         });
 
-    }
-
-    // IOUtils.toByteArray() method *manually* shaded here
-    private byte[] toByteArray(final InputStream input) throws IOException
-    {
-        try (final ByteArrayOutputStream output = new ByteArrayOutputStream())
-        {
-            byte[] buffer = new byte[8196];
-            int n;
-            while (-1 != (n = input.read(buffer)))
-            {
-                output.write(buffer, 0, n);
-            }
-            return output.toByteArray();
-        }
     }
 
     // some setters...

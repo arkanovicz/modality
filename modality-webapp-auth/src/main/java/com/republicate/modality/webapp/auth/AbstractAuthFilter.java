@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
  * the <code>isProtectedURI(uri)</code> method.</p>
  * <p>Configuration parameters:</p>
  * <ul>
+ * <li><code>auth.realm</code> - authentication realm</li>
  * <li><code>auth.protected</code> - regular expression meant to match all resources URIs which are to be protected ;
  * by default all mapped resources are protected.
  *</ul>
@@ -54,6 +56,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
 
     // config parameters keys
 
+    public static final String REALM = "auth.realm";
     public static final String PROTECTED_RESOURCES = "auth.protected";
 
     protected boolean isProtectedURI(String uri)
@@ -105,6 +108,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
+        realm = Optional.ofNullable(REALM).orElse("");
         String protectedResourcesPattern = findConfigParameter(PROTECTED_RESOURCES);
         if (protectedResourcesPattern != null)
         {
@@ -162,7 +166,13 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
         return String.valueOf(user);
     }
 
-   private Pattern protectedResources = null;
+    protected final String getRealm()
+    {
+        return realm;
+    }
+
+    private String realm = null;
+    private Pattern protectedResources = null;
 
     // for oauth
     // ...

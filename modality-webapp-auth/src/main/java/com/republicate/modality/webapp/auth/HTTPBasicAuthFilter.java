@@ -1,18 +1,15 @@
 package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Instance;
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
 import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
 import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
 
-import java.sql.SQLException;
 import java.util.Optional;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
 /**
- * <p>Basic Authentication filter.</p>
+ * <p>HTTP Basic Authentication filter.</p>
  * <p>Configuration parameters:</p>
  * <ul>
  *     <li>auth.model.<b>user_by_credentials</b>&nbsp;row attribute name to use ;
@@ -21,8 +18,7 @@ import javax.servlet.ServletException;
  * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
-
-public class BasicAuthFilter extends AbstractBasicAuthFilter<Instance>
+public class HTTPBasicAuthFilter extends AbstractHTTPBasicAuthFilter<Instance>
 {
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
 
@@ -37,10 +33,17 @@ public class BasicAuthFilter extends AbstractBasicAuthFilter<Instance>
     }
 
     @Override
+    protected void initModel() throws ServletException
+    {
+        super.initModel();
+        credentialsChecker.setModel(getModel());
+    }
+
+    @Override
     protected Instance checkCredentials(String login, String password) throws ServletException
     {
         getModel(); // force model initialization
-        return credentialsChecker.checkCredentials(login, password);
+        return credentialsChecker.checkCredentials(getRealm(), login, password);
     }
 
     private CredentialsChecker<Instance> credentialsChecker = null;

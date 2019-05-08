@@ -43,6 +43,10 @@ public class CookieParser
                 String value = parts[i].substring(eq+1);
                 if (i == 0)
                 {
+                    if (value.startsWith("\"") && value.endsWith("\""))
+                    {
+                        value = value.substring(1, value.length() - 2);
+                    }
                     cookie = new Cookie(key, value);
                 }
                 else if (cookie == null)

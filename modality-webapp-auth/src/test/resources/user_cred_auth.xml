@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<model reverse="full">
+    <row name="user_by_credentials" result="USER">
+        select us_id, login from user where login = <login/> and password = <password/> and <realm/> = 'TESTS';
+    </row>
+</model>

@@ -1,5 +1,6 @@
 package com.republicate.modality.webapp.auth;
 
+import junit.framework.TestCase;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 
@@ -15,7 +16,7 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.sql.DataSource;
 
-public class BaseBookshelfTests
+public class BaseBookshelfTests extends TestCase
 {
     protected static DataSource initDataSource() throws Exception
     {
@@ -41,9 +42,9 @@ public class BaseBookshelfTests
         for (String command : sql.split(";"))
         {
             if (command.trim().length() == 0) continue;
-            // System.err.println("Running ["+command+"]");
+            System.err.println("Running ["+command+"]");
             statement.executeUpdate(command);
-            // System.err.println("Done.");
+            System.err.println("Done.");
         }
         statement.close();
         connection.close();

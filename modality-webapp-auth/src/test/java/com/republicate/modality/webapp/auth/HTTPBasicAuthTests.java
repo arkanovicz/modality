@@ -1,26 +1,13 @@
 package com.republicate.modality.webapp.auth;
 
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.servlet.DispatcherType;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import com.republicate.modality.Model;
 import com.republicate.modality.util.TypeUtils;
 import com.republicate.modality.webapp.ModalityFilter;
 
-import org.apache.commons.collections4.iterators.IteratorEnumeration;
-import org.eclipse.jetty.servlet.ServletTester;
+import static org.junit.Assert.*;
 
 public class HTTPBasicAuthTests extends BaseHTTPAuthTests
 {

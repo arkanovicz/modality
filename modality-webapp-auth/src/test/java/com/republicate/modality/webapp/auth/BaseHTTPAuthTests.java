@@ -28,10 +28,8 @@ public abstract class BaseHTTPAuthTests extends BaseBookshelfTests
 
     /* ------------------------------------------------------------ */
 
-    @Override
     protected void setUp() throws Exception
     {
-        super.setUp();
         BaseBookshelfTests.populateDataSource();
         Model model = new Model().setDataSource(initDataSource()).initialize("model", getResource("user_cred_auth.xml"));
 
@@ -42,14 +40,13 @@ public abstract class BaseHTTPAuthTests extends BaseBookshelfTests
         tester.addServlet(EndpointServlet.class, "/*");
         tester.start();
     }
+
     protected abstract Class getFilterClass();
 
-    @Override
     protected void tearDown() throws Exception
     {
         tester.stop();
         tester=null;
-        super.tearDown();
     }
 
     public static class EndpointServlet extends HttpServlet

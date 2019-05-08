@@ -9,6 +9,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import static org.junit.Assert.*;
+
 public class HTTPDigestAuthTests extends BaseHTTPAuthTests
 {
     public static class MyFilterConfig extends MyAbstractFilterConfig

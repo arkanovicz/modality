@@ -6,6 +6,9 @@ import javax.servlet.ServletException;
 
 import com.republicate.modality.util.TypeUtils;
 import com.republicate.modality.webapp.ModalityFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -50,6 +53,19 @@ public class HTTPBasicAuthTests extends BaseHTTPAuthTests
         return MyFilter.class;
     }
 
+    @Before
+    public void setUp() throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        super.tearDown();
+    }
+
+    @Test
     public void testWWWAuthenticate() throws Exception
     {
         String request =
@@ -60,6 +76,7 @@ public class HTTPBasicAuthTests extends BaseHTTPAuthTests
         assertTrue(response.contains(expectedWWWAuthenticateHeader));
     }
 
+    @Test
     public void testBadAuthenticate() throws Exception
     {
         String request =
@@ -71,6 +88,7 @@ public class HTTPBasicAuthTests extends BaseHTTPAuthTests
         assertTrue(response.contains(expectedWWWAuthenticateHeader));
     }
 
+    @Test
     public void testGoodAuthenticate() throws Exception
     {
         String b64 = TypeUtils.base64Encode("nestor:secret");

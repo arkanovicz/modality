@@ -2,6 +2,9 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.webapp.ModalityFilter;
 import com.republicate.modality.webapp.util.Digester;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +58,19 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
 
     static Pattern checkResp = Pattern.compile("WWW-Authenticate: Digest realm=\"TESTS\", qop=\"auth,auth-int\", nonce=\"(\\w{32})\", domain=\"/\", uri=\"/\", algorithm=MD5-sess");
 
+    @Before
+    public void setUp() throws Exception
+    {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        super.tearDown();
+    }
+
+    @Test
     public void testWWWAuthenticate() throws Exception
     {
         String request =
@@ -65,6 +81,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
         assertTrue(matcher.find());
     }
 
+    @Test
     public void testGoodAuthenticate() throws Exception
     {
         String request =
@@ -89,6 +106,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
         assertTrue(response.contains(GOOD_CONTENT));
     }
 
+    @Test
     public void testGoodAuthenticate_MD5() throws Exception
     {
         String request =
@@ -113,6 +131,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
         assertTrue(response.contains(GOOD_CONTENT));
     }
 
+    @Test
     public void testGoodAuthenticate_MD5sess() throws Exception
     {
         String request =
@@ -138,6 +157,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
         assertTrue(response.contains(GOOD_CONTENT));
     }
 
+    @Test
     public void testGoodAuthenticate_auth() throws Exception
     {
         String request =
@@ -165,6 +185,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
 
     /*
     Broken, server does not see GET request content ?!
+    @Test
     public void testGoodAuthenticate_authInt() throws Exception
     {
         String request =

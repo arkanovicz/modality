@@ -108,7 +108,7 @@ public abstract class AbstractAuthFilter<USER> extends ModalityFilter
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
-        realm = Optional.ofNullable(REALM).orElse("");
+        realm = Optional.ofNullable(findConfigParameter(REALM)).orElse("");
         String protectedResourcesPattern = findConfigParameter(PROTECTED_RESOURCES);
         if (protectedResourcesPattern != null)
         {

@@ -1,5 +1,6 @@
-package com.republicate.modality.tools;
+package com.republicate.velocity.tools.api;
 
+import com.github.cliftonlabs.json_simple.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,15 +14,18 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.EntityTemplate;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.apache.velocity.tools.generic.JsonContent;
 import org.apache.velocity.tools.generic.JsonTool;
 import org.apache.velocity.tools.generic.XmlTool;
-import org.apache.velocity.tools.shaded.org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,22 +33,42 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * This class 
+ * This class implements a basic API client around Apache HTTP client.
  */
+
+// TODO cookieStore ? credentialsProvider ?
+// CookieStore cookieStore = new BasicCookieStore();
+// CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+// TODO  client.close();
 
 public class ApiClient
 {
     protected static Logger logger = LoggerFactory.getLogger(ApiClient.class);
-    private static HttpClient client = HttpClients.custom()
-                                       .setDefaultRequestConfig(RequestConfig.custom()
-                                          .setCookieSpec(CookieSpecs.STANDARD).build())
-                                       .build();
+    private static CloseableHttpClient client = HttpClients.custom()
+        .setSSLSocketFactory(new SSLConnectionSocketFactory(
+            SSLContexts.createSystemDefault(),
+            new String[] { "TLSv1.2" },
+            null,
+            SSLConnectionSocketFactory.getDefaultHostnameVerifier()))
+        .setConnectionTimeToLive(1, TimeUnit.MINUTES)
+        .setDefaultSocketConfig(SocketConfig.custom()
+            .setSoTimeout(5000)
+            .build())
+        .setDefaultRequestConfig(RequestConfig.custom()
+            .setConnectTimeout(5000)
+            .setSocketTimeout(5000)
+            .setCookieSpec(CookieSpecs.STANDARD)
+            .build())
+        .build();
 
-    protected static JsonContent requestToJSON(HttpRequestBase req) throws IOException
+    protected static JsonContent submit(HttpRequestBase req) throws IOException
     {
         JsonContent ret = null;
         HttpResponse resp = client.execute(req);
@@ -53,9 +77,12 @@ public class ApiClient
         if (status >= 200 && status < 300)
         {
             HttpEntity entity = resp.getEntity();
-            if (entity == null) throw new ClientProtocolException("Response is empty");
+            if (entity == null)
+            {
+                throw new ClientProtocolException("Response is empty");
+            }
             String body = EntityUtils.toString(entity);
-            logger.debug("[api-client] response body = " + body);
+            logger.trace("[api-client] response body = " + body);
             ContentType contentType = ContentType.get(entity);
             Charset charset = contentType.getCharset();
             switch (contentType.getMimeType())
@@ -66,18 +93,24 @@ public class ApiClient
                     break;
                 }
                 case "application/x-www-form-urlencoded":
-                case "text/html": // needed for twitter
+                case "text/html":
                 {
-                    JSONObject obj = new JSONObject();
+                    JsonObject obj = new JsonObject();
                     String keyValuePairs[] = body.split("&");
                     for (String keyValue : keyValuePairs)
                     {
                         String kv[] = keyValue.split("=");
-                        if (kv.length != 2) throw new ClientProtocolException("Expecting key-value pair: " + keyValue);
+                        if (kv.length != 2)
+                        {
+                            throw new ClientProtocolException("Expecting key-value pair: " + keyValue);
+                        }
                         String key = URLDecoder.decode(kv[0], charset.name());
                         String value = URLDecoder.decode(kv[1], charset.name());
                         Object previous = obj.put(key, value);
-                        if (previous != null) throw new ClientProtocolException("Unsupported redundant values in response for key: " + key);
+                        if (previous != null)
+                        {
+                            throw new ClientProtocolException("Unsupported redundant values in response for key: " + key);
+                        }
                     }
                     ret = new JsonContent(obj);
                     break;
@@ -85,7 +118,7 @@ public class ApiClient
                 case "text/xml":
                 {
                     // hack for linkedin - TODO: use LinkedIn v2 API & json
-                    JSONObject obj = new JSONObject();
+                    JsonObject obj = new JsonObject();
                     XmlTool xml = new XmlTool();
                     xml.parse(body);
                     obj.put("email", xml.getFirst().getFirst().getText());
@@ -127,7 +160,7 @@ public class ApiClient
             req = new HttpGet(paramsUrl);
             req.setHeader("Accept", "*/*");
             if (header != null) req.setHeader(header.getLeft(), header.getRight());
-            return requestToJSON(req);
+            return submit(req);
         }
         finally
         {
@@ -157,7 +190,7 @@ public class ApiClient
             }
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(reqParams, "UTF-8");
             req.setEntity(entity);
-            return requestToJSON(req);
+            return submit(req);
         }
         finally
         {
@@ -172,10 +205,14 @@ public class ApiClient
         {
             req = new HttpPost(url);
             req.setHeader("Accept", "*/*");
-            req.setHeader("Content-type", "application/json");
-            StringEntity entity = new StringEntity(params.toString(), "application/json", "UTF-8");
+            EntityTemplate entity = new EntityTemplate(outputstream ->
+            {
+                outputstream.write(params.toString().getBytes(StandardCharsets.UTF_8));
+                outputstream.flush();
+            });
+            entity.setContentType(ContentType.APPLICATION_JSON.toString());
             req.setEntity(entity);
-            return requestToJSON(req);
+            return submit(req);
         }
         finally
         {

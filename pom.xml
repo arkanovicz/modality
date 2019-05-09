@@ -33,12 +33,13 @@ under the License.
     <url>https://github.com/arkanovicz/modality/model</url>
     <modules>
         <module>modality-core</module>
-<!--        <module>modality-tools-apiclient</module>-->
-        <module>modality-tools-model</module>
         <module>modality-webapp</module>
         <module>modality-webapp-auth</module>
-<!--        <module>modality-webapp-oauth</module>-->
+        <module>modality-webapp-oauth-client</module>
+        <module>modality-webapp-oauth-server</module>
         <module>modality-examples</module>
+        <module>velocity-tools-model</module>
+        <module>velocity-tools-apiclient</module>
     </modules>
     <licenses>
         <license>

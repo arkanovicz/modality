@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TestURLHandler
 {
-  static final String TEST_PROTOCOL = "veltest";
+  static final String TEST_PROTOCOL = "modality";
   static Map<String, String> contentMap;
   static
   {

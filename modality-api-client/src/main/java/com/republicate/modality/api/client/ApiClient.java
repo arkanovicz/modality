@@ -1,5 +1,23 @@
 package com.republicate.modality.api.client;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
@@ -146,7 +164,7 @@ public class ApiClient implements Closeable
         }
         finally
         {
-            req.releaseConnection();
+            closeRequest(req);
         }
     }
 
@@ -164,7 +182,7 @@ public class ApiClient implements Closeable
             req.setHeader("Accept", "*/*");
             EntityTemplate entity = new EntityTemplate(outputstream ->
             {
-                outputstream.write(params.toString().getBytes(StandardCharsets.UTF_8));
+                outputstream.write(params.toJson().getBytes(StandardCharsets.UTF_8));
                 outputstream.flush();
             });
             entity.setContentType(ContentType.APPLICATION_JSON.toString());
@@ -172,7 +190,7 @@ public class ApiClient implements Closeable
         }
         finally
         {
-            req.releaseConnection();
+            closeRequest(req);
         }
     }
 
@@ -262,11 +280,21 @@ public class ApiClient implements Closeable
         Object rawJson = null;
         try
         {
-            rawJson = Jsoner.deserialize(body);
+            if (logger.isTraceEnabled())
+            {
+                // Debugging version
+                String got = IOUtils.toString(body);
+                logger.trace("body: {}", got);
+                rawJson = Jsoner.deserialize(got);
+            }
+            else
+            {
+                rawJson = Jsoner.deserialize(body);
+            }
         }
         catch (JsonException je)
         {
-            throw new ClientProtocolException("Invalid json");
+            throw new ClientProtocolException("Invalid json", je);
         }
         if (rawJson instanceof JsonObject)
         {
@@ -320,7 +348,7 @@ public class ApiClient implements Closeable
 
     protected Charset getCharset(HttpEntity entity)
     {
-        Charset charset = getCharset(entity);
+        Charset charset = null;
         ContentType contentType = ContentType.get(entity);
         if (contentType != null)
         {
@@ -331,7 +359,8 @@ public class ApiClient implements Closeable
                 charset = defaultContentType != null ? defaultContentType.getCharset() : null;
             }
         }
-        if (charset == null) {
+        if (charset == null)
+        {
             charset = StandardCharsets.UTF_8;
         }
         return charset;
@@ -349,6 +378,15 @@ public class ApiClient implements Closeable
             map.put(params[p], params[p + 1]);
         }
         return map;
+    }
+
+    protected void closeRequest(HttpRequestBase req) throws IOException
+    {
+        if (req != null && !req.isAborted())
+        {
+            req.abort();
+            req.releaseConnection();
+        }
     }
 
     private CloseableHttpClient client = null;

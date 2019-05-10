@@ -19,7 +19,6 @@ package com.republicate.modality;
  * under the License.
  */
 
-
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Filter;
 import org.junit.BeforeClass;

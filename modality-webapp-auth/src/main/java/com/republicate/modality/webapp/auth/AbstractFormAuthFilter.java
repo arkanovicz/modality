@@ -19,7 +19,6 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-
 import com.republicate.modality.webapp.auth.helpers.ForwardedRequest;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
 import com.republicate.modality.webapp.util.DateParseException;

@@ -46,7 +46,7 @@ under the License.
         </dependency>
         <dependency>
             <groupId>com.republicate.modality</groupId>
-            <artifactId>velocity-tools-apiclient</artifactId>
+            <artifactId>modality-api-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

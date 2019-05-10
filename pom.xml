@@ -38,6 +38,8 @@ under the License.
         <module>modality-webapp-oauth-client</module>
         <module>modality-webapp-oauth-server</module>
         <module>modality-examples</module>
+        <module>modality-api-client</module>
+        <module>modality-api-server</module>
         <module>velocity-tools-model</module>
         <module>velocity-tools-apiclient</module>
     </modules>

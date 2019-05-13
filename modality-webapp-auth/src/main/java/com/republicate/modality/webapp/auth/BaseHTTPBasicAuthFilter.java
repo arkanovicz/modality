@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Filter for HTTP Basic authentication.</p>
  */
 
-public abstract class AbstractHTTPBasicAuthFilter<USER> extends AbstractAuthFilter<USER>
+public abstract class BaseHTTPBasicAuthFilter<USER> extends BaseAuthFilter<USER>
 {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException

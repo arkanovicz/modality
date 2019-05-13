@@ -23,8 +23,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.velocity.tools.view.JeeConfig;
 import org.apache.velocity.tools.view.ServletUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -66,7 +64,7 @@ import javax.servlet.http.HttpSession;
  *
  */
 
-public abstract class AbstractSessionAuthFilter<USER> extends AbstractAuthFilter<USER>
+public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
 {
     // config parameters keys
 

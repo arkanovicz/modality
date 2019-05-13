@@ -37,7 +37,7 @@ import javax.servlet.ServletException;
  * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
-public class HTTPBasicAuthFilter extends AbstractHTTPBasicAuthFilter<Instance>
+public class HTTPBasicAuthFilter extends BaseHTTPBasicAuthFilter<Instance>
 {
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
 

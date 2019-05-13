@@ -21,6 +21,7 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Instance;
 import com.republicate.modality.webapp.ModalityFilter;
+import com.republicate.modality.webapp.WebappModelConfig;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
@@ -78,32 +79,32 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests) throws Exception
     {
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(AbstractAuthFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.REALM)).andAnswer(eval("TESTS"));
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
+        expect(filterConfig.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.REALM)).andAnswer(eval("TESTS"));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(servletContext.getContextPath()).andReturn("/");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.LOGGED_SESSION_KEY)).andAnswer(eval("_user_"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.DOLOGIN_URI)).andAnswer(eval("/login.do"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.DOLOGOUT_URI)).andAnswer(eval("/logout.do"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_PARAMETER)).andAnswer(eval("redirect"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_REFERRER)).andAnswer(eval("true"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_SKIP_CHECKS)).andAnswer(eval("false"));
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.INVALIDATE_ON_LOGOUT)).andAnswer(eval("true"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.LOGGED_SESSION_KEY)).andAnswer(eval("_user_"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.DOLOGIN_URI)).andAnswer(eval("/login.do"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.DOLOGOUT_URI)).andAnswer(eval("/logout.do"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_PARAMETER)).andAnswer(eval("redirect"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_REFERRER)).andAnswer(eval("true"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_SKIP_CHECKS)).andAnswer(eval("false"));
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.INVALIDATE_ON_LOGOUT)).andAnswer(eval("true"));
         expect(servletContext.getContextPath()).andReturn("/");
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.LOGIN_FIELD)).andAnswer(eval("login"));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.PASSWORD_FIELD)).andAnswer(eval("password"));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.LOGIN_URI)).andAnswer(eval("/login.vhtml"));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.HOME_URI)).andAnswer(eval("/index.vhtml"));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.LOGIN_FIELD)).andAnswer(eval("login"));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.PASSWORD_FIELD)).andAnswer(eval("password"));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.LOGIN_URI)).andAnswer(eval("/login.vhtml"));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.HOME_URI)).andAnswer(eval("/index.vhtml"));
         expect(servletContext.getResourcePaths("/")).andAnswer(eval(new HashSet<String>(Arrays.asList("/index.vhtml"))));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.USER_HOME_URI)).andAnswer(eval("/index.vhtml"));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.REDIRECT_TOWARDS_LOGIN)).andAnswer(eval(String.valueOf(redirectTowardsLogin)));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.REDIRECT_GET_ON_SUCCESS)).andAnswer(eval(String.valueOf(redirectGetRequests)));
-        expect(filterConfig.getInitParameter(AbstractFormAuthFilter.FORWARD_POST_ON_SUCCESS)).andAnswer(eval(String.valueOf(forwardPostRequests)));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.USER_HOME_URI)).andAnswer(eval("/index.vhtml"));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.REDIRECT_TOWARDS_LOGIN)).andAnswer(eval(String.valueOf(redirectTowardsLogin)));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.REDIRECT_GET_ON_SUCCESS)).andAnswer(eval(String.valueOf(redirectGetRequests)));
+        expect(filterConfig.getInitParameter(BaseFormAuthFilter.FORWARD_POST_ON_SUCCESS)).andAnswer(eval(String.valueOf(forwardPostRequests)));
         expect(filterConfig.getInitParameter(FormAuthFilter.USER_BY_CRED_ATTRIBUTE)).andAnswer(eval("user_by_credentials"));
     }
 
@@ -111,6 +112,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     {
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
+        //expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
+        //expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
         expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
     }

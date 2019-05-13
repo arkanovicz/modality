@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
  * @param <USER>
  */
 
-public abstract class AbstractHTTPDigestAuthFilter<USER> extends AbstractAuthFilter<USER>
+public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER>
 {
     // config parameters keys
 

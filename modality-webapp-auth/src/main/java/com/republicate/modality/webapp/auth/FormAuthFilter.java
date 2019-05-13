@@ -19,24 +19,13 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.Attribute;
 import com.republicate.modality.Instance;
-import com.republicate.modality.RowAttribute;
-import com.republicate.modality.config.ConfigurationException;
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
 import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
 import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.Optional;
-import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>Authentication filter relying on a query returning a user instance whenever his/her credentials
@@ -55,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
-public class FormAuthFilter extends AbstractFormAuthFilter<Instance>
+public class FormAuthFilter extends BaseFormAuthFilter<Instance>
 {
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
     public static final String USER_REFRESH_RATE =      "auth.model.refresh_rate";

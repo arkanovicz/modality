@@ -21,21 +21,15 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.webapp.auth.helpers.ForwardedRequest;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
-import com.republicate.modality.webapp.util.DateParseException;
-import com.republicate.modality.webapp.util.DateUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.velocity.tools.view.ServletUtils;
 
 import java.io.IOException;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -58,7 +52,7 @@ import javax.servlet.http.HttpSession;
  * @param <USER>
  */
 
-public abstract class AbstractFormAuthFilter<USER> extends AbstractSessionAuthFilter<USER>
+public abstract class BaseFormAuthFilter<USER> extends BaseSessionAuthFilter<USER>
 {
     public static final String LOGIN_FIELD =             "auth.form.field.login";
     public static final String PASSWORD_FIELD =          "auth.form.field.password";

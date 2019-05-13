@@ -21,17 +21,17 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.webapp.BaseWebappMockTest;
 import com.republicate.modality.webapp.ModalityFilter;
+import com.republicate.modality.webapp.WebappModelConfig;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.easymock.EasyMock.expect;
 
-public class AbstractAuthFilterTest extends BaseWebappMockTest
+public class BaseAuthFilterTest extends BaseWebappMockTest
 {
-    protected class AuthFilter extends AbstractAuthFilter<String>
+    protected class AuthFilter extends BaseAuthFilter<String>
     {
         @Override
         protected String authenticate(HttpServletRequest request)
@@ -45,13 +45,13 @@ public class AbstractAuthFilterTest extends BaseWebappMockTest
     protected void recordConfig()
     {
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
-        expect(filterConfig.getInitParameter(ModalityFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(ModalityFilter.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(ModalityFilter.MODEL_ID)).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.REALM)).andAnswer(eval("TESTS"));
-        expect(filterConfig.getInitParameter(AbstractAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
+        expect(filterConfig.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.REALM)).andAnswer(eval("TESTS"));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
     }
 
     @Test

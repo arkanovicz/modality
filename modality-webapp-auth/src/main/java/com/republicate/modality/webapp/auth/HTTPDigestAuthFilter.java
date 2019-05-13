@@ -19,7 +19,6 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.Attribute;
 import com.republicate.modality.Instance;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.ScalarAttribute;
@@ -44,7 +43,7 @@ import javax.servlet.ServletException;
  * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
-public class HTTPDigestAuthFilter extends AbstractHTTPDigestAuthFilter<Instance>
+public class HTTPDigestAuthFilter extends BaseHTTPDigestAuthFilter<Instance>
 {
     // configuration keys
 

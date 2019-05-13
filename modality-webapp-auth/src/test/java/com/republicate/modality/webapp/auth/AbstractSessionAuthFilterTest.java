@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.easymock.EasyMock.expect;
 
-public class AbstractSessionAuthFilterTest extends AbstractAuthFilterTest
+public class AbstractSessionAuthFilterTest extends BaseAuthFilterTest
 {
-    protected class AuthSessionFilter extends AbstractSessionAuthFilter<String>
+    protected class AuthSessionFilter extends BaseSessionAuthFilter<String>
     {
         @Override
         protected String authenticate(HttpServletRequest request) throws ServletException
@@ -51,14 +51,14 @@ public class AbstractSessionAuthFilterTest extends AbstractAuthFilterTest
     {
         super.recordConfig();
         expect(servletContext.getContextPath()).andReturn("/");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andReturn("0");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.LOGGED_SESSION_KEY)).andReturn("_user_");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.DOLOGIN_URI)).andReturn("/login.do");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.DOLOGOUT_URI)).andReturn("/logout.do");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_PARAMETER)).andReturn("redirect");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_REFERRER)).andReturn("true");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.REDIRECT_SKIP_CHECKS)).andReturn("false");
-        expect(filterConfig.getInitParameter(AbstractSessionAuthFilter.INVALIDATE_ON_LOGOUT)).andReturn("true");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andReturn("0");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.LOGGED_SESSION_KEY)).andReturn("_user_");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.DOLOGIN_URI)).andReturn("/login.do");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.DOLOGOUT_URI)).andReturn("/logout.do");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_PARAMETER)).andReturn("redirect");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_REFERRER)).andReturn("true");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.REDIRECT_SKIP_CHECKS)).andReturn("false");
+        expect(filterConfig.getInitParameter(BaseSessionAuthFilter.INVALIDATE_ON_LOGOUT)).andReturn("true");
     }
 
     @Test

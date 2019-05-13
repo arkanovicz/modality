@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 
 import com.republicate.modality.util.TypeUtils;
 import com.republicate.modality.webapp.ModalityFilter;
+import com.republicate.modality.webapp.WebappModelConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +45,9 @@ public class HTTPBasicAuthTests extends BaseHTTPAuthTests
         protected String[][] getConfigValues()
         {
            return  new String[][] {
-               { ModalityFilter.MODEL_ID, "model" },
-               { AbstractAuthFilter.REALM, "TESTS" },
-               { AbstractAuthFilter.PROTECTED_RESOURCES, ".*" },
+               { WebappModelConfig.MODEL_ID, "model" },
+               { BaseAuthFilter.REALM, "TESTS" },
+               { BaseAuthFilter.PROTECTED_RESOURCES, ".*" },
                { HTTPBasicAuthFilter.USER_BY_CRED_ATTRIBUTE, "user_by_credentials" },
            };
         }

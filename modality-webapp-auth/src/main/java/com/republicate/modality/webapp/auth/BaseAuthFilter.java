@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Configuration parameters can be specified in the <code>modality.properties</code> file, or as init-param or context-param in the <code>web.xml</code> webapp descriptor.</p>
  */
 
-public abstract class AbstractAuthFilter<USER> extends ModalityFilter
+public abstract class BaseAuthFilter<USER> extends ModalityFilter
 {
     protected static Logger logger = LoggerFactory.getLogger("auth");
 

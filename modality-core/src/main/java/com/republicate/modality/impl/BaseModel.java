@@ -23,6 +23,7 @@ import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
+import com.republicate.modality.ModelRepository;
 import com.republicate.modality.WrappingInstance;
 import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigHelper;
@@ -298,7 +299,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             reverseEngineer();
             getInstances().initialize();
             initializeAttributes();
-            modelRepository.put(id, getModel());
+            ModelRepository.registerModel(getModel());
         }
         catch (ConfigurationException ce)
         {
@@ -395,7 +396,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     public Model setVelocityEngine(VelocityEngine velocityEngine)
     {
         this.velocityEngine = velocityEngine;
-        return getModel();
+        return get();
     }
      */
 
@@ -744,16 +745,6 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     /*
      * Operations
      */
-
-    public static Model getModel(String id)
-    {
-        Model ret = modelRepository.get(id);
-        if (ret == null)
-        {
-            throw new ConfigurationException("model id not found: " + id);
-        }
-        return ret;
-    }
 
     protected final String quoteIdentifier(String identifier)
     {
@@ -1171,8 +1162,4 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      */
     private ConversionHandler conversionHandler = new ConversionHandlerImpl();
 
-    /**
-     * Model repository
-     */
-    private static Map<String, Model> modelRepository = new HashMap<>();
 }

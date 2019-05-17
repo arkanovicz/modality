@@ -39,7 +39,7 @@ import javax.servlet.http.HttpSession;
  * <p>Configuration parameters:</p>
  * <ul>
  *     <li><code>auth.form.field.login</code> - login form field name</li>
- *     <li><code>auth.form.<b>field.password</code> - password form field name</li>
+ *     <li><code>auth.form.field.password</code> - password form field name</li>
  *     <li><code>auth.form.uri.login</code> - log in form URI</li>
  *     <li><code>auth.form.uri.home</code> - public index URI ; defaults to root
  *     resource mapped to '/', typically the welcome file.</li>

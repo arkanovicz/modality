@@ -50,7 +50,7 @@ import javax.servlet.http.HttpSession;
  *     <li><code>auth.session.uri.dologin</code> - login action URI (should not include servlet context path)</li>
  *     <li><code>auth.session.uri.dologout</code> - logout action URI (should not include servlet context path)</li>
  *     <li><code>auth.session.redirect.parameter</code> - name of query string
- *     parameter in login & logout actions to take into account (takes precedence over referrer redirection
+ *     parameter in login &amp; logout actions to take into account (takes precedence over referrer redirection
  *     if activated).
  *     <li><code>auth.session.redirect.referrer</code> - whether to
  *     redirect newly logged users to login action referrer ; defaults to <code>false</code>.</li>

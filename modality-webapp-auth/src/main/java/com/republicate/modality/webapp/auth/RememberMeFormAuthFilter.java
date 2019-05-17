@@ -66,9 +66,6 @@ import javax.servlet.http.HttpSession;
  *     <li><code>auth.cookie.consider_public_requests</code> - Whether to log in by cookie also on requests towards
  *     public resources. Defaults to true.</li>
  * </ul>
- * </ul>
- * <p>Or, you can forget every configuration param above and define <code></code>
- * to .
  * <p>Typical implementation:</p>
  *
  * <ul>
@@ -76,7 +73,7 @@ import javax.servlet.http.HttpSession;
  * <pre><code>CREATE TABLE remember_me (
  *   us_id INT NOT NULL,
  *   ip VARCHAR(50) NOT NULL,
- *   secure_key TODO NOT NULL,
+ *   secure_key varchar(50) NOT NULL,
  *   creation DATETIME NOT NULL,
  *   PRIMARY KEY (us_id, ip, secure_key),
  *   FOREIGN KEY user (us_id) REFERENCES user (us_id)
@@ -96,7 +93,7 @@ import javax.servlet.http.HttpSession;
  *           WHERE remember_me.us_id = &lt;us_id/&gt;
  *             AND remember_me.ip = &lt;ip/&gt;
  *             AND remember_me.secure_key = &lt;secure_key/&gt;
- *             AND creation >= now() - interval 365 day;
+ *             AND creation &gt;= now() - interval 365 day;
  *       &lt;/row&gt;
  *
  *       &lt;action name="refresh_remember_me"&gt;
@@ -112,15 +109,16 @@ import javax.servlet.http.HttpSession;
  *           WHERE remember_me.us_id = &lt;us_id/&gt;
  *             AND remember_me.ip = &lt;ip/&gt;
  *             AND remember_me.secure_key = &lt;secure_key/&gt;
- *             AND creation >= now() - interval 365 day;
+ *             AND creation &gt;= now() - interval 365 day;
  *       &lt;/action&gt;
 
  *       &lt;action name="clean_remember_me"&gt;&lt;![CDATA[
- *           DELETE FROM remember_me WHERE creation < now() - interval 365 day;]]&gt;
+ *           DELETE FROM remember_me WHERE creation &lt; now() - interval 365 day;]]&gt;
  *       &lt;/action&gt;
  *       ...
  *   &lt;/model&gt;
  *   </code></pre></li>
+ *   </ul>
  *   <p>As a last note: the client application should ask the user for his/her current password when (s)he wants to change it
  *   and this operation should erase the remember_me cookie.</p>
  */
@@ -222,7 +220,6 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     /**
      * Also check cookie on public pages
      * @param request
-     * @return
      * @throws ServletException
      */
     @Override

@@ -34,10 +34,11 @@ import java.util.regex.Pattern;
 /**
  * <p>Contains specific description and behaviour of jdbc drivers.</p>
  *
- * <p>Main sources:
- * <ul><li>http://www.schemaresearch.com/products/srtransport/doc/modules/jdbcconf.html
+ * <p>Main sources:</p>
+ * <ul>
+ * <li>http://www.schemaresearch.com/products/srtransport/doc/modules/jdbcconf.html
  * <li>http://db.apache.org/torque/ and org.apache.torque.adapter classes
- * </ul></p>
+ * </ul>
  *
  *  @author <a href="mailto:claude.brisson@gmail.com">Claude Brisson</a>
  */

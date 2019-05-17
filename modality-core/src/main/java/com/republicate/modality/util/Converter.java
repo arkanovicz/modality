@@ -34,7 +34,7 @@ public interface Converter<T extends Serializable> extends Serializable
     /**
      * convert object to type T
      * @param o input object
-     * @result converted object
+     * @return converted object
      */
     T convert(Serializable o);
 }

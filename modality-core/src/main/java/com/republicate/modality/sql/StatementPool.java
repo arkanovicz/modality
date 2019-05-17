@@ -243,7 +243,7 @@ public class StatementPool implements /* Runnable, */ Pool
     private int count = 0;
 
     /**
-     * map queries -> statements.
+     * map queries -&gt; statements.
      */
     private MultiMap statementsMap = new HashMultiMap();    // query -> PooledStatement
 

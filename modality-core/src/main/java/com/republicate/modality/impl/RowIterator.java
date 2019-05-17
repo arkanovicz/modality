@@ -186,7 +186,7 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
         return result;
     }
 
-    /**
+    /* *
      * Gets all the rows in a list of instances.
      *
      * @return a list of all the rows

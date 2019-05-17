@@ -23,16 +23,20 @@ import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
+import com.republicate.modality.ModelRepository;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EntityReference extends Reference
+public class EntityReference extends Reference implements Serializable
 {
     public EntityReference(Entity entity, ModelTool modelReference)
     {
@@ -343,12 +347,36 @@ public class EntityReference extends Reference
         }
     }
 
+    // serialization
+
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+        out.writeObject(entity == null ? null : entity.getName());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        String entityName = (String)in.readObject();
+        if (entityName != null)
+        {
+            entity = modelReference.getModel().getEntity(entityName);
+            if (entity == null)
+            {
+                throw new IOException("could not de-serialize entity reference: entity '" + entityName + "' not found");
+            }
+        }
+    }
+
+
     @Override
     protected ModelTool getModelTool()
     {
         return modelReference;
     }
 
-    private Entity entity = null;
+    private transient Entity entity = null;
+
     private ModelTool modelReference = null;
 }

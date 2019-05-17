@@ -23,6 +23,7 @@ import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
+import com.republicate.modality.ModelRepository;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
@@ -34,10 +35,14 @@ import org.apache.velocity.tools.generic.SafeConfig;
 import org.apache.velocity.tools.generic.ValueParser;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * <p>ModelTool</p>
@@ -49,7 +54,7 @@ import java.util.Map;
 
 @ValidScope(Scope.APPLICATION)
 @DefaultKey("model")
-public class ModelTool extends SafeConfig implements Constants
+public class ModelTool extends SafeConfig implements Constants, Serializable
 {
     public static final String MODEL_TOOLS_DEFAULTS_PATH = "com/republicate/modality/tools/model/tools.xml";
 
@@ -274,9 +279,6 @@ public class ModelTool extends SafeConfig implements Constants
         return getLog();
     }
 
-    private Model model = null;
-    private boolean canWrite = false;
-
     public class InstanceReferenceIterator implements Iterator<InstanceReference>
     {
         public InstanceReferenceIterator(Iterator<Instance> iterator)
@@ -304,6 +306,30 @@ public class ModelTool extends SafeConfig implements Constants
         private Iterator<Instance> iterator;
     }
 
+    // serialization
+
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+        out.writeObject(model.getModelId());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        String modelId = (String)in.readObject();
+        ModelRepository.getModel(modelId);
+        if (model == null)
+        {
+            // lazy initialization
+            ModelRepository.addModelListener(modelId, new LazyModelSetter());
+            return;
+
+        }
+    }
+
+    // last error handling
+
     protected static void setLastError(String message)
     {
         lastError.set(message);
@@ -319,5 +345,30 @@ public class ModelTool extends SafeConfig implements Constants
         lastError.remove();
     }
 
+    protected void setModel(Model model)
+    {
+        this.model = model;
+    }
+
+    private class LazyModelSetter implements Consumer<Model>
+    {
+        public LazyModelSetter()
+        {
+        }
+
+        @Override
+        public void accept(Model model)
+        {
+            setModel(model);
+        }
+    }
+
     private static ThreadLocal<String> lastError = new ThreadLocal<>();
+
+    // private fields
+
+    private transient Model model = null;
+
+    private boolean canWrite = false;
+
 }

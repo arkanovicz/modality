@@ -24,6 +24,13 @@ Fix libraries versions (TODO add link towards dependencies).
 + Use the `com.republicate.tools.model.velosurf.VelosurfTool` class for the model.
 + Add `credentials = "`*...path to credentials.xml...*`"` to the `<tool>` tag.
 
+Using the `com.republicate.tools.model.velosurf.VelosurfTool` instead of the regular `com.republicate.tools.model.ModelTool` provides the following backward compatibility helpers:
++ Support of model `obfuscate()` and `deobfuscate()` methods
++ Support of `<database>` instead of `<model>` and of the deprecated tags `<entity>` and `<attribute>`, along with some deprecated attributes (`caching`, `read-only`, `obfuscate` and `localize` for entities, `caching` replaced by `cached` for attributes)
++ Support for rowset `getRows()`, `getScalars()`, `getSet()`, `getMap()` and `getInstanceMap()`
++ Instance generic getter also returns attributes (also mimic Velosurf behavior: search for attributes when inner values are present but null) - new behavior is to only return colmns
+
+
 ### In `model.xml`
 
 + Remove the `<credentials>` tag or the `<xi:include>` of the credentials, if any.
@@ -45,7 +52,6 @@ Update uberspectors:
 + In Java code, the generic getter of instances now only concern columns. You'll call `evaluate()` to get a scalar, `retrieve()` to get a row, `query()` to get a rowset and `perform()` to perform an action. The same methods can be called on the model for root attributes.
 + Entities have `fetch()`, `getCount()` and `iterate()` methods.
 + Use the above methods instead of `getWithParams()`.
-
 
 ### `modality.properties`
 

@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class ModelRepository
 {
@@ -22,6 +25,7 @@ public class ModelRepository
 
     public static void registerModel(Object context, Model model)
     {
+        // find apropriate model store
         if (context == null)
         {
             context = ModelRepository.class.getClassLoader();
@@ -36,7 +40,20 @@ public class ModelRepository
             }
             contextMap.put(context, store);
         }
+
+        // store model
         store.put(model);
+
+        // call listeners
+        List<Consumer<Model>> listeners = modelListeners.get(model.getModelId());
+        if (listeners != null)
+        {
+            logger.debug("[model-repository] calling {} listeners", listeners.size());
+            for (Consumer<Model> listener : listeners)
+            {
+                listener.accept(model);
+            }
+        }
     }
 
     public static Model getModel(String modelId)
@@ -59,10 +76,37 @@ public class ModelRepository
         return model;
     }
 
+    public static void addModelListener(String modelId, Consumer<Model> consumer)
+    {
+        logger.debug("[model-repository] added listener towards model {} : {}", modelId, consumer.getClass().getName());
+        List<Consumer<Model>> listeners = modelListeners.get(modelId);
+        if (listeners == null)
+        {
+            synchronized (modelListeners)
+            {
+                listeners = modelListeners.get(modelId);
+                if (listeners == null)
+                {
+                    listeners = new ArrayList<Consumer<Model>>();
+                    modelListeners.put(modelId, listeners);
+                }
+            }
+        }
+        synchronized (listeners)
+        {
+            listeners.add(consumer);
+        }
+    }
+
     /**
      * (global) model id resolution contexts (aka ServletContexts or ClassLoaders)
      */
     private static Map<Object, ModelStore> contextMap = new HashMap<>();
+
+    /**
+     * model listeners map
+     */
+    private static Map<String, List<Consumer<Model>>> modelListeners = new ConcurrentHashMap<>();
 
     private static interface ModelStore
     {
@@ -167,5 +211,4 @@ public class ModelRepository
         private Map<String, Model> innerMap = new ConcurrentHashMap<>();
         private static Map<Object, ModelStore> staticContexts = new ConcurrentHashMap<>();
     }
-
 }

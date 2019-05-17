@@ -26,6 +26,9 @@ import com.republicate.modality.util.ChainedMap;
 import com.republicate.modality.util.SlotTreeMap;
 import com.republicate.modality.util.TypeUtils;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -34,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Instance extends SlotTreeMap
 {
@@ -403,13 +407,74 @@ public class Instance extends SlotTreeMap
         }
     }
 
-    private Model model = null;
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+        out.writeObject(model.getModelId());
+        out.writeObject(entity == null ? null : entity.getName());
+    }
 
-    private Entity entity = null;
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        String modelId = (String)in.readObject();
+        String entityName = (String)in.readObject();
+        ModelRepository.getModel(modelId);
+        if (model == null)
+        {
+            // lazy initialization
+            ModelRepository.addModelListener(modelId, new LazyModelSetter(entityName));
+            return;
+        }
+        if (entityName != null)
+        {
+            entity = model.getEntity(entityName);
+            if (entity == null)
+            {
+                throw new IOException("could not de-serialize instance: entity '" + entityName + "' not found");
+            }
+        }
+    }
+
+    protected void setModel(Model model)
+    {
+        this.model = model;
+    }
+
+    protected void setEntity(Entity entity)
+    {
+        this.entity = entity;
+    }
+
+    private transient Model model = null;
+
+    private transient Entity entity = null;
 
     private BitSet dirtyFlags = null;
 
     private boolean canWrite = false;
 
     private boolean persisted = false;
+
+    private static final long serialVersionUID = -6234576437555893893L;
+
+    private class LazyModelSetter implements Consumer<Model>
+    {
+        public LazyModelSetter(String entityName)
+        {
+            this.entityName = entityName;
+        }
+
+        @Override
+        public void accept(Model model)
+        {
+            setModel(model);
+            if (entityName != null)
+            {
+                setEntity(model.getEntity(entityName));
+            }
+        }
+
+        private String entityName;
+    }
 }

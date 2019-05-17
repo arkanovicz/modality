@@ -220,7 +220,7 @@ public class VelosurfTool extends ModelTool
     {
         try
         {
-            throw new SQLFeatureNotSupportedException("ModelTool is read-only");
+            throw new SQLFeatureNotSupportedException("ModelTool is read-only, pass parameters directly to attributes");
         }
         catch (SQLException sqle)
         {

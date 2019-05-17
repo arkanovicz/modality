@@ -28,12 +28,12 @@ import org.slf4j.helpers.MessageFormatter;
  * <ul>
  *     <li>Set `runtime.log.track_location = true` in `velocity.properties`</li>
  *     <li>Set logger the format, for instance with webapp-slf4j-logger :
- *     <code><pre>
+ *     <pre><code>
  *         &lt;context-param&gt;
  *             &lt;param-name&gt;webapp-slf4j-logger.format&lt;/param-name&gt;
  *             &lt;param-value&gt;%logger [%level] [%ip] %message @%file:%line:%column&lt;/param-value&gt;
  *         &lt;/context-param&gt;
- *     </pre></code>
+ *     </code></pre>
  *     </li>
  * </ul>
  */

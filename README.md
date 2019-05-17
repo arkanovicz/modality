@@ -47,6 +47,8 @@ Actions with more than one statement are **Transactions**. Actions return the nu
 
 Each of the above methods can be invoked from the model object itself or from an instance, and can take additional query parameter arguments.
 
+Here's the [Javadoc](https://republicate.com/modality/apidocs/) (wip).
+
 ### Configuration
 
 You can either:

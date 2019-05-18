@@ -50,15 +50,13 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
 {
     protected static Logger logger = LoggerFactory.getLogger("remember-me");
 
-    public RememberMeCookieHandlerImpl(String name, String domain, String path, int maxAge, boolean secure, boolean checkUserAgent, boolean checkIP)
+    public RememberMeCookieHandlerImpl(String name, String domain, String path, int maxAge, boolean secure)
     {
         this.cookieName = name;
         this.cookieDomain = domain;
         this.cookiePath = path;
         this.cookieMaxAge = maxAge;
         this.cookieSecure = secure;
-        this.checkUserAgent = checkUserAgent;
-        this.checkIP = checkIP;
     }
 
     @Override
@@ -145,13 +143,6 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         String ip = parts[1];
         String ua = parts[2];
         String secureKey = parts[3];
-
-        if (checkIP && !ip.equals(requestIp)
-            || checkUserAgent && !ua.equals(requestUA))
-        {
-            logger.debug("mismatch in remember_me cookie IP or UA");
-            return null;
-        }
 
         Serializable[] pk = userKey.split("\\|");
         if (pk.length != usersPrimaryKey.size())
@@ -301,8 +292,6 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     private String cookiePath;
     private int cookieMaxAge;
     private boolean cookieSecure;
-    private boolean checkUserAgent;
-    private boolean checkIP;
     private Cryptograph cryptograph;
 
     // init

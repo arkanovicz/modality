@@ -239,7 +239,6 @@ public class ApiServlet extends VelocityViewServlet
         }
     }
 
-
     protected void requestCleanup(HttpServletRequest request,
                                   HttpServletResponse response,
                                   Context context)

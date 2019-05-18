@@ -56,7 +56,6 @@ import javax.servlet.http.HttpSession;
  *     <li><code>auth.cookie.path</code> - path of the Remember Me cookie, defaults to "/" (prepended by the
  *     servlet context path).</li>
  *     <li><code>auth.cookie.max_age</code> - Max age of the Remember Me cookie, defaults to 31536000 (one year).</li>
- *     <li><code>auth.cookie.check_ip</code> - Whether to check request IP, defaults to true.</li>
  *     <li><code>auth.cookie.secure</code> - Whether to use a secure cookie, defaults to true.</li>
  *     <li><code>auth.cookie.handler</code> - either a class name or a living instance of a class extending <code>RememberMeCookieHandler</code> ;
  *     all previous parameters are ignored, next ones are taken into account. The default handler is <code>RememberMeCookieHandlerImpl</code></li>
@@ -129,8 +128,6 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     public static final String COOKIE_DOMAIN =          "auth.cookie.domain";
     public static final String COOKIE_PATH =            "auth.cookie.path";
     public static final String COOKIE_MAX_AGE =         "auth.cookie.max_age";
-    public static final String COOKIE_CHECK_UA =        "auth.cookie.check.user_agent";
-    public static final String COOKIE_CHECK_IP =        "auth.cookie.check.ip";
     public static final String COOKIE_HANDLER =         "auth.cookie.handler";
     public static final String COOKIE_CLEAN_RATE =      "auth.cookie.clean_rate";
     public static final String COOKIE_CONSIDER_PUBLIC = "auth.cookie.consider_public_requests";
@@ -187,9 +184,7 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
             String cookiePath = Optional.ofNullable(findConfigParameter(COOKIE_PATH)).orElse(ServletUtils.combinePath(getConfig().getServletContext().getContextPath(), DEFAULT_COOKIE_PATH));
             int cookieMaxAge = NumberUtils.toInt(findConfigParameter(COOKIE_MAX_AGE), DEFAULT_COOKIE_MAX_AGE);
             boolean cookieSecure = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_SECURE))).orElse(true);
-            boolean checkUserAgent = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CHECK_UA))).orElse(true);
-            boolean checkIP = BooleanUtils.toBoolean(findConfigParameter(COOKIE_CHECK_IP));
-            rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, cookieSecure, checkUserAgent, checkIP);
+            rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, cookieSecure);
         }
         cleanRate = NumberUtils.toInt(findConfigParameter(COOKIE_CLEAN_RATE), DEFAULT_COOKIE_CLEAN_RATE);
         considerPublicRequests = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_CONSIDER_PUBLIC))).orElse(true);

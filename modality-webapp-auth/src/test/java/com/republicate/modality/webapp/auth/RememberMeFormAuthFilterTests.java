@@ -53,9 +53,7 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_PATH)).andAnswer(eval("/"));
         expect(servletContext.getContextPath()).andAnswer(eval("/"));
         expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_MAX_AGE)).andAnswer(eval("10000"));
-        expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_CHECK_UA)).andAnswer(eval("true"));
         expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_SECURE)).andAnswer(eval("false"));
-        expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_CHECK_IP)).andAnswer(eval("false"));
         expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_CLEAN_RATE)).andAnswer(eval("0"));
         expect(filterConfig.getInitParameter(RememberMeFormAuthFilter.COOKIE_CONSIDER_PUBLIC)).andAnswer(eval("true"));
     }

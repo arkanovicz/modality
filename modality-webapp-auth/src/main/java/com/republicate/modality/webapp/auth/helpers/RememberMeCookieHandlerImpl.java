@@ -254,6 +254,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         SlotMap params = new SlotHashMap();
         IntStream.range(0, pk.length).forEach(i -> params.put(usersPrimaryKey.get(i), pk[i]));
         params.put("ip", ip);
+        params.put("user_agent", ua);
         params.put("secure_key", secureKey);
         return params;
     }

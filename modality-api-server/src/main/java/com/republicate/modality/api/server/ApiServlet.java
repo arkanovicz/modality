@@ -19,7 +19,6 @@ package com.republicate.modality.api.server;
  * under the License.
  */
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -31,8 +30,6 @@ import org.apache.velocity.tools.view.VelocityViewServlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

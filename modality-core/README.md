@@ -40,9 +40,9 @@ specific entity instances. There are three types of attributes:
 
 + **Scalar** attributes, corresponding to the **`evaluate()`** method, returning a scalar (string, number, boolean).
 + **Row** attributes, corresponding to the **`retrieve()`** method, returning an instance.
-+ **Rowset** attributes, corresponding to the ``query()`` method, returning an iterator over instances.
++ **Rowset** attributes, corresponding to the **`query()`** method, returning an iterator over instances.
 
-**Actions**, corresponding to the ``perform()`` method,  are named SQL queries performing an atomic or transactionnal database change.
+**Actions**, corresponding to the **`perform()`** method,  are named SQL queries performing an atomic or transactionnal database change.
 Actions with more than one statement are **Transactions**. Actions return the number of changed database rows.
 
 Each of the above methods can be invoked from the model object itself or from an instance, and can take additional query parameter arguments.

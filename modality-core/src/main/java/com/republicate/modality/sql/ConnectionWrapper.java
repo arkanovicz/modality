@@ -739,6 +739,7 @@ public class ConnectionWrapper
                     ret = -1;
                 }
                 rs.close();
+                break;
             }
             case RETURNING:
             {

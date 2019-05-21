@@ -53,12 +53,12 @@ public class Transaction extends Action
     }
 
     @Override
-    public int performImpl(Serializable... paramValues) throws SQLException
+    public long performImpl(Serializable... paramValues) throws SQLException
     {
         ConnectionWrapper connection = null;
         try
         {
-            int changed = 0;
+            long changed = 0;
             connection = getModel().getTransactionConnection();
             connection.enterBusyState();
             int param = 0;

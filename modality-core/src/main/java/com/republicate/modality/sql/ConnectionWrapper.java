@@ -727,6 +727,7 @@ public class ConnectionWrapper
                     }
                 }
                 rs.close();
+                break;
             }
             case QUERY:
             {

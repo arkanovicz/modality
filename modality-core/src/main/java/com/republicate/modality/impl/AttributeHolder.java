@@ -237,7 +237,7 @@ public abstract class AttributeHolder implements Serializable
         return ((RowsetAttribute)attribute).query(source, params);
     }
 
-    public int perform(String name, Serializable... params) throws SQLException
+    public long perform(String name, Serializable... params) throws SQLException
     {
         Attribute attribute = getAttribute(name);
         if (attribute == null)
@@ -251,7 +251,7 @@ public abstract class AttributeHolder implements Serializable
         return ((Action)attribute).perform(params);
     }
 
-    public int perform(String name, Map source) throws SQLException
+    public long perform(String name, Map source) throws SQLException
     {
         Attribute attribute = getAttribute(name);
         if (attribute == null)
@@ -265,7 +265,7 @@ public abstract class AttributeHolder implements Serializable
         return ((Action)attribute).perform(source);
     }
 
-    public int perform(String name, Map source, Serializable... params) throws SQLException
+    public long perform(String name, Map source, Serializable... params) throws SQLException
     {
         Attribute attribute = getAttribute(name);
         if (attribute == null)

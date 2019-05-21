@@ -182,7 +182,7 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
         }
     }
 
-    public int perform(String name, Serializable... params)
+    public long perform(String name, Serializable... params)
     {
         try
         {
@@ -200,7 +200,7 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
         }
     }
 
-    public int perform(String name, Map params)
+    public long perform(String name, Map params)
     {
         try
         {

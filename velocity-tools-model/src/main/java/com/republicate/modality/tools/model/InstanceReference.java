@@ -191,7 +191,7 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
-    public int perform(String name, Map params)
+    public long perform(String name, Map params)
     {
         if (canWrite)
         {
@@ -204,7 +204,7 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
-    protected int performImpl(String name, Map params)
+    protected long performImpl(String name, Map params)
     {
         try
         {
@@ -217,7 +217,7 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
-    public int perform(String name, Serializable... params)
+    public long perform(String name, Serializable... params)
     {
         if (canWrite)
         {
@@ -230,7 +230,7 @@ public class InstanceReference extends Reference implements SlotMap
         }
     }
 
-    protected int performImpl(String name, Serializable... params)
+    protected long performImpl(String name, Serializable... params)
     {
         try
         {

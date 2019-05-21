@@ -17,21 +17,21 @@
 
 create table publisher
 (
-    publisher_id int not null,
+    publisher_id int identity not null,
     name varchar(200) not null,
     primary key (publisher_id)
 );
 
 create table author
 (
-    author_id int not null,
+    author_id int identity not null,
     name varchar(200) not null,
     primary key (author_id)
 );
 
 create table book
 (
-    book_id int not null,
+    book_id int identity not null,
     title varchar(200) not null,
     published date not null,
     publisher_id int not null,
@@ -41,7 +41,7 @@ create table book
 
 create table book_author
 (
-    book_id int not null,
+    book_id int identity not null,
     author_id int not null,
     primary key (book_id, author_id),
     foreign key (book_id) references book (book_id),

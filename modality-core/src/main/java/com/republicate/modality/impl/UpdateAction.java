@@ -56,7 +56,7 @@ public class UpdateAction extends Action
 
 
     @Override
-    public int perform(Map source) throws SQLException
+    public long perform(Map source) throws SQLException
     {
         if (!(source instanceof Instance))
         {

@@ -34,30 +34,34 @@ public class Action extends Attribute
 
     }
 
-    public int perform(Serializable... params) throws SQLException
+    public long perform(Serializable... params) throws SQLException
     {
         return performImpl(getParamValues(params));
     }
 
-    public int perform(Map source) throws SQLException
+    public long perform(Map source) throws SQLException
     {
         return performImpl(getParamValues(source));
     }
 
-    public int perform(Map source, Serializable... params) throws SQLException
+    public long perform(Map source, Serializable... params) throws SQLException
     {
         return performImpl(getParamValues(source, params));
     }
 
-    protected int performImpl(Serializable... paramValues) throws SQLException
+    protected long performImpl(Serializable... paramValues) throws SQLException
     {
-        int changed = 0;
+        long ret = 0;
         PooledStatement statement = null;
         try
         {
             statement = getModel().prepareUpdate(getQuery());
             statement.getConnection().enterBusyState();
-            changed = statement.executeUpdate(paramValues);
+            ret = statement.executeUpdate(paramValues);
+            if (ret == 1 && generatedKeyColumn != null)
+            {
+                ret = statement.getLastInsertID(generatedKeyColumn);
+            }
         }
         finally
         {
@@ -67,7 +71,7 @@ public class Action extends Attribute
                 statement.getConnection().leaveBusyState();
             }
         }
-        return changed;
+        return ret;
     }
 
     @Override
@@ -75,4 +79,11 @@ public class Action extends Attribute
     {
         return "perform";
     }
+
+    public void setGeneratedKeyColumn(String generatedKeyColumn)
+    {
+        this.generatedKeyColumn = generatedKeyColumn;
+    }
+
+    private String generatedKeyColumn = null;
 }

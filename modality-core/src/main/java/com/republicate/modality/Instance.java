@@ -145,7 +145,7 @@ public class Instance extends SlotTreeMap
         return entity.query(name, (Map)this, params);
     }
 
-    public int perform(String name, Map params) throws SQLException
+    public long perform(String name, Map params) throws SQLException
     {
         if (!canWrite)
         {
@@ -154,7 +154,7 @@ public class Instance extends SlotTreeMap
         return entity.perform(name, params == null ? (Map)this : new ChainedMap(this, params));
     }
 
-    public int perform(String name, Serializable... params) throws SQLException
+    public long perform(String name, Serializable... params) throws SQLException
     {
         if (!canWrite)
         {

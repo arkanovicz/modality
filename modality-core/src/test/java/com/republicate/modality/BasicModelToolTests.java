@@ -24,6 +24,7 @@ import com.republicate.modality.filter.Filter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -187,7 +188,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals("The Astonishing Life of Duncan Moonwalker", title);
         Action censor = (Action)book.getAttribute("censor");
         assertNotNull(censor);
-        int changed = censor.perform(oneBook);
+        long changed = censor.perform(oneBook);
         assertEquals(1, changed);
         oneBook = book.fetch(1);
         assertNotNull(oneBook);
@@ -212,7 +213,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertNotNull(oneBook);
         String title = oneBook.getString("title");
         assertEquals("The Astonishing Life of Duncan Moonwalker", title);
-        int count = oneBook.perform("good_transaction");
+        long count = oneBook.perform("good_transaction");
         assertEquals(3, count);
         oneBook.refresh();
         String newtitle = oneBook.getString("title");
@@ -234,7 +235,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals("The Astonishing Life of Duncan Moonwalker", title);
         try
         {
-            int count = oneBook.perform("bad_transaction");
+            long count = oneBook.perform("bad_transaction");
             fail("expecting SQLException");
         }
         catch (SQLException sqle)
@@ -459,6 +460,25 @@ public class BasicModelToolTests extends BaseBookshelfTests
         oneBook.upsert();
         assertFalse(oneBook.isDirty());
         assertEquals(title, book.fetch(1).getString("title"));
+    }
+
+    public @Test void testLastInsertId() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.FULL);
+        model.initialize(getResourceReader("test_action.xml"));
+        Entity author = model.getEntity("author");
+        assertNotNull(author);
+        Instance oneAuthor = author.newInstance();
+        oneAuthor.put("name", "New Writer");
+        oneAuthor.insert();
+        Serializable id = oneAuthor.get("author_id");
+        assertNotNull(id);
+        assertTrue(id instanceof Long);
+        long longId = (Long)id;
+        assertEquals(3, longId);
     }
 
     @BeforeClass

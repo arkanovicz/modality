@@ -171,7 +171,12 @@ public abstract class BaseEntity extends AttributeHolder
 
     public void insert(Map source) throws SQLException
     {
-        insert.perform(source);
+        long ret = insert.perform(source);
+        if (primaryKey.size() == 1 && primaryKey.get(0).generated)
+        {
+            Column keyColumn = primaryKey.get(0);
+            source.put(keyColumn.name, ret);
+        }
     }
 
     public void update(Map source) throws SQLException
@@ -283,6 +288,10 @@ public abstract class BaseEntity extends AttributeHolder
             }
             insert.addQueryPart(")");
             insert.initialize();
+            if (primaryKey.size() == 1 && primaryKey.get(0).generated)
+            {
+                insert.setGeneratedKeyColumn(sqlPrimaryKey.get(0));
+            }
         }
     }
 

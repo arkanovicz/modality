@@ -20,6 +20,7 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.easymock.Capture;
@@ -66,8 +67,6 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         { super.initModel();}};
     }
 
-
-
     @Test
     public void testFormLoginSetcookie() throws Exception
     {
@@ -76,6 +75,9 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         recordFilterRequireInit();
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
+        Capture<Model> model = new Capture<>();
+        servletContext.setAttribute(eq("model"), capture(model));
+        expect(servletContext.getAttribute("model")).andAnswer(evalCapture(model));
 
         // GET /index.vhtml : save request and redirect to /login.vhtml
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
@@ -143,6 +145,9 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         recordFilterRequireInit();
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
+        Capture<Model> model = new Capture<>();
+        servletContext.setAttribute(eq("model"), capture(model));
+        expect(servletContext.getAttribute("model")).andAnswer(evalCapture(model));
 
         // GET /index.vhtml : log by cookie
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));

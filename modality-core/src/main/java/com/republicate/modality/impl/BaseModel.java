@@ -102,13 +102,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private void ensureConfigured(Object servletContext)
     {
-        if (!defaultPropertiesLoaded)
+        if (!configured)
         {
             ConfigHelper config = new ConfigHelper();
+            this.servletContext = servletContext;
             loadDefaultConfig(config);
             loadUserConfig(config, servletContext);
             configure(config);
-            defaultPropertiesLoaded = true;
+            configured = true;
         }
     }
 
@@ -299,7 +300,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             reverseEngineer();
             getInstances().initialize();
             initializeAttributes();
-            ModelRepository.registerModel(getModel());
+            registerModel();
         }
         catch (ConfigurationException ce)
         {
@@ -353,6 +354,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         connectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, true, maxConnections);
         transactionConnectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, false, maxConnections);
         statementPool = new StatementPool(connectionPool);
+    }
+
+    protected final void registerModel()
+    {
+        ModelRepository.registerModel(servletContext, getModel());
     }
 
     /*
@@ -1046,7 +1052,9 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      * Members
      */
 
-    private boolean defaultPropertiesLoaded = false;
+    private boolean configured = false;
+
+    private Object servletContext = null;
 
     private String modelId = null;
 

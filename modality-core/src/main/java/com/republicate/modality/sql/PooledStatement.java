@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -114,6 +115,10 @@ public class PooledStatement extends Pooled implements RowValues
 
     private void setParamValues(Serializable[] paramValues) throws SQLException
     {
+        if (logger.isTraceEnabled())
+        {
+            logger.trace("params-{}", Arrays.asList(paramValues));
+        }
         for (int i = 0; i < paramValues.length; ++i)
         {
             preparedStatement.setObject(i + 1, paramValues[i]);
@@ -131,8 +136,8 @@ public class PooledStatement extends Pooled implements RowValues
     {
         try
         {
-            logger.trace("update-params={}", params);
-            setParams(params);
+            Serializable arrParams[] = new Serializable[params.size()];
+            setParamValues((Serializable[])params.toArray(arrParams));
             connection.enterBusyState();
 
             int rows = preparedStatement.executeUpdate();
@@ -211,27 +216,28 @@ public class PooledStatement extends Pooled implements RowValues
         return connection;
     }
 
-    /**
+    /*
      * set prepared parameter values.
      *
      * @param params parameter values
      * @exception SQLException thrown by the database engine
-     */
+     *  /
     private void setParams(List params) throws SQLException
     {
         for(int i = 0; i < params.size(); i++)
         {
             Object param = params.get(i);
 
-            /* TODO - review use case
+            / * TODO - review use case
             if(valueParserSubClass != null && valueParserSubClass.isAssignableFrom(param.getClass()))
             {
                 param = param.toString();
             }
-            */
+            * /
             preparedStatement.setObject(i + 1, param);
         }
     }
+    */
 
     /**
      * wrapped prepared statement.

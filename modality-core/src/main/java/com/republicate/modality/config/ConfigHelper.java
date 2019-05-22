@@ -32,6 +32,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ConfigHelper
 {
@@ -44,7 +45,7 @@ public class ConfigHelper
     {
         if (values != null)
         {
-            config = ExtProperties.convertProperties(values);
+            config = ExtProperties.convertProperties(values.entrySet().stream().filter(entry -> entry.getValue() != null).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
             ExtProperties sub = config.subset("model");
             if (sub != null)
             {

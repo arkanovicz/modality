@@ -18,7 +18,7 @@ TODO
 
 Fix libraries versions (TODO add link towards dependencies).
 
-### In `toolbox.xml`
+### In `tools.xml`
 
 + Models need to be in the application scope.
 + Use the `com.republicate.tools.model.velosurf.VelosurfTool` class for the model.

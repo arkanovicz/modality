@@ -18,6 +18,9 @@ package com.republicate.modality.config;
  * under the License.
  */
 
+import java.util.HashSet;
+import java.util.Set;
+
 public interface Constants
 {
     String MODALITY_PROPERTIES = "modality.properties";

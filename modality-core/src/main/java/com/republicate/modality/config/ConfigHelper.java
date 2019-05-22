@@ -46,16 +46,6 @@ public class ConfigHelper
         if (values != null)
         {
             config = ExtProperties.convertProperties(values.entrySet().stream().filter(entry -> entry.getValue() != null).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
-            ExtProperties sub = config.subset("model");
-            if (sub != null)
-            {
-                config = sub;
-                Object servletContext = values.get("servletContext");
-                if (servletContext != null)
-                {
-                    config.put("servletContext", servletContext);
-                }
-            }
         }
         else
         {
@@ -84,9 +74,14 @@ public class ConfigHelper
         return this;
     }
 
+    private Object getInternal(String key)
+    {
+        return config.get(key);
+    }
+
     public Object get(String key, Object defaultValue)
     {
-        Object value = config.get(key);
+        Object value = getInternal(prefix.get() + key);
         return value == null ? defaultValue : value;
     }
 
@@ -129,7 +124,7 @@ public class ConfigHelper
 
     public ExtProperties getSubProperties(String key)
     {
-        return config.subset(key);
+        return config.subset(prefix.get() + key);
     }
 
     public <T extends Enum<T>> T getEnum(String key, Enum<T> defaultValue) throws IllegalArgumentException
@@ -190,7 +185,7 @@ public class ConfigHelper
         {
             if (servletContext == null)
             {
-                servletContext = get("servletContext");
+                servletContext = getInternal("servletContext");
             }
             if (servletContext != null && servletContextClass.isAssignableFrom(servletContext.getClass()))
             {
@@ -269,5 +264,17 @@ public class ConfigHelper
         return ret;
     }
 
+    public void setPrefix(String prefix)
+    {
+        this.prefix.set(prefix);
+    }
+
+    public void resetPrefix()
+    {
+        this.prefix.set("");
+    }
+
     private ExtProperties config = null;
+
+    private ThreadLocal<String> prefix = ThreadLocal.withInitial(() -> "");
 }

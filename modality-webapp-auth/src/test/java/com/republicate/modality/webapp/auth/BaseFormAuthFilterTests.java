@@ -20,6 +20,7 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 import com.republicate.modality.webapp.ModalityFilter;
 import com.republicate.modality.webapp.WebappModelConfig;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
@@ -112,9 +113,12 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     {
         expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
-        //expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
-        //expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
         expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
+        // expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
+        // expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
+        // Capture<Model> modelCapture = new Capture<>();
+        // servletContext.setAttribute(eq("model"), capture(modelCapture));
+        // expect(servletContext.getAttribute("model")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
     }
 

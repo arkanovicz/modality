@@ -102,14 +102,19 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private void ensureConfigured(Object servletContext)
     {
-        if (!configured)
+        if (!configured && !configuring)
         {
-            ConfigHelper config = new ConfigHelper();
-            this.servletContext = servletContext;
-            loadDefaultConfig(config);
-            loadUserConfig(config, servletContext);
-            configure(config);
-            configured = true;
+            synchronized (this)
+            {
+                configuring = true;
+                ConfigHelper config = new ConfigHelper();
+                this.servletContext = servletContext;
+                loadDefaultConfig(config);
+                loadUserConfig(config, servletContext);
+                configure(config);
+                configuring = false;
+                configured = true;
+            }
         }
     }
 
@@ -132,6 +137,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     {
         try
         {
+            config.setPrefix("model.");
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -220,6 +226,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         catch (Exception e)
         {
             throw new ConfigurationException("configuration problem", e);
+        }
+        finally
+        {
+            config.resetPrefix();
         }
     }
 
@@ -377,6 +387,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setWriteAccess(WriteAccess writeAccess)
     {
+        ensureConfigured();
         this.writeAccess = writeAccess;
         return getModel();
     }
@@ -388,6 +399,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setReverseMode(ReverseMode reverseMode)
     {
+        ensureConfigured();
         this.reverseMode = reverseMode;
         return getModel();
     }
@@ -415,6 +427,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setDataSource(DataSource dataSource) throws Exception
     {
+        ensureConfigured();
         if (this.dataSource != null)
         {
             throw new ConfigurationException("data source cannot be changed (no dynamic reloading)");
@@ -430,6 +443,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setDatabaseURL(String databaseURL)
     {
+        ensureConfigured();
         this.databaseURL = databaseURL;
         return getModel();
     }
@@ -441,6 +455,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setSchema(String schema)
     {
+        ensureConfigured();
         this.schema = schema;
         if (connectionPool != null)
         {
@@ -465,6 +480,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setDefinition(URL definition)
     {
+        ensureConfigured();
         this.definition = definition;
         return getModel();
     }
@@ -780,6 +796,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         public Model setReadMapping(Map filters) throws Exception
         {
+            ensureConfigured();
             readFilters.setMapping(filters);
             return getModel();
         }
@@ -791,12 +808,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         public Model setWriteMapping(Map filters) throws Exception
         {
+            ensureConfigured();
             writeFilters.setMapping(filters);
             return getModel();
         }
 
         public final Model setCryptographClass(String cryptographClass)
         {
+            ensureConfigured();
             this.cryptographClass = cryptographClass;
             return getModel();
         }
@@ -858,6 +877,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         public Model setFactory(Object factory)
         {
+            ensureConfigured();
             if (factory == null || factory instanceof Class)
             {
                 this.factory = (Class)factory;
@@ -887,6 +907,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         public Model setClasses(Map<String, ?> classes)
         {
+            ensureConfigured();
             this.classes = new TreeMap<String, Class>();
             try
             {
@@ -1052,6 +1073,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      * Members
      */
 
+    private boolean configuring = false;
     private boolean configured = false;
 
     private Object servletContext = null;

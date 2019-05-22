@@ -252,7 +252,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         Properties modelProps = new Properties();
         modelProps.put("model.datasource", dataSource);
         modelProps.put("model.reverse", "extended");
-        modelProps.put("model.identifiers.mapping", "lowercase");
+        modelProps.put("model.identifiers.mapping.*", "lowercase");
+        modelProps.put("model.identifiers.mapping.*.*", "lowercase");
         modelProps.put("model.identifiers.mapping.*.*_id", "/^.*_id/id/");
         modelProps.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
         Model model = new Model().configure(modelProps);
@@ -274,7 +275,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "tables");
         props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("model.identifiers.mapping", "lowercase");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
 
         Model model = new Model().configure(props).initialize();
         Instance book = model.getEntity("book").fetch(1);
@@ -303,7 +305,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "tables");
         props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("model.identifiers.mapping", "lowercase");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
         Filter calendar_to_time = x -> ((Calendar)x).getTime();
         props.put("model.filters.write.java.util.Calendar", calendar_to_time);
 
@@ -414,7 +417,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         props.put("model.credentials.user", "sa");
         props.put("model.credentials.password", "");
         props.put("model.database", "jdbc:hsqldb:.");
-        props.put("model.identifiers.mapping", "lowercase");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
         props.put("model.instances.classes.book", MyBook.class);
         props.put("model.instances.classes.publisher", MyPub.class);
         props.put("model.instances.factory", MyFactory.class);

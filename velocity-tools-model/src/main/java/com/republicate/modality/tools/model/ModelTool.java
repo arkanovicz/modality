@@ -28,6 +28,7 @@ import com.republicate.modality.RowAttribute;
 import com.republicate.modality.RowsetAttribute;
 import com.republicate.modality.ScalarAttribute;
 import com.republicate.modality.config.Constants;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.velocity.tools.Scope;
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.ValidScope;
@@ -40,9 +41,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * <p>ModelTool</p>
@@ -73,15 +81,31 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     }
     */
 
+    private static NavigableSet<String> modelKeys = new TreeSet<String>(Arrays.asList(
+        Model.MODEL_WRITE_ACCESS, Model.MODEL_REVERSE_MODE, Model.MODEL_DEFINITION, Model.MODEL_SCHEMA,
+        Model.MODEL_IDENTIFIERS_INFLECTOR, Model.MODEL_IDENTIFIERS_MAPPING,
+        Model.MODEL_FILTERS_READ, Model.MODEL_FILTERS_WRITE, Model.MODEL_FILTERS_CRYPTOGRAPH,
+        Model.MODEL_DATASOURCE, Model.MODEL_DATABASE, Model.MODEL_CREDENTIALS_USER, Model.MODEL_CREDENTIALS_PASSWORD,
+        Model.MODEL_INSTANCES_CLASSES, Model.MODEL_INSTANCES_FACTORY
+    ));
+
+    private static boolean isModelKey(String key)
+    {
+        // TODO - could be done upstream
+        String found = modelKeys.floor(key);
+        return found != null  && key.startsWith(found);
+    }
+
     @Override
     protected void configure(ValueParser params)
     {
         model = createModel();
 
-        // handles default and global configuration ;
-        // all those values can be changed during initialization
-        // when model path is read
-        model.configure(params);
+        Map<String, Object> modelParams =
+            params.entrySet().stream()
+            .map(entry -> Pair.of(isModelKey(entry.getKey()) ? "model." + entry.getKey() : entry.getKey(), entry.getValue()))
+            .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
+        model.configure(modelParams);
 
         String key = params.getString("key");
         if (key == null || key.length() == 0)

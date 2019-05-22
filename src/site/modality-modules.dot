@@ -28,7 +28,7 @@ Servlets [label=<<b>J2EE Servlet API</b>>];
 Webapp [label=<<b>modality-webapp</b><br/><sub><i>Modality webapp<br/>module</i></sub>>];
 Auth [label=<<b>modality-webapp-auth</b><br/><sub><i>authentication filters</i></sub>>];
 OAuth [label=<<b>modality-webapp-oauth</b><br/><sub><i>OAuth filters</i></sub>>];
-ModelTool [label=<<b>modality-tools-model</b><br/><sub><i>'pull model' view tools<br/>for Velocity</i></sub>>];
+ModelTool [label=<<b>velocity-tools-model</b><br/><sub><i>'pull model' view tools<br/>for Velocity</i></sub>>];
 Velocity [label=<<b>Apache Velocity</b><br/><sub><i>View layer</i></sub>>];
 Bookshelf [label=<<b>modality-example-bookshelf</b><br/><sub><i>the Bookshelf webapp<br/>example</i></sub>>];
 

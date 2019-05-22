@@ -89,7 +89,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         props.put("reverse", "full");
         props.put("definition", "blank_model.xml");
         props.put("identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("identifiers.mapping", "lowercase");
+        props.put("identifiers.mapping.*", "lowercase");
+        props.put("identifiers.mapping.*.*", "lowercase");
         model.configure(props);
         Context context = new VelocityContext();
         context.put("model", model);
@@ -114,7 +115,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         props.put("reverse", "full");
         props.put("definition", "blank_model.xml");
         props.put("identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("identifiers.mapping", "lowercase");
+        props.put("identifiers.mapping.*", "lowercase");
+        props.put("identifiers.mapping.*.*", "lowercase");
         model.configure(props);
         Context context = new VelocityContext();
         context.put("model", model);

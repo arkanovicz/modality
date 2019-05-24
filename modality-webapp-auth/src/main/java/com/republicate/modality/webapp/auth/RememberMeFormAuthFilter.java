@@ -20,6 +20,8 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
+import com.republicate.modality.webapp.WebappModelAccessor;
 import com.republicate.modality.webapp.auth.helpers.RememberMeCookieHandler;
 import com.republicate.modality.webapp.auth.helpers.RememberMeCookieHandlerImpl;
 import org.apache.commons.lang3.BooleanUtils;
@@ -181,7 +183,7 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
         {
             String cookieName = Optional.ofNullable(findConfigParameter(COOKIE_NAME)).orElse(DEFAULT_COOKIE_NAME);
             String cookieDomain = findConfigParameter(COOKIE_DOMAIN);
-            String cookiePath = Optional.ofNullable(findConfigParameter(COOKIE_PATH)).orElse(ServletUtils.combinePath(getConfig().getServletContext().getContextPath(), DEFAULT_COOKIE_PATH));
+            String cookiePath = Optional.ofNullable(findConfigParameter(COOKIE_PATH)).orElse(ServletUtils.combinePath(getModelProvider().getServletContext().getContextPath(), DEFAULT_COOKIE_PATH));
             int cookieMaxAge = NumberUtils.toInt(findConfigParameter(COOKIE_MAX_AGE), DEFAULT_COOKIE_MAX_AGE);
             boolean cookieSecure = Optional.ofNullable(BooleanUtils.toBooleanObject(findConfigParameter(COOKIE_SECURE))).orElse(true);
             rememberMeCookieHandler = new RememberMeCookieHandlerImpl(cookieName, cookieDomain, cookiePath, cookieMaxAge, cookieSecure);
@@ -191,10 +193,10 @@ public class RememberMeFormAuthFilter extends FormAuthFilter
     }
 
     @Override
-    protected void initModel() throws ServletException
+    public void modelInitialized(Model model) throws ServletException
     {
-        super.initModel();
-        rememberMeCookieHandler.setModel(getModel());
+        super.modelInitialized(model);
+        rememberMeCookieHandler.setModel(model);
     }
 
     @Override

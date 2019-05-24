@@ -20,6 +20,8 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
+import com.republicate.modality.webapp.WebappModelAccessor;
 import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
 import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
 
@@ -34,7 +36,7 @@ import javax.servlet.ServletException;
  *     <li>auth.model.<b>user_by_credentials</b>&nbsp;row attribute name to use ;
  *     defaults to <code>user_by_credentials</code>.</li>
  * </ul>
- * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
+ * <p>As usual, configuration parameters can be filter's configure-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
 public class HTTPBasicAuthFilter extends BaseHTTPBasicAuthFilter<Instance>
@@ -52,9 +54,9 @@ public class HTTPBasicAuthFilter extends BaseHTTPBasicAuthFilter<Instance>
     }
 
     @Override
-    protected void initModel() throws ServletException
+    public void modelInitialized(Model model) throws ServletException
     {
-        super.initModel();
+        super.modelInitialized(model);
         credentialsChecker.setModel(getModel());
     }
 

@@ -20,9 +20,7 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
-import com.republicate.modality.Model;
-import com.republicate.modality.webapp.ModalityFilter;
-import com.republicate.modality.webapp.WebappModelConfig;
+import com.republicate.modality.webapp.WebappModelProvider;
 import com.republicate.modality.webapp.auth.helpers.SavedRequest;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
@@ -80,11 +78,11 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests) throws Exception
     {
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
-        expect(filterConfig.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(WebappModelConfig.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(WebappModelProvider.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelProvider.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
-        expect(filterConfig.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(WebappModelConfig.MODEL_ID)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(BaseAuthFilter.REALM)).andAnswer(eval("TESTS"));
         expect(filterConfig.getInitParameter(BaseAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
         expect(servletContext.getContextPath()).andReturn("/");

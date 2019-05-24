@@ -63,8 +63,14 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
 
     private RememberMeFormAuthFilter createFilter()
     {
-        return new RememberMeFormAuthFilter() { @Override protected void initModel() throws ServletException
-        { super.initModel();}};
+        return new RememberMeFormAuthFilter()
+        {
+            @Override
+            public void modelInitialized(Model model) throws ServletException
+            {
+                super.modelInitialized(model);
+            }
+        };
     }
 
     @Test
@@ -126,10 +132,10 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
 
         replayAll();
 
-        velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
+        velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity configure now, just to ease tests
         RememberMeFormAuthFilter filter = createFilter();
         filter.init(filterConfig);
-        filter.initModel();
+        filter.getModel();
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
         filter.doFilter(request, response, filterChain);
@@ -176,10 +182,10 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
 
         replayAll();
 
-        velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity init now, just to ease tests
+        velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity configure now, just to ease tests
         RememberMeFormAuthFilter filter = createFilter();
         filter.init(filterConfig);
-        filter.initModel();
+        filter.getModel();
         filter.doFilter(request, response, filterChain);
 
         verifyAll();

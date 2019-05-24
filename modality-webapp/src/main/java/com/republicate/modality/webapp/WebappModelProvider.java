@@ -1,5 +1,24 @@
 package com.republicate.modality.webapp;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import com.republicate.modality.Model;
 import com.republicate.modality.ModelRepository;
 import com.republicate.modality.config.ConfigurationException;
@@ -21,34 +40,15 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-public class WebappModelConfig
+public class WebappModelProvider extends WebappModalityConfig
 {
-    protected static Logger logger = LoggerFactory.getLogger("model-init");
-
-    public static final String MODALITY_CONFIG_KEY = "modality.config";
-    public static final String MODALITY_DEFAULT_CONFIG = "com/republicate/modality/modality.properties";
-    public static final String MODALITY_DEFAULT_USER_CONFIG = "/WEB-INF/modality.properties";
+    protected static Logger logger = LoggerFactory.getLogger("model-configure");
 
     public static final String MODEL_ID = "auth.model.model_id";
 
-    public WebappModelConfig(JeeConfig config)
+    public WebappModelProvider(JeeConfig config)
     {
-        this.webConfig = config;
-    }
-
-    public JeeConfig getWebConfig()
-    {
-        return webConfig;
-    }
-
-    public String findConfigParameter(String key)
-    {
-        String ret = webConfig.findInitParameter(key);
-        if (ret == null)
-        {
-            ret = modalityConfig.getString(key);
-        }
-        return ret;
+        super(config);
     }
 
     public ServletContext getServletContext()
@@ -56,68 +56,30 @@ public class WebappModelConfig
         return getWebConfig().getServletContext();
     }
 
-    //
-    // Modality Initialization
-    //  - default modality.properties file
-    // - user provided mododality.properties file
-    //
-
-    public void initModalityConfig() throws ServletException
+    public Model getModel() throws ServletException
     {
-        initModalityDefaultConfig();
-        initModalityUserConfig();
+        return getModel(true);
+    }
+
+    public Model getModel(boolean initialize) throws ServletException
+    {
+        if (model == null && initialize)
+        {
+            synchronized (this)
+            {
+                if (model == null)
+                {
+                    initialize();
+                }
+            }
+        }
+        return model;
+    }
+
+    public void configure() throws ServletException
+    {
+        super.configure();
         modelId = findConfigParameter(MODEL_ID);
-    }
-
-    private void initModalityDefaultConfig() throws ServletException
-    {
-        modalityConfig = new ExtProperties();
-        InputStream is = ServletUtils.getInputStream(MODALITY_DEFAULT_CONFIG, webConfig.getServletContext());
-        if (is == null)
-        {
-            throw new ServletException("could not find default modality configuration file: " + MODALITY_DEFAULT_CONFIG);
-        }
-        try
-        {
-            modalityConfig.load(is);
-        } catch (IOException ioe)
-        {
-            throw new ServletException("could configure default modality configuration file", ioe);
-        }
-    }
-
-    private void initModalityUserConfig() throws ServletException
-    {
-        String modalityConfigPath = getWebConfig().findInitParameter(MODALITY_CONFIG_KEY);
-        boolean mandatory = modalityConfigPath != null;
-        if (modalityConfigPath == null)
-        {
-            modalityConfigPath = MODALITY_DEFAULT_USER_CONFIG;
-        }
-        if (modalityConfigPath != null)
-        {
-            InputStream is = ServletUtils.getInputStream(modalityConfigPath, webConfig.getServletContext());
-            if (is == null)
-            {
-                if (mandatory)
-                {
-                    throw new ServletException("could not find modality configuration file: " + modalityConfigPath);
-                }
-            }
-            else
-            {
-                ExtProperties userProps = new ExtProperties();
-                try
-                {
-                    userProps.load(is);
-                }
-                catch (IOException ioe)
-                {
-                    throw new ServletException("could not read modality configuration file: " + modalityConfigPath, ioe);
-                }
-                modalityConfig.putAll(userProps);
-            }
-        }
     }
 
     //
@@ -126,12 +88,11 @@ public class WebappModelConfig
     // - ModelRepository toolbox
     //
 
-
-    protected Model initModel() throws ServletException
+    private void initialize() throws ServletException
     {
         // if the model has been initialized via a model tool,
         // make sure the model tool is ready
-        Model model = initModelFromApplicationToolbox();
+        model = initModelFromApplicationToolbox();
         if (model == null)
         {
             // No application toolbox, or nothing found within.
@@ -150,7 +111,6 @@ public class WebappModelConfig
                 }
             }
         }
-        return model;
     }
 
     private Model initModelFromApplicationToolbox()
@@ -260,7 +220,6 @@ public class WebappModelConfig
     }
 
     private String modelId = null;
-    private ExtProperties modalityConfig = null;
-    private JeeConfig webConfig;
+    private Model model = null;
     
 }

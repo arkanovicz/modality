@@ -47,11 +47,16 @@ import javax.servlet.http.HttpServletResponse;
  * <li><code>auth.protected</code> - regular expression meant to match all resources URIs which are to be protected ;
  * by default all mapped resources are protected.
  *</ul>
- * <p>Configuration parameters can be specified in the <code>modality.properties</code> file, or as init-param or context-param in the <code>web.xml</code> webapp descriptor.</p>
+ * <p>Configuration parameters can be specified in the <code>modality.properties</code> file, or as configure-param or context-param in the <code>web.xml</code> webapp descriptor.</p>
  */
 
 public abstract class BaseAuthFilter<USER> extends ModalityFilter
 {
+    // CB TODO - it could just implement Filter and hold a WebappModalityConfig,
+    // so that it's totally independent form Model, but it would requires some refactoring
+    // since children classes may require the WebappModalityConfig to be a WebappModelProvider
+    // (or they could hold their own WebappModelProvider).
+
     protected static Logger logger = LoggerFactory.getLogger("auth");
 
     // config parameters keys
@@ -99,8 +104,8 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
 
     /**
      * <p>Filter initialization.</p>
-     * <p>Child classes should start with <code>super.init(filterConfig);</code>.</p>
-     * <p>Once parent has been initialized, <code>getConfig()</code> returns a JeeConfig.</p>
+     * <p>Child classes should start with <code>super.configure(filterConfig);</code>.</p>
+     * <p>Once parent has been initialized, <code>getModelProvider()</code> returns a JeeConfig.</p>
      * @param filterConfig filter config
      * @throws ServletException in case of error
      */

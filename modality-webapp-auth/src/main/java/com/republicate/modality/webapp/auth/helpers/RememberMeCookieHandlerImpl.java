@@ -295,7 +295,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     private boolean cookieSecure;
     private Cryptograph cryptograph;
 
-    // init
+    // configure
     private RowAttribute doCheckCookie = null;
     private List<String> usersPrimaryKey = null;
     private Action doCreateCookie = null;

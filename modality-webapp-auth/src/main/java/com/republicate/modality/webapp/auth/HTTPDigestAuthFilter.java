@@ -20,6 +20,7 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.ScalarAttribute;
 import com.republicate.modality.config.ConfigurationException;
@@ -40,7 +41,7 @@ import javax.servlet.ServletException;
  *     <li><code>auth.model.user_by_login</code> - row attribute returning the user instance. Defaults to
  *     'user_by_login'. Receives the parameters 'login' and 'realm'.</li>
  * </ul>
- * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
+ * <p>As usual, configuration parameters can be filter's configure-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
 public class HTTPDigestAuthFilter extends BaseHTTPDigestAuthFilter<Instance>
@@ -63,9 +64,9 @@ public class HTTPDigestAuthFilter extends BaseHTTPDigestAuthFilter<Instance>
     }
 
     @Override
-    protected void initModel() throws ServletException
+    public void modelInitialized(Model model) throws ServletException
     {
-        super.initModel();
+        super.modelInitialized(model);
 
         String digestByLogin = Optional.ofNullable(findConfigParameter(DIGEST_BY_LOGIN)).orElse(DEFAULT_DIGEST_BY_LOGIN);
         digestByLoginAttribute = getModel().getScalarAttribute(digestByLogin);

@@ -28,51 +28,21 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-public abstract class ModalityServlet extends HttpServlet
+public abstract class ModalityServlet extends HttpServlet implements WebappModelAccessor
 {
     protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public void init(ServletConfig servletConfig) throws ServletException
     {
-        this.config = new WebappModelConfig((new JeeServletConfig(servletConfig)));
-        config.initModalityConfig();
+        this.modelProvider = new WebappModelProvider((new JeeServletConfig(servletConfig)));
+        configureModel();
     }
 
-    protected Model getModel() throws ServletException
+    @Override
+    public final WebappModelProvider getModelProvider()
     {
-        requireModelInit();
-        return model;
+        return modelProvider;
     }
 
-    protected void requireModelInit() throws ServletException
-    {
-        if (model == null)
-        {
-            synchronized (this)
-            {
-                if (model == null)
-                {
-                    initModel();
-                }
-            }
-        }
-    }
-
-    protected void initModel() throws ServletException
-    {
-        model = config.initModel();
-    }
-
-    protected final String findConfigParameter(String key)
-    {
-        return config.findConfigParameter(key);
-    }
-
-    protected final WebappModelConfig getConfig()
-    {
-        return config;
-    }
-
-    private WebappModelConfig config = null;
-    private Model model = null;
+    private WebappModelProvider modelProvider = null;
 }

@@ -19,7 +19,6 @@ package com.republicate.modality.webapp;
  * under the License.
  */
 
-import com.republicate.modality.Model;
 import org.apache.velocity.tools.view.JeeFilterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,52 +27,31 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
-public abstract class ModalityFilter implements Filter
+/**
+ * <p>Base J2EE filter providing:</p>
+ * <ul>
+ *     <li><code>void modelInitialized(Model)</code></li>
+ *     <li><code>Model getModel()</code></li>
+ *     <li><code>String findConfigParameter(String key)</code></li>
+ * </ul>
+ */
+
+public abstract class ModalityFilter implements Filter, WebappModelAccessor
 {
     protected static Logger logger = LoggerFactory.getLogger("modality");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
     {
-        this.config = new WebappModelConfig(new JeeFilterConfig(filterConfig));
-        config.initModalityConfig();
+        this.modelProvider = new WebappModelProvider(new JeeFilterConfig(filterConfig));
+        configureModel();
     }
 
-    protected Model getModel() throws ServletException
+    @Override
+    public final WebappModelProvider getModelProvider()
     {
-        requireModelInit();
-        return model;
+        return modelProvider;
     }
 
-    protected void requireModelInit() throws ServletException
-    {
-        if (model == null)
-        {
-            synchronized (this)
-            {
-                if (model == null)
-                {
-                    initModel();
-                }
-            }
-        }
-    }
-
-    protected void initModel() throws ServletException
-    {
-        model = config.initModel();
-    }
-
-    protected final String findConfigParameter(String key)
-    {
-        return config.findConfigParameter(key);
-    }
-
-    protected final WebappModelConfig getConfig()
-    {
-        return config;
-    }
-
-    private WebappModelConfig config = null;
-    private Model model = null;
+    private WebappModelProvider modelProvider = null;
 }

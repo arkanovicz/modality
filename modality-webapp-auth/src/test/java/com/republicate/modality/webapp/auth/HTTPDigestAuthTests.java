@@ -19,8 +19,7 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.webapp.ModalityFilter;
-import com.republicate.modality.webapp.WebappModelConfig;
+import com.republicate.modality.webapp.WebappModelProvider;
 import com.republicate.modality.webapp.util.Digester;
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +46,7 @@ public class HTTPDigestAuthTests extends BaseHTTPAuthTests
         protected String[][] getConfigValues()
         {
             return  new String[][] {
-                { WebappModelConfig.MODEL_ID, "model" },
+                { WebappModelProvider.MODEL_ID, "model" },
                 { BaseAuthFilter.REALM, "TESTS" },
                 { BaseAuthFilter.PROTECTED_RESOURCES, ".*" },
                 { HTTPDigestAuthFilter.USER_BY_LOGIN, "user_by_login" },

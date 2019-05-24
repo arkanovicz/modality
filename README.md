@@ -1,8 +1,8 @@
 # Modality
 
-Modality is a set of tools which stick to the HTTP standard to provide a lightweight [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture based on the Java J2EE servlets API.
+Modality is a set of tools which stick to the J2EE and JDBC standard to provide a lightweight [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture based on the Java J2EE servlets API.
 
-Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design) approach rather than top-down. This makes Modality an *anti-framework*: its various components do stick to the underlying SQL/HTTP/J2EE... norms and have a minimal interdependance between them and just do the specific task they are intended to, leveraging the learning curve and added complexity, and nevertheless it covers all the basic needs of a fully functional MVC webapp.
+Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design) approach rather than top-down. This makes Modality an *anti-framework*: its various components do stick to the underlying norms and have a minimal interdependance between them and just do the specific task they are intended to, leveraging the learning curve and added complexity, and nevertheless those components assembly covers all the basic needs of a fully functional MVC webapp.
 
 + the Model layer is addressed with a generic ORM Java API witouth any code generation and with minimal optional caching, providing a complete database structure reverse enginering feature.
 + the View layer is Apache Velocity, but other Java View layer technologies can easily be used instead.

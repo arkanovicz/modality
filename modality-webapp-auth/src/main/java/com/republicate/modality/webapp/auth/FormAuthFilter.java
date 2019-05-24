@@ -20,6 +20,8 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Instance;
+import com.republicate.modality.Model;
+import com.republicate.modality.webapp.WebappModelAccessor;
 import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
 import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
 
@@ -41,10 +43,10 @@ import javax.servlet.ServletException;
  *     <li>auth.model.<b>refresh_rate</b>&nbsp;user instance refresh rate in seconds;
  *     defaults to 0 (aka never)</li>
  * </ul>
- * <p>As usual, configuration parameters can be filter's init-params or global context-params, or inside <code>modality.properties</code>.</p>
+ * <p>As usual, configuration parameters can be filter's configure-params or global context-params, or inside <code>modality.properties</code>.</p>
  */
 
-public class FormAuthFilter extends BaseFormAuthFilter<Instance>
+public class FormAuthFilter extends BaseFormAuthFilter<Instance> implements WebappModelAccessor
 {
     public static final String USER_BY_CRED_ATTRIBUTE = "auth.model.user_by_credentials";
     public static final String USER_REFRESH_RATE =      "auth.model.refresh_rate";
@@ -60,10 +62,10 @@ public class FormAuthFilter extends BaseFormAuthFilter<Instance>
     }
 
     @Override
-    protected void initModel() throws ServletException
+    public void modelInitialized(Model model) throws ServletException
     {
-        super.initModel();
-        credentialsChecker.setModel(getModel());
+        super.modelInitialized(model);
+        credentialsChecker.setModel(model);
     }
 
     @Override

@@ -72,7 +72,7 @@ public abstract class BaseFormAuthFilter<USER> extends BaseSessionAuthFilter<USE
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
-        final String contextPath = getConfig().getServletContext().getContextPath();
+        final String contextPath = getModelProvider().getServletContext().getContextPath();
         loginField = Optional.ofNullable(findConfigParameter(LOGIN_FIELD)).orElse(DEFAULT_FORM_LOGIN_FIELD);
         passwordField = Optional.ofNullable(findConfigParameter(PASSWORD_FIELD)).orElse(DEFAULT_FORM_PASSWORD_FIELD);
         loginURI = ServletUtils.combinePath(contextPath, Optional.ofNullable(findConfigParameter(LOGIN_URI)).orElse(null));
@@ -257,7 +257,7 @@ public abstract class BaseFormAuthFilter<USER> extends BaseSessionAuthFilter<USE
 
     private String findIndex()
     {
-        Set<String> landingPages = getConfig().getServletContext().getResourcePaths("/");
+        Set<String> landingPages = getModelProvider().getServletContext().getResourcePaths("/");
         for (String landingPage : landingPages)
         {
             if (landingPage.indexOf('/', 1) == -1)

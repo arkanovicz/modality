@@ -84,8 +84,8 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
 
     /**
      * <p>Filter initialization.</p>
-     * <p>Child classes should start with <code>super.init(filterConfig);</code>.</p>
-     * <p>Once parent has been initialized, <code>getConfig()</code> returns a JeeConfig.</p>
+     * <p>Child classes should start with <code>super.configure(filterConfig);</code>.</p>
+     * <p>Once parent has been initialized, <code>getModelProvider()</code> returns a JeeConfig.</p>
      * @param filterConfig filter config
      * @throws ServletException in case of error
      */
@@ -93,7 +93,7 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
-        String contextPath = getConfig().getServletContext().getContextPath();
+        String contextPath = getModelProvider().getServletContext().getContextPath();
         maxInactiveInterval = NumberUtils.toInt(findConfigParameter(MAX_INACTIVE_INTERVAL), 0);
         loggedSessionKey = Optional.ofNullable(findConfigParameter(LOGGED_SESSION_KEY)).orElse(DEFAULT_LOGGED_SESSION_KEY);
         doLoginURI = ServletUtils.combinePath(contextPath, Optional.ofNullable(findConfigParameter(DOLOGIN_URI)).orElse(DEFAULT_DOLOGIN_URI));

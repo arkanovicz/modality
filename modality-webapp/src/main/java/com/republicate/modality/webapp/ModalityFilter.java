@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
@@ -51,6 +52,11 @@ public abstract class ModalityFilter implements Filter, WebappModelAccessor
     public final WebappModelProvider getModelProvider()
     {
         return modelProvider;
+    }
+
+    public ServletContext getServletContext()
+    {
+        return modelProvider.getServletContext();
     }
 
     private WebappModelProvider modelProvider = null;

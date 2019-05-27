@@ -51,11 +51,6 @@ public class WebappModelProvider extends WebappModalityConfig
         super(config);
     }
 
-    public ServletContext getServletContext()
-    {
-        return getWebConfig().getServletContext();
-    }
-
     public Model getModel() throws ServletException
     {
         return getModel(true);

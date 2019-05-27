@@ -25,6 +25,7 @@ import org.apache.velocity.util.ExtProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 public class WebappModalityConfig
@@ -36,6 +37,11 @@ public class WebappModalityConfig
     public WebappModalityConfig(JeeConfig config)
     {
         this.webConfig = config;
+    }
+
+    public ServletContext getServletContext()
+    {
+        return getWebConfig().getServletContext();
     }
 
     public String findConfigParameter(String key)

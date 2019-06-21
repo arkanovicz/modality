@@ -26,6 +26,7 @@ import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.view.JeeConfig;
 import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
+import org.apache.velocity.tools.view.ViewContext;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.ExtProperties;
 import org.slf4j.Logger;
@@ -193,7 +194,7 @@ public class WebappModelProvider extends WebappModalityConfig
         try
         {
             Map params = new HashMap();
-            params.put(ToolContext.CONTEXT_KEY, getWebConfig().getServletContext());
+            params.put(ViewContext.SERVLET_CONTEXT_KEY, getWebConfig().getServletContext());
             params.put(ToolContext.ENGINE_KEY, ServletUtils.getVelocityView(getWebConfig()).getVelocityEngine());
             model = new Model().configure(params);
             if (modelId == null)

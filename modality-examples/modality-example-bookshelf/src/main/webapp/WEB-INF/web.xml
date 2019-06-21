@@ -37,7 +37,7 @@
   <filter>
     <filter-name>auth</filter-name>
     <filter-class>com.republicate.modality.webapp.auth.FormAuthFilter</filter-class>
-  </filter>auth.form.uri.login
+  </filter>
   <!-- filters mapping -->
   <filter-mapping>
     <filter-name>auth</filter-name>

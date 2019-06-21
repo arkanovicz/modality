@@ -135,6 +135,24 @@ public class ReverseEngineer
             // get columns
             String table = entity.getTable();
             columns = databaseMetaData.getColumns(getCatalog(), getSchema(), table, null);
+            String gen1 = "NO";
+            String gen2 = "NO";
+            boolean is_generatedcolumn_supported = true;
+            boolean is_autoincrement_supported = true;
+            try {
+                if (columns.findColumn("IS_GENERATEDCOLUMN") > 0)  is_generatedcolumn_supported = true;
+                else is_generatedcolumn_supported = false;
+            } catch (SQLException e) {
+                is_generatedcolumn_supported = false;
+                logger.warn("IS_GENERATEDCOLUMN not supported by this jdbc driver");
+            }
+            try {
+                if (columns.findColumn("IS_AUTOINCREMENT") > 0)  is_autoincrement_supported = true;
+                else is_autoincrement_supported = false;
+            } catch (SQLException e) {
+                is_autoincrement_supported = false;
+                logger.warn("is_autoincrement not supported by this jdbc driver");
+            }
             while (columns.next())
             {
                 Integer size = columns.getInt("COLUMN_SIZE");
@@ -142,8 +160,8 @@ public class ReverseEngineer
                 String colSqlName = columns.getString("COLUMN_NAME");
                 String colName = identifiers.transformColumnName(table, colSqlName);
                 int dataType = columns.getInt("DATA_TYPE");
-                String gen1 = columns.getString("IS_AUTOINCREMENT");
-                String gen2 = columns.getString("IS_GENERATEDCOLUMN");
+                if(is_autoincrement_supported) gen1 = columns.getString("IS_AUTOINCREMENT");
+                if(is_generatedcolumn_supported) gen2 = columns.getString("IS_GENERATEDCOLUMN");
                 boolean generated = "YES".equals(gen1) || "YES".equals(gen2);
                 ret.add(new Entity.Column(colName, colSqlName, dataType, size, generated));
             }

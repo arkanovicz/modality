@@ -21,7 +21,6 @@ package com.republicate.modality;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
-import org.apache.velocity.app.VelocityEngine;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -38,21 +37,6 @@ import javax.sql.DataSource;
 
 public class BaseBookshelfTests
 {
-    protected VelocityEngine createVelocityEngine(String propertiesFile)
-    {
-        VelocityEngine engine = propertiesFile == null ? new VelocityEngine() : new VelocityEngine(propertiesFile);
-        engine.init();
-        return engine;
-    }
-
-    protected VelocityEngine createVelocityEngine(Properties properties)
-    {
-        VelocityEngine engine = properties == null ? new VelocityEngine() : new VelocityEngine(properties);
-        engine.init();
-        return engine;
-    }
-
-
     protected static DataSource initDataSource() throws Exception
     {
         BasicDataSource ds = new BasicDataSource();

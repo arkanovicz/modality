@@ -202,7 +202,6 @@ public abstract class BaseFormAuthFilter<USER> extends BaseSessionAuthFilter<USE
         filterChain.doFilter(request, response);
     }
 
-
     @Override
     protected void processPostLogoutRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
@@ -220,7 +219,7 @@ public abstract class BaseFormAuthFilter<USER> extends BaseSessionAuthFilter<USE
     private void saveRequestIfNeeded(HttpServletRequest request)
     {
         String method = request.getMethod();
-        if (onSuccessRedirectGET && method.equals("GET") || onSuccessForwardPOST && method.equals("POST"))
+        if (onSuccessRedirectGET && method.equals("GET") || onSuccessForwardPOST && method.equals("POST") && !request.getRequestURI().equals(getDoLoginURI()))
         {
             SavedRequest savedRequest = new SavedRequest(request);
             saveRequest(request, savedRequest);

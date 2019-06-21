@@ -91,8 +91,7 @@ import javax.servlet.http.HttpSession;
  *           SELECT user.*
  *           FROM   remember_me
  *             JOIN user ON user.us_id = remember_me.us_id
- *           WHERE remember_me.us_id = &lt;us_id/&gt;
- *             AND remember_me.ip = &lt;ip/&gt;
+ *           WHERE remember_me.ip = &lt;ip/&gt;
  *             AND remember_me.secure_key = &lt;secure_key/&gt;
  *             AND creation &gt;= now() - interval 365 day;
  *       &lt;/row&gt;

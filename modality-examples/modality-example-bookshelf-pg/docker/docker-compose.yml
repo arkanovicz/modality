@@ -1,0 +1,42 @@
+version: '2'
+services:
+
+
+  bookshelf:
+    build:
+      context: .
+    container_name: bookshelf
+    environment:
+      - JPDA_ADDRESS=5005
+      - JPDA_TRANSPORT=dt_socket
+      - JPDA_SUSPEND=y
+    ports:
+      - "5005:5005"
+      - "80:8080"
+    volumes:
+      - ../target/modality-example-bookshelf-pg-1.0-SNAPSHOT:/usr/local/tomcat/webapps/ROOT
+      - bookshelf_logs:/usr/local/tomcat/logs
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
+      - ./context.xml:/usr/local/tomcat/conf/context.xml
+    command: /usr/local/tomcat/bin/catalina.sh jpda run
+    depends_on:
+      - db_bookshelf
+
+  db_bookshelf:
+    restart: always
+    container_name: db_bookshelf
+    image: postgres:9-alpine
+    environment:
+      - POSTGRES_PASSWORD=bookshelf
+      - POSTGRES_USER=bookshelf
+      - POSTGRES_DB=bookshelf
+      - DB_NAME=bookshelf
+    volumes:
+      - bookshelf_pgdb:/var/lib/postgresql/data
+
+
+volumes:
+  bookshelf_pgdb:
+    driver: local
+  bookshelf_logs:
+    driver: local

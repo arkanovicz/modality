@@ -294,7 +294,7 @@ public class ConfigDigester
         }
         if (setter == null)
         {
-            throw new ConfigurationException("no setter for preperty " + name + " on class " + bean.getClass());
+            throw new ConfigurationException("no setter for property " + name + " on class " + bean.getClass());
         }
         setter.setAccessible(true);
         Object argument;

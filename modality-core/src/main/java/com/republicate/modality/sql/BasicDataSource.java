@@ -30,7 +30,7 @@ import javax.sql.DataSource;
  * <p>Standalone data source, aka connections provider.</p>
  * <p>When using the BasicDataSource from *inside* a webapp (i.e. *not* using JNDI):</p>
  * <ul>
- *     <li>If the JDBC driver livrary is present both in the container libraries and in the webapp libraries,
+ *     <li>If the JDBC driver library is present both in the container libraries and in the webapp libraries,
  *     the driver will be automatically registered.</li>
  *     <li>If the JDBC driver library is only present in the webapp libraries, the application *is* responsible
  *     for registering it with the DriverManager, which boils down to calling Class.forName(driverClass).</li>

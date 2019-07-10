@@ -112,6 +112,7 @@ under the License.
                 <artifactId>cargo-maven2-plugin</artifactId>
                 <version>1.6.8</version>
                 <configuration>
+                    <skip>${maven.test.skip}</skip>
                     <container>
                         <containerId>jetty9x</containerId>
                         <timeout>1800000</timeout> <!-- @@ for debugging -->

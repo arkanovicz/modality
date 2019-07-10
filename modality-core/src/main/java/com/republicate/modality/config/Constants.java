@@ -30,6 +30,8 @@ public interface Constants
     // TODO
     // String MODEL_LOGGER_NAME = "logger.name";
 
+    String MODEL_ID = "id";
+    
     String MODEL_WRITE_ACCESS = "write";
 
     String MODEL_REVERSE_MODE = "reverse";

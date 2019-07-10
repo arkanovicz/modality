@@ -138,6 +138,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         try
         {
             config.setPrefix("model.");
+            Optional.ofNullable(config.getString(MODEL_ID)).ifPresent(this::setModelId);
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -299,7 +300,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model initialize(String id, InputSource source) throws ConfigurationException
     {
-        this.modelId = id;
+        setModelId(id);
         try
         {
             ensureConfigured();
@@ -380,6 +381,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return modelId;
     }
 
+    public void setModelId(String modelId)
+    {
+        this.modelId = modelId;
+    }
+    
     public WriteAccess getWriteAccess()
     {
         return writeAccess;

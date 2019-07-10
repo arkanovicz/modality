@@ -249,7 +249,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model initialize(URL url)
     {
-        return initialize("default", url);
+        return initialize(Optional.ofNullable(getModelId()).orElse("default"), url);
     }
 
     public Model initialize(String id, URL url)

@@ -288,7 +288,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model initialize(Reader reader)
     {
-        return initialize("default", new InputSource(reader));
+        return initialize(Optional.ofNullable(getModelId()).orElse("default"), new InputSource(reader));
     }
 
     public Model initialize(String id, Reader reader) throws ConfigurationException

@@ -74,7 +74,7 @@ public class FormAuthFilterTests extends BaseFormAuthFilterTests
         replayAll();
 
         velocityView = ServletUtils.getVelocityView(filterConfig); // force Velocity configure now, just to ease tests
-        new Model().setDataSource(initDataSource()).initialize("model", getResource("user_cred_model.xml"));
+        new Model().setDataSource(initDataSource()).initialize(getResource("user_cred_model.xml"));
         FormAuthFilter filter = createFilter();
         filter.init(filterConfig);
         filter.getModel();

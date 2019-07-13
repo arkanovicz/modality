@@ -82,8 +82,8 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     */
 
     private static NavigableSet<String> modelKeys = new TreeSet<String>(Arrays.asList(
-        Model.MODEL_WRITE_ACCESS, Model.MODEL_REVERSE_MODE, Model.MODEL_DEFINITION, Model.MODEL_SCHEMA,
-        Model.MODEL_IDENTIFIERS_INFLECTOR, Model.MODEL_IDENTIFIERS_MAPPING,
+        Model.MODEL_WRITE_ACCESS, Model.MODEL_REVERSE_MODE, Model.MODEL_CONFIGURATION, Model.MODEL_DEFINITION, Model.MODEL_SCHEMA,
+        Model.MODEL_ID, Model.MODEL_IDENTIFIERS_INFLECTOR, Model.MODEL_IDENTIFIERS_MAPPING,
         Model.MODEL_FILTERS_READ, Model.MODEL_FILTERS_WRITE, Model.MODEL_FILTERS_CRYPTOGRAPH,
         Model.MODEL_DATASOURCE, Model.MODEL_DATABASE, Model.MODEL_CREDENTIALS_USER, Model.MODEL_CREDENTIALS_PASSWORD,
         Model.MODEL_INSTANCES_CLASSES, Model.MODEL_INSTANCES_FACTORY
@@ -101,18 +101,26 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     {
         model = createModel();
 
+        String key = params.getString("key");
+        if (key == null || key.length() == 0)
+        {
+            key = "model";
+        }
+
         Map<String, Object> modelParams =
             params.entrySet().stream()
             .map(entry -> Pair.of(isModelKey(entry.getKey()) ? "model." + entry.getKey() : entry.getKey(), entry.getValue()))
             .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
+
+        String modelIdKey = "model." + MODEL_ID;
+        if (!modelParams.containsKey(modelIdKey))
+        {
+            modelParams.put(modelIdKey, key);
+        }
+
         model.configure(modelParams);
 
-        String key = params.getString("key");
-        if (key == null || key.length() == 0)
-        {
-            key = "default";
-        }
-        model.initialize(key, model.getDefinition());
+        model.initialize(model.getDefinition());
         canWrite = model.getWriteAccess() == Model.WriteAccess.VTL;
     }
 

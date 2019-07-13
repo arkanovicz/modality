@@ -36,14 +36,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class Velosurf extends Model
 {
     @Override
-    public Model initialize(String id, InputSource source) throws ConfigurationException
+    public Model initialize(InputSource source) throws ConfigurationException
     {
         String seed = Optional.ofNullable(source.getSystemId())
             .orElse(Optional.ofNullable(getDefinition()).map(url -> url.toString())
             .orElse(Optional.ofNullable(getDatabaseURL())
                 .orElse("those are random characters...")));
         initObuscator(seed);
-        return super.initialize(id, source);
+        return super.initialize(source);
     }
 
     @Override

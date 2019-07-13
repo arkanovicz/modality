@@ -196,17 +196,17 @@ public class WebappModelProvider extends WebappModalityConfig
             Map params = new HashMap();
             params.put(ViewContext.SERVLET_CONTEXT_KEY, getWebConfig().getServletContext());
             params.put(ToolContext.ENGINE_KEY, ServletUtils.getVelocityView(getWebConfig()).getVelocityEngine());
+            if (modelId != null)
+            {
+                params.put(Model.MODEL_ID, modelId);
+            }
             model = new Model().configure(params);
-            if (modelId == null)
+            model.initialize();
+            if (modelId != null && modelId != model.getModelId())
             {
-                model.initialize();
-                modelId = model.getModelId();
+                throw new ConfigurationException("Was expecting model id '" + modelId + "', got model id '" + model.getModelId() + "'");
             }
-            else
-            {
-                model.initialize(modelId);
-            }
-            logger.info("Configured new model with model id '{}'", modelId);
+            logger.info("Configured new model with model id '{}'", model.getModelId());
         }
         catch (ConfigurationException ce)
         {

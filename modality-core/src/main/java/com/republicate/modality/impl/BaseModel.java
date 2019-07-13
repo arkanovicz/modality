@@ -110,7 +110,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 ConfigHelper config = new ConfigHelper();
                 this.servletContext = servletContext;
                 loadDefaultConfig(config);
-                loadUserConfig(config, servletContext);
+                loadGlobalConfig(config, servletContext);
+                loadModelConfig(config, servletContext);
                 configure(config);
                 configuring = false;
                 configured = true;
@@ -124,7 +125,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         config.setProperties(url);
     }
 
-    private void loadUserConfig(ConfigHelper config, Object servletContext)
+    private void loadGlobalConfig(ConfigHelper config, Object servletContext)
     {
         URL url = config.findURL(MODALITY_PROPERTIES, servletContext, false);
         if (url != null)
@@ -133,12 +134,34 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         }
     }
 
+    private void loadModelConfig(ConfigHelper config, Object servletContext)
+    {
+        String modelConfig = config.getString(MODEL_CONFIGURATION);
+        if (modelConfig == null)
+        {
+            String modelId = config.getString(MODEL_ID);
+            if (modelId != null && ! "model".equals(modelId))
+            {
+                modelConfig = modelId + ".properties";
+            }
+        }
+        if (modelConfig != null)
+        {
+            URL url = config.findURL(modelConfig, servletContext, false);
+            if (url != null)
+            {
+                config.setProperties(url);
+            }
+        }
+    }
+
     private Model configure(ConfigHelper config)
     {
         try
         {
             config.setPrefix("model.");
-            Optional.ofNullable(config.getString(MODEL_ID)).ifPresent(this::setModelId);
+            // CB TODO - add suffixes to the default id when initializing several models without id
+            setModelId(Optional.ofNullable(config.getString(MODEL_ID)).orElse("model"));
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -250,16 +273,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model initialize(URL url)
     {
-        return initialize(Optional.ofNullable(getModelId()).orElse("default"), url);
-    }
-
-    public Model initialize(String id, URL url)
-    {
         try
         {
             if (url == null)
             {
-                initialize(id, (Reader)null);
+                initialize((Reader)null);
             }
             else
             {
@@ -267,7 +285,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 Reader reader = new InputStreamReader(url.openStream());
                 InputSource source = new InputSource(reader);
                 source.setSystemId(url.toExternalForm());
-                initialize(id, source);
+                initialize(source);
             }
         }
         catch (IOException ioe)
@@ -277,30 +295,19 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return getModel();
     }
 
-    public Model initialize(String id, String path)
+    public Model initialize(String path)
     {
-        return initialize(id, new ConfigHelper().findURL(path));
+        return initialize(new ConfigHelper().findURL(path));
     }
 
-    public Model initialize(String id)
+    public Model initialize(Reader reader) throws ConfigurationException
     {
-        return initialize(id, getDefinition());
-    }
-
-    public Model initialize(Reader reader)
-    {
-        return initialize(Optional.ofNullable(getModelId()).orElse("default"), new InputSource(reader));
-    }
-
-    public Model initialize(String id, Reader reader) throws ConfigurationException
-    {
-        return initialize(id, reader == null ? null : new InputSource(reader));
+        return initialize(reader == null ? null : new InputSource(reader));
 
     }
 
-    public Model initialize(String id, InputSource source) throws ConfigurationException
+    public Model initialize(InputSource source) throws ConfigurationException
     {
-        setModelId(id);
         try
         {
             ensureConfigured();

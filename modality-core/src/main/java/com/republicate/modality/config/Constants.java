@@ -39,6 +39,8 @@ public interface Constants
     // TODO - Velocity-aware model should be a subclass
     String MODEL_VELOCITY_ENGINE = "velocity_engine";
 
+    String MODEL_CONFIGURATION = "configuration";
+
     String MODEL_DEFINITION = "definition";
 
     String MODEL_DEFAULT_PATH = "model.xml";

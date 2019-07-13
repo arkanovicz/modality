@@ -50,7 +50,7 @@ public abstract class BaseHTTPAuthTests extends BaseBookshelfTests
     protected void setUp() throws Exception
     {
         BaseBookshelfTests.populateDataSource();
-        Model model = new Model().setDataSource(initDataSource()).initialize("model", getResource("user_cred_auth.xml"));
+        Model model = new Model().setDataSource(initDataSource()).initialize(getResource("user_cred_auth.xml"));
 
         tester = new ServletTester();
         tester.setContextPath("/");

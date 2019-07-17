@@ -31,6 +31,8 @@ public interface Constants
     // String MODEL_LOGGER_NAME = "logger.name";
 
     String MODEL_ID = "id";
+
+    String DEFAULT_MODEL_ID = "model";
     
     String MODEL_WRITE_ACCESS = "write";
 

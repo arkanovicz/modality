@@ -140,7 +140,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         if (modelConfig == null)
         {
             String modelId = config.getString(MODEL_ID);
-            if (modelId != null && ! "model".equals(modelId))
+            if (modelId != null)
             {
                 modelConfig = modelId + ".properties";
             }
@@ -161,7 +161,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             config.setPrefix("model.");
             // CB TODO - add suffixes to the default id when initializing several models without id
-            setModelId(Optional.ofNullable(config.getString(MODEL_ID)).orElse("model"));
+            setModelId(Optional.ofNullable(config.getString(MODEL_ID)).orElse(DEFAULT_MODEL_ID));
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -224,7 +224,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 if (definition == null)
                 {
                     useDefault = true;
-                    path = MODEL_DEFAULT_PATH;
+                    path = getModelId() + ".xml";
                 }
             }
             if (path != null)

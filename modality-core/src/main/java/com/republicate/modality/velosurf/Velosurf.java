@@ -35,6 +35,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 @Deprecated
 public class Velosurf extends Model
 {
+    public Velosurf()
+    {
+        super();
+    }
+
+    public Velosurf(String modelId)
+    {
+        super(modelId);
+    }
+
     @Override
     public Model initialize(InputSource source) throws ConfigurationException
     {

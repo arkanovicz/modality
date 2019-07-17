@@ -20,6 +20,7 @@ package com.republicate.modality.tools.model;
  */
 
 
+import com.republicate.modality.ModelRepository;
 import com.republicate.modality.webapp.ModalityView;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -30,6 +31,7 @@ import org.apache.velocity.tools.ToolboxFactory;
 import org.apache.velocity.tools.config.ConfigurationUtils;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.XmlFactoryConfiguration;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -126,6 +128,12 @@ public class BasicModelToolTests extends BaseBookshelfTests
         out = new StringWriter();
         assertTrue(engine.evaluate(context, out, "test", "#foreach( $book_author in $model.book.fetch(1).book_authors )$book_author.author.author_id#end"));
         assertEquals("12", out.toString());
+    }
+
+    @Before
+    public void clearRepository()
+    {
+        ModelRepository.clear();
     }
 
     @BeforeClass

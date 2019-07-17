@@ -1,9 +1,11 @@
 package com.republicate.modality.tools.model;
 
+import com.republicate.modality.ModelRepository;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
 import org.apache.velocity.tools.config.ConfigurationUtils;
 import org.apache.velocity.tools.config.FactoryConfiguration;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,6 +36,12 @@ public class MultiModelsTests extends BaseBookshelfTests
         assertTrue(rst2 instanceof Number);
         assertEquals(2l, rst1);
         assertEquals(2l, rst2);
+    }
+
+    @Before
+    public void clearRepository()
+    {
+        ModelRepository.clear();
     }
 
     @BeforeClass

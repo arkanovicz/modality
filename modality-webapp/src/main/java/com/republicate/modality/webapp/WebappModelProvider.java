@@ -28,24 +28,20 @@ import org.apache.velocity.tools.view.ServletUtils;
 import org.apache.velocity.tools.view.VelocityView;
 import org.apache.velocity.tools.view.ViewContext;
 import org.apache.velocity.util.ClassUtils;
-import org.apache.velocity.util.ExtProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 public class WebappModelProvider extends WebappModalityConfig
 {
     protected static Logger logger = LoggerFactory.getLogger("model-configure");
 
-    public static final String MODEL_ID = "auth.model.model_id";
+    public static final String MODEL_ID = "auth.model." + Model.MODEL_ID;
 
     public WebappModelProvider(JeeConfig config)
     {
@@ -139,7 +135,7 @@ public class WebappModelProvider extends WebappModalityConfig
             {
                 if (modelKeys.size() > 1)
                 {
-                    throw new RuntimeException("authentication filter cannot choose between several models, please specify " + MODEL_ID + " in configuration parameters");
+                    throw new RuntimeException("authentication filter cannot choose between several models, please specify auth.model." + MODEL_ID + " in webapp parameters");
                 }
                 else if (!modelKeys.isEmpty())
                 {

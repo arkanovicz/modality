@@ -54,9 +54,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class VelosurfTool extends ModelTool
 {
     @Override
-    protected Model createModel()
+    protected Model createModel(String modelId)
     {
-        return new Velosurf();
+        return new Velosurf(modelId);
     }
 
     @Override

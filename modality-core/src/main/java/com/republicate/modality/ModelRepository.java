@@ -98,6 +98,12 @@ public class ModelRepository
         }
     }
 
+    public static void clear()
+    {
+        // mainly used for resetting repository before tests
+        contextMap.clear();
+    }
+
     /**
      * (global) model id resolution contexts (aka ServletContexts or ClassLoaders)
      */

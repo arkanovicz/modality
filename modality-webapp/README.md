@@ -35,7 +35,7 @@ See the [class diagram](src/site/dependencies.svg), and the [call graph](src/sit
           |         +-- uri. +-- home = <auto> : home URI for unauthentified sessions, set by default to '/' resource path
           |                  +-- login = "login.vhtml" : login form URI
           |                  +-- user_home = home : home URI for logged users
-          +-- model. +-- model_id = <auto> : model id to use
+          +-- model. +-- id = <auto> : model id to use
           |          +-- refresh_rate = 0 : session user instance refresh rate
           |          +-- user_by_credentials = null : model attribute returning a user given correct dredentials
           +-- cookie. +-- check. +-- ip = false : should the *remember me* cookie handler check IPs

@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -99,34 +100,39 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     @Override
     protected void configure(ValueParser params)
     {
-        model = createModel();
-
-        String key = params.getString("key");
-        if (key == null || key.length() == 0)
-        {
-            key = "model";
-        }
+        String modelId = Optional.ofNullable(params.getString("key")).orElse(Model.DEFAULT_MODEL_ID);
+        model = getModel(params.get("servletContext"), modelId);
 
         Map<String, Object> modelParams =
             params.entrySet().stream()
             .map(entry -> Pair.of(isModelKey(entry.getKey()) ? "model." + entry.getKey() : entry.getKey(), entry.getValue()))
             .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
 
-        String modelIdKey = "model." + MODEL_ID;
-        if (!modelParams.containsKey(modelIdKey))
+        if (model.isConfigured())
         {
-            modelParams.put(modelIdKey, key);
+            getLog().warn("model {} is already initialized, skipping configuration with tools params: {}", modelParams);
         }
-
-        model.configure(modelParams);
-
-        model.initialize(model.getDefinition());
+        else
+        {
+            model.configure(modelParams);
+            model.initialize(model.getDefinition());
+        }
         canWrite = model.getWriteAccess() == Model.WriteAccess.VTL;
     }
 
-    protected Model createModel()
+    protected Model getModel(Object context, String modelId)
     {
-        return new Model();
+        Model model = ModelRepository.getModel(context, modelId);
+        if (model == null)
+        {
+            model = createModel(modelId);
+        }
+        return model;
+    }
+
+    protected Model createModel(String modelId)
+    {
+        return new Model(modelId);
     }
 
     protected Model getModel()

@@ -33,6 +33,12 @@ public class Model extends BaseModel
 
     public Model()
     {
+        super();
+    }
+
+    public Model(String modelId)
+    {
+        super(modelId);
     }
 
     public Logger getLogger()

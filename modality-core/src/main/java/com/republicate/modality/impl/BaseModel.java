@@ -82,6 +82,13 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 {
     public BaseModel()
     {
+        this(null);
+    }
+
+    public BaseModel(String modelId)
+    {
+        // CB TODO - add suffixes to the default id when initializing several models without id
+        setModelId(Optional.ofNullable(modelId).orElse(DEFAULT_MODEL_ID));
     }
 
     /*
@@ -93,6 +100,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         ensureConfigured(params.get("servletContext"));
         configure(new ConfigHelper(params));
         return getModel();
+    }
+
+    public boolean isConfigured()
+    {
+        return configured;
     }
 
     private void ensureConfigured()
@@ -160,8 +172,6 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         try
         {
             config.setPrefix("model.");
-            // CB TODO - add suffixes to the default id when initializing several models without id
-            setModelId(Optional.ofNullable(config.getString(MODEL_ID)).orElse(DEFAULT_MODEL_ID));
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -388,7 +398,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return modelId;
     }
 
-    public void setModelId(String modelId)
+    private void setModelId(String modelId)
     {
         this.modelId = modelId;
     }

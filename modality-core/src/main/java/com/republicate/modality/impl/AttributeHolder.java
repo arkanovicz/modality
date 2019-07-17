@@ -115,7 +115,7 @@ public abstract class AttributeHolder implements Serializable
        Attribute attribute = getAttribute(name);
        if (attribute == null)
        {
-           throw new SQLException("unknown baseAttribute: " + name);
+           throw new SQLException("unknown attribute: " + name);
        }
        if (!(attribute instanceof ScalarAttribute))
        {
@@ -129,7 +129,7 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new SQLException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof ScalarAttribute))
         {
@@ -144,7 +144,7 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new SQLException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof ScalarAttribute))
         {
@@ -158,7 +158,7 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new SQLException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {
@@ -172,7 +172,7 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new SQLException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {
@@ -186,7 +186,7 @@ public abstract class AttributeHolder implements Serializable
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
-            throw new SQLException("unknown baseAttribute: " + name);
+            throw new SQLException("unknown attribute: " + name);
         }
         if (!(attribute instanceof RowAttribute))
         {

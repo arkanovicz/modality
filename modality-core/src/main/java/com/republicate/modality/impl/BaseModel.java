@@ -151,7 +151,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         String modelConfig = config.getString(MODEL_CONFIGURATION);
         if (modelConfig == null)
         {
-            String modelId = config.getString(MODEL_ID);
+            String modelId = getModelId();
             if (modelId != null)
             {
                 modelConfig = modelId + ".properties";

@@ -21,7 +21,9 @@ package com.republicate.modality.webapp.auth;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.velocity.tools.generic.ValueParser;
 import org.apache.velocity.tools.view.JeeConfig;
+import org.apache.velocity.tools.view.ParameterTool;
 import org.apache.velocity.tools.view.ServletUtils;
 
 import java.io.IOException;
@@ -135,7 +137,7 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
                 user = super.getAuthentifiedUser(request); // will call authenticate()
                 if (user == null)
                 {
-                    logger.info("failed login with params {}", request.getParameterMap());
+                    logger.info("failed login with params {}", new ParameterTool(request));
                 }
                 return user;
             }

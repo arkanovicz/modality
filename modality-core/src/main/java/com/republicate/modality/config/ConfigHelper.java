@@ -53,9 +53,15 @@ public class ConfigHelper
         }
     }
 
+    public ConfigHelper setProperties(ExtProperties values)
+    {
+        config.combine(values);
+        return this;
+    }
+
     public ConfigHelper setProperties(Map values)
     {
-        config.putAll(values);
+        setProperties(ExtProperties.convertProperties(values));
         return this;
     }
 
@@ -70,7 +76,7 @@ public class ConfigHelper
         {
             throw new ConfigurationException("coud not load " + properties.toString(), ioe);
         }
-        config.putAll(props);
+        setProperties(props);
         return this;
     }
 

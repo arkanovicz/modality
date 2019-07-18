@@ -178,7 +178,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             // Optional.ofNullable((VelocityEngine)config.get(MODEL_VELOCITY_ENGINE)).ifPresent(this::setVelocityEngine);
             Optional.ofNullable(config.getString(MODEL_SCHEMA)).ifPresent(this::setSchema);
             Optional.ofNullable(config.getString(MODEL_IDENTIFIERS_INFLECTOR)).ifPresent(getIdentifiers()::setInflector);
-            Object flatMapping = config.get(MODEL_IDENTIFIERS_MAPPING);
+            Object flatMapping = Optional.ofNullable(config.get(MODEL_IDENTIFIERS_MAPPING)).orElse(config.getSubProperties(MODEL_IDENTIFIERS_MAPPING));
             if (flatMapping != null)
             {
                 if (flatMapping instanceof String)

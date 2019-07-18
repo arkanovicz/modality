@@ -686,6 +686,12 @@ public class ConnectionWrapper
         {
             case METHOD:
             {
+                Statement targetStatement = statement;
+                while (targetStatement.isWrapperFor(Statement.class))
+                {
+                    targetStatement = targetStatement.unwrap(Statement.class);
+                }
+
                 if (lastInsertIdMethod == null)
                 {
                     synchronized(this)
@@ -694,7 +700,7 @@ public class ConnectionWrapper
                         {
                             try
                             {
-                                lastInsertIdMethod = statement.getClass().getMethod(driverInfos.getLastInsertIdMethodName());
+                                lastInsertIdMethod = targetStatement.getClass().getMethod(driverInfos.getLastInsertIdMethodName());
                             }
                             catch (NoSuchMethodException nsme)
                             {
@@ -705,7 +711,7 @@ public class ConnectionWrapper
                 }
                 try
                 {
-                    ret = ((Long)lastInsertIdMethod.invoke(statement)).longValue();
+                    ret = ((Long)lastInsertIdMethod.invoke(targetStatement)).longValue();
                 }
                 catch (IllegalAccessException | InvocationTargetException e)
                 {

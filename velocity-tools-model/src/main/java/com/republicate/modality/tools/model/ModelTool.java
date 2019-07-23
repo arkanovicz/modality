@@ -46,6 +46,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -332,6 +334,52 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
         public InstanceReference next()
         {
             return createInstanceReference(iterator.next());
+        }
+
+        public Map<Serializable, Serializable> toMap(String keyName)
+        {
+            Boolean mapToInstances = null;
+            String valueName = null;
+            Map<Serializable, Serializable> ret = new TreeMap<>();
+            while (hasNext())
+            {
+                InstanceReference instance = next();
+                if (mapToInstances == null)
+                {
+                    switch (instance.size())
+                    {
+                        case 0:
+                        case 1:
+                            error("toMap(): invalid call: instances must have at least two values");
+                            return null;
+                        case 2:
+                            mapToInstances = false;
+                            Set<String> columns = instance.keySet();
+                            for (String col : columns)
+                            {
+                                if (!col.equals(keyName))
+                                {
+                                    valueName = col;
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            mapToInstances = true;
+                    }
+                }
+                Serializable key = instance.get(keyName);
+                if (mapToInstances)
+                {
+                    ret.put(key, instance);
+                }
+                else
+                {
+                    Serializable value = instance.get(valueName);
+                    ret.put(key, value);
+                }
+            }
+            return ret;
         }
 
         protected Iterator<Instance> getInnerIterator()

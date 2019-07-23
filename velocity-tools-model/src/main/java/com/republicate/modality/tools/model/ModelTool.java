@@ -42,13 +42,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -309,12 +306,13 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     protected void error(String message, Object... arguments)
     {
         // default implementation only logs
-        getLogger().error(message, arguments);
+        getLog().error(message, arguments);
     }
 
-    protected Logger getLogger() // give package access to logger
+    @Override
+    protected Logger getLog() // give package access to logger
     {
-        return getLog();
+        return super.getLog();
     }
 
     public class InstanceReferenceIterator implements Iterator<InstanceReference>

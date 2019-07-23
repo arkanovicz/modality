@@ -15,7 +15,7 @@ package com.republicate.modality.impl;
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
+ * specific language governing permissions and limitationsDriverInfos
  * under the License.
  */
 
@@ -32,7 +32,9 @@ import java.io.InputStream;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -233,6 +235,61 @@ public class ReverseEngineer
             }
         }
         return joins;
+    }
+
+    public List<String> describeEnum(Entity entity, String column) throws SQLException
+    {
+        List<String> ret = null;
+        String describeEnumQuery = driverInfos.getDescribeEnumQuery();
+        if (describeEnumQuery != null)
+        {
+            ret = new ArrayList<>();
+            Entity.Column enumCol = entity.getColumn(column);
+            if (enumCol == null)
+            {
+                throw new SQLException("unknown enum column: " + entity.getTable() + "." + column);
+            }
+            describeEnumQuery = describeEnumQuery
+                .replace("$table", entity.getTable())
+                .replace("$column", enumCol.name);
+            Statement st = databaseMetaData.getConnection().createStatement();
+            ResultSet rs = st.executeQuery(describeEnumQuery);
+            if (!rs.next())
+            {
+                throw new SQLException("no result while describing enum column " + entity.getTable() + "." + column);
+            }
+            String describeEnumPattern = driverInfos.getDescribeEnumPattern();
+            if (describeEnumPattern == null)
+            {
+                // expecting one value per row
+                do
+                {
+                    ret.add(rs.getString(1));
+                }
+                while (rs.next());
+            }
+            else
+            {
+                // expecting a coma separated list
+                String desc = rs.getString(1);
+                Pattern pattern = Pattern.compile(describeEnumPattern);
+                Matcher matcher = pattern.matcher(desc);
+                if (matcher.matches())
+                {
+                    String list = matcher.group(1);
+                    if (list == null)
+                    {
+                        throw new SQLException("column " + entity.getTable() + "." + column + ": expecting a coma separated list as captured group fir pattern '" + describeEnumPattern + "' against value: " + desc);
+                    }
+                    ret = Arrays.asList(list.split(","));
+                }
+                else
+                {
+                    throw new SQLException("column " + entity.getTable() + "." + column + ": cannot apply pattern '" + describeEnumPattern + "' to column description '" + desc + "'");
+                }
+            }
+        }
+        return ret;
     }
 
     /**

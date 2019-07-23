@@ -141,7 +141,6 @@ public class ConnectionPool implements Serializable
             {
                 schemaQuery = schemaQuery.replace("$schema", schema);
                 Statement stmt = connection.createStatement();
-
                 stmt.executeUpdate(schemaQuery);
                 stmt.close();
             }

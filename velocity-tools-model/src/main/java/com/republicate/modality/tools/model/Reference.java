@@ -45,12 +45,12 @@ public abstract class Reference
     protected void error(String message, Object... arguments)
     {
         // The default implementation just log the error.
-        getModelTool().getLogger().error(message, arguments);
+        getModelTool().getLog().error(message, arguments);
 
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
         String msg = tuple.getMessage();
         Throwable err = tuple.getThrowable();
-        getModelTool().getLogger().error(msg, err);
+        getModelTool().getLog().error(msg, err);
         getModelTool().setLastError(msg);
 
         // TODO - this is a good insertion point for a pluggable error handler

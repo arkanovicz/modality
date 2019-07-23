@@ -120,7 +120,7 @@ public class VelosurfTool extends ModelTool
     }
 
     @Override
-    protected Logger getLogger() // give package access to logger
+    protected Logger getLog() // give package access to logger
     {
         return getLog();
     }

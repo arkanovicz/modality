@@ -255,6 +255,31 @@ public class DriverInfos implements Constants, Serializable
         }
     }
 
+    public String getDescribeEnumQuery()
+    {
+        return describeEnumQuery;
+    }
+
+    public String getDescribeEnumPattern()
+    {
+        return describeEnumPattern;
+    }
+
+    public void setDescribeEnum(String describeEnum)
+    {
+        int sep = describeEnum.indexOf('|');
+        if (sep == -1)
+        {
+            describeEnumQuery = describeEnum;
+            describeEnumPattern = null;
+        }
+        else
+        {
+            describeEnumQuery = describeEnum.substring(0, sep);
+            describeEnumPattern = describeEnum.substring(sep + 1);
+        }
+    }
+
     /**
      * Check whether to ignore or not this table.
      *
@@ -319,64 +344,7 @@ public class DriverInfos implements Constants, Serializable
     /** whether driver supports ::varchar etc... */
     private Boolean columnMarkers = null;
 
-    /**
-       * Get the last inserted id.
-       * @param statement source statement
-       * @param keyColumn key column name
-       * @return last inserted id (or -1)
-       * @throws SQLException
-       * /
-      public long getLastInsertId(Statement statement, String keyColumn) throws SQLException
-      {
-        long ret = -1;
-
-        if("mysql".equalsIgnoreCase(getTag()))
-        {    /* MySql * /
-          try
-          {
-            Method lastInsertId = statement.getClass().getMethod("getLastInsertID", new Class[0]);
-            ret = ((Long) lastInsertId.invoke(statement, new Object[0])).longValue();
-          }
-          catch (Throwable e)
-          {
-            logger.error("Could not find last insert id", e);
-          }
-        }
-        else if (getUsesGeneratedKeys())
-        {
-          int col = 1;
-          ResultSet rs = statement.getGeneratedKeys();
-          ResultSetMetaData rsmd = rs.getMetaData();
-          int numberOfColumns = rsmd.getColumnCount();
-          if (rs.next())
-          {
-            if (numberOfColumns > 1)
-            {
-              ret = rs.getLong(keyColumn);
-              if (rs.wasNull()) ret = -1;
-            }
-            else
-            {
-              ret = rs.getLong(1);
-              if (rs.wasNull()) ret = -1;
-            }
-          }
-        }
-        else
-        {
-          if (lastInsertIDQuery == null)
-          {
-            logger.error("getLastInsertID is not [yet] implemented for your dbms... Contribute!");
-          }
-          else
-          {
-            ResultSet rs = statement.getConnection().createStatement().executeQuery(lastInsertIDQuery);
-            rs.next();
-            ret = rs.getLong(1);
-            if (rs.wasNull()) ret = -1;
-          }
-        }
-        return ret;
-      }
-      */
+    /** sql query to get enum values */
+    private String describeEnumQuery = null;
+    private String describeEnumPattern = null;
 }

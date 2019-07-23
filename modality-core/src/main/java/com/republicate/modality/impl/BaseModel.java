@@ -572,6 +572,17 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         entitiesMap.put(entity.getName(), entity);
     }
 
+    private ReverseEngineer getMetaModel(ConnectionWrapper connection) throws SQLException
+    {
+        return new ReverseEngineer(connection.getMetaData(), driverInfos);
+    }
+
+    public ReverseEngineer getMetaModel() throws SQLException
+    {
+        ConnectionWrapper connection = connectionPool.getConnection();
+        return getMetaModel(connection);
+    }
+
     private void reverseEngineer() throws SQLException
     {
         if (connectionPool == null)
@@ -584,7 +595,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             connection = connectionPool.getConnection();
             connection.enterBusyState();
-            ReverseEngineer reverseEngineer = new ReverseEngineer(connection.getMetaData(), driverInfos);
+            ReverseEngineer reverseEngineer = getMetaModel(connection);
 
             // adapt known entities table case if necessary
             for (Entity entity : entitiesMap.values())

@@ -67,7 +67,7 @@ public class MetaModelTool extends SafeConfig implements Constants, Serializable
     @Override
     protected void configure(ValueParser params)
     {
-        String modelId = Optional.ofNullable(params.getString("key")).orElse(Model.DEFAULT_MODEL_ID);
+        String modelId = Optional.ofNullable(params.getString(Model.MODEL_ID)).orElse(Model.DEFAULT_MODEL_ID);
         model = getModel(params.get("servletContext"), modelId);
         if (model == null)
         {

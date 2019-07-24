@@ -41,8 +41,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Optional;
@@ -378,6 +380,17 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
                     Serializable value = instance.get(valueName);
                     ret.put(key, value);
                 }
+            }
+            return ret;
+        }
+
+        public List<InstanceReference> toList()
+        {
+            List<InstanceReference> ret = new ArrayList<>();
+            InstanceReference instance;
+            while (hasNext())
+            {
+                ret.add(next());
             }
             return ret;
         }

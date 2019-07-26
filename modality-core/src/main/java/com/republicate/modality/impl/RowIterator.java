@@ -25,12 +25,15 @@ import com.republicate.modality.sql.PooledStatement;
 import com.republicate.modality.sql.SqlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 //import com.republicate.modality.util.UserContext;
@@ -150,7 +153,7 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
      */
     public void remove()
     {
-        logger.warn("'remove' not implemented");
+        throw new NotImplementedException();
     }
 
     /**
@@ -190,74 +193,16 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
      * Gets all the rows in a list of instances.
      *
      * @return a list of all the rows
-     * /
-    public List<Instance> getRows()
+     */
+    public static List<Instance> toInstancesList(Iterator<Instance> iterator)
     {
-        try
+        List<Instance> ret = new ArrayList<Instance>();
+        while (iterator.hasNext())
         {
-            List<Instance> ret = new ArrayList<Instance>();
-
-            pooledStatement.getConnection().enterBusyState();
-            if(resultEntity != null && !resultEntity.isRootEntity())
-            {
-                while(!resultSet.isAfterLast() && resultSet.next())
-                {
-                    Instance i = resultEntity.newInstance(new ReadOnlyMap(this), true);
-                    i.setClean();
-                    ret.add(i);
-                }
-            }
-            else
-            {
-                while(!resultSet.isAfterLast() && resultSet.next())
-                {
-                    Instance i = new Instance(new ReadOnlyMap(this), resultEntity == null ? null : resultEntity.getDB());
-                    ret.add(i);
-                }
-            }
-            return ret;
+            ret.add(iterator.next());
         }
-        catch(SQLException sqle)
-        {
-            logger.log(sqle);
-            return null;
-        }
-        finally
-        {
-            pooledStatement.getConnection().leaveBusyState();
-            pooledStatement.notifyOver();
-            isOver = true;
-        }
+        return ret;
     }
-    */
-
-    /*
-    public List getScalars()
-    {
-        try
-        {
-            List ret = new ArrayList();
-
-            pooledStatement.getConnection().enterBusyState();
-            while(!resultSet.isAfterLast() && resultSet.next())
-            {
-                ret.add(resultSet.getObject(1));
-            }
-            return ret;
-        }
-        catch(SQLException sqle)
-        {
-            logger.log(sqle);
-            return null;
-        }
-        finally
-        {
-            pooledStatement.getConnection().leaveBusyState();
-            pooledStatement.notifyOver();
-            isOver = true;
-        }
-    }
-    */
 
     Set cachedSet = null;
 

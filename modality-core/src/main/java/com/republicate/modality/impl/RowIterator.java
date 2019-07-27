@@ -189,21 +189,6 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
         return result;
     }
 
-    /* *
-     * Gets all the rows in a list of instances.
-     *
-     * @return a list of all the rows
-     */
-    public static List<Instance> toInstancesList(Iterator<Instance> iterator)
-    {
-        List<Instance> ret = new ArrayList<Instance>();
-        while (iterator.hasNext())
-        {
-            ret.add(iterator.next());
-        }
-        return ret;
-    }
-
     Set cachedSet = null;
 
     /*  */
@@ -215,21 +200,6 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
         }
         return cachedSet;
     }
-
-    /*  * /
-    public List<String> keyList()
-    {
-        try
-        {
-            return SqlUtil.getColumnNames(resultSet);
-        }
-        catch(SQLException sqle)
-        {
-            logger.log(sqle);
-            return null;
-        }
-    }
-    */
 
     /**
      * Check if some data is available.

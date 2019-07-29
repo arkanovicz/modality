@@ -689,7 +689,12 @@ public class ConnectionWrapper
                 Statement targetStatement = statement;
                 while (targetStatement.isWrapperFor(Statement.class))
                 {
-                    targetStatement = targetStatement.unwrap(Statement.class);
+                    Statement wrapped = targetStatement.unwrap(Statement.class);
+                    if (wrapped == targetStatement)
+                    {
+                        break;
+                    }
+                    targetStatement = wrapped;
                 }
 
                 if (lastInsertIdMethod == null)

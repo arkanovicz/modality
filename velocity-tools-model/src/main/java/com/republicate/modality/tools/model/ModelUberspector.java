@@ -161,15 +161,34 @@ public class ModelUberspector extends AbstractChainableUberspector
                 Object[] arguments;
                 if (vararg)
                 {
-                    arguments = new Object[] { property, args };
+                    Serializable params[] = new Serializable[args.length];
+                    for (int i = 0; i < args.length; ++i)
+                    {
+                        if (args[i] == null || args[i] instanceof Serializable)
+                        {
+                            params[i] = (Serializable)args[i];
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException("Expecting serializable arguments");
+                        }
+                    }
+                    arguments = new Object[] { property, params };
                 }
                 else
                 {
-                    arguments = new Object[] { property, args[0] };
+                    if (args[0] == null || args[0] instanceof Serializable)
+                    {
+                        arguments = new Object[] { property, (Serializable)args[0] };
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException("Expecting serializable arguments");
+                    }
                 }
                 ret = method.invoke(obj, arguments);
             }
-            catch(IllegalAccessException | InvocationTargetException e)
+            catch(IllegalAccessException | InvocationTargetException | IllegalArgumentException e)
             {
                 logger.error("attribute call failed", e);
             }

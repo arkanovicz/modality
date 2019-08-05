@@ -106,8 +106,9 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
 
         Map<String, Object> modelParams =
             params.entrySet().stream()
-            .map(entry -> Pair.of(isModelKey(entry.getKey()) ? "model." + entry.getKey() : entry.getKey(), entry.getValue()))
-            .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> Pair.of(isModelKey(entry.getKey()) ? "model." + entry.getKey() : entry.getKey(), entry.getValue()))
+                .collect(Collectors.toMap(pair -> pair.getLeft(), pair -> pair.getRight()));
 
         if (model.isConfigured())
         {

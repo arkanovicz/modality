@@ -1,6 +1,6 @@
 # Modality
 
-Modality is a set of tools which stick to the J2EE and JDBC standard to provide a lightweight, loosely coupled and highly cusomizable [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture based on the Java J2EE servlets API.
+Modality is a set of tools which stick to the J2EE and JDBC standards to provide a lightweight, loosely coupled and highly cusomizable [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture based on the Java J2EE servlets API.
 
 Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design) approach rather than top-down. This makes Modality an *anti-framework*: its various components do stick to the underlying norms, have a minimal interdependance and just do the specific task they are intended to, leveraging the learning curve and added complexity, and nevertheless those components assembly covers all the basic needs of a fully functional MVC webapp.
 

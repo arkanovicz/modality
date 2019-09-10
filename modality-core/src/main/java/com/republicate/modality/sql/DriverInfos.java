@@ -145,14 +145,17 @@ public class DriverInfos implements Constants, Serializable
         {
             case NONE: return "none";
             case GENERATED_KEYS: return "generated_keys";
-            case METHOD: return "method:" + getLastInsertIdMethodName();
+            case METHOD: return "method:" + getLastInsertIdMethod();
             case QUERY: return "query:" + getLastInsertIdQuery();
             default: return null;
         }
     }
 
+    static Pattern classMethodPattern = Pattern.compile("((?:\\w+\\.)*\\w+\\.\\w)(?:\\(\\))?");
+
     public void setLastInsertIdPolicy(String policy)
     {
+        policy = policy.trim();
         if (policy.startsWith("query:"))
         {
             lastInsertIdPolicy = LastInsertIdPolicy.QUERY;
@@ -161,7 +164,7 @@ public class DriverInfos implements Constants, Serializable
         else if (policy.startsWith("method:"))
         {
             lastInsertIdPolicy = LastInsertIdPolicy.METHOD;
-            lastInsertIdMethodName = policy.substring(7).trim();
+            lastInsertIdMethod = policy.substring(7).trim();
         }
         else
         {
@@ -178,9 +181,9 @@ public class DriverInfos implements Constants, Serializable
         return lastInsertIdQuery;
     }
 
-    public String getLastInsertIdMethodName()
+    public String getLastInsertIdMethod()
     {
-        return lastInsertIdMethodName;
+        return lastInsertIdMethod;
     }
 
     public Boolean isStrictColumnTypes()
@@ -330,7 +333,7 @@ public class DriverInfos implements Constants, Serializable
     public enum LastInsertIdPolicy { NONE, GENERATED_KEYS, RETURNING, QUERY, METHOD }
     private LastInsertIdPolicy lastInsertIdPolicy = null;
     private String lastInsertIdQuery = null;
-    private String lastInsertIdMethodName = null;
+    private String lastInsertIdMethod = null;
 
     /** whether the JDBC driver is strict about column types */
     private Boolean strictColumnTypes = null;

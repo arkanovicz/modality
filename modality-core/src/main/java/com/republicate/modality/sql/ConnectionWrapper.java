@@ -61,7 +61,7 @@ public class ConnectionWrapper
     /**
      * Constructor.
      * @param driverInfos infos on the driver
-     * @param connection connection to be wrapped
+-     * @param connection connection to be wrapped
      */
     public ConnectionWrapper(DriverInfos driverInfos, Connection connection)
     {
@@ -687,15 +687,6 @@ public class ConnectionWrapper
             case METHOD:
             {
                 Statement targetStatement = statement;
-                while (targetStatement.isWrapperFor(Statement.class))
-                {
-                    Statement wrapped = targetStatement.unwrap(Statement.class);
-                    if (wrapped == targetStatement)
-                    {
-                        break;
-                    }
-                    targetStatement = wrapped;
-                }
 
                 if (lastInsertIdMethod == null)
                 {
@@ -705,15 +696,53 @@ public class ConnectionWrapper
                         {
                             try
                             {
-                                lastInsertIdMethod = targetStatement.getClass().getMethod(driverInfos.getLastInsertIdMethodName());
+                                String classAndMethod = driverInfos.getLastInsertIdMethod();
+                                if (classAndMethod == null)
+                                {
+                                    throw new SQLException("invalid last insert id method, expecting: package.class.method");
+                                }
+                                int lastDot = classAndMethod.lastIndexOf('.');
+                                if (lastDot == -1)
+                                {
+                                    throw new SQLException("invalid last insert id method, expecting: package.class.method");
+                                }
+                                lastInsertIdClass = Class.forName(classAndMethod.substring(0, lastDot));
+                                String methodName = classAndMethod.substring(lastDot + 1);
+                                lastInsertIdMethod = lastInsertIdClass.getMethod(methodName);
                             }
-                            catch (NoSuchMethodException nsme)
+                            catch (NoSuchMethodException | ClassNotFoundException e)
                             {
-                                throw new SQLException("cannot get last insert id", nsme);
+                                throw new SQLException("cannot get last insert id", e);
                             }
                         }
                     }
                 }
+
+                /* TODO URGENT BROKEN
+                while (targetStatement.isWrapperFor(Statement.class))
+                {
+                    Statement wrapped = targetStatement.unwrap(Statement.class);
+                    if (wrapped == targetStatement)
+                    {
+                        break;
+                    }
+                    targetStatement = wrapped;
+                }
+                */
+
+                // TEMPORARY HACK - tomcat jdbc2 + mysql
+                try
+                {
+                    Method getDelegateMethod = targetStatement.getClass().getMethod("getDelegate");
+                    targetStatement = (Statement)getDelegateMethod.invoke(targetStatement);
+                    targetStatement = (Statement)getDelegateMethod.invoke(targetStatement);
+                    targetStatement = (Statement)targetStatement.unwrap(lastInsertIdClass);
+                }
+                catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+                {
+                    throw new SQLException("cannot get last insert id", e);
+                }
+
                 try
                 {
                     ret = ((Long)lastInsertIdMethod.invoke(targetStatement)).longValue();
@@ -795,6 +824,7 @@ public class ConnectionWrapper
     /** Infos on the driver. */
     private DriverInfos driverInfos = null;
 
+    private Class lastInsertIdClass = null;
     private Method lastInsertIdMethod = null;
 
     /** Wrapped connection. */

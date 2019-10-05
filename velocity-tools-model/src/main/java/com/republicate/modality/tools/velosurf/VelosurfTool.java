@@ -185,7 +185,45 @@ public class VelosurfTool extends ModelTool
 
         public Map<Serializable, Serializable> getMap()
         {
-            throw new UnsupportedOperationException("not supported");
+            try
+            {
+                Map<Serializable, Serializable> ret = new HashMap<>();
+                String keyName = null, valueName = null;
+                while (hasNext())
+                {
+                    VelosurfInstanceReference instance = (VelosurfInstanceReference) next();
+                    if (keyName == null)
+                    {
+                        Serializable key[] = instance.getInstance().getPrimaryKey();
+                        if (key != null && key.length == 1)
+                        {
+                            Iterator<String> it = instance.keySet().iterator();
+                            keyName = it.next();
+                            if (!it.hasNext())
+                            {
+
+                                throw new SQLException("not enough columns");
+                            }
+                            valueName = it.next();
+                            if (it.hasNext())
+                            {
+                                log.warn("iterator to map: ignored columns");
+                            }
+                        }
+                        else
+                        {
+                            throw new SQLException("wrong key size");
+                        }
+                    }
+                    ret.put(instance.get(keyName), instance.get(valueName));
+                }
+                return ret;
+            }
+            catch (SQLException sqle)
+            {
+                error("cannot get instance map", sqle);
+                return null;
+            }
         }
 
         public Map<Serializable, InstanceReference> getInstanceMap()

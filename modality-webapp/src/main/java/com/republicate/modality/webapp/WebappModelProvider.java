@@ -136,7 +136,7 @@ public class WebappModelProvider extends WebappModalityConfig
                 if (modelKeys.size() > 1)
                 {
                     // CB TODO - wider scope than auth! adapt (and parametrize) log message
-                    throw new RuntimeException("servlet/filter model provider cannot choose between several models, please specify auth.model." + MODEL_ID + " as init-param or context-param");
+                    throw new RuntimeException("servlet/filter model provider cannot choose between several models, please specify " + MODEL_ID + " as init-param or context-param");
                 }
                 else if (!modelKeys.isEmpty())
                 {

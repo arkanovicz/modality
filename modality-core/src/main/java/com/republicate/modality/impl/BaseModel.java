@@ -278,6 +278,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model initialize()
     {
+        ensureConfigured();
         return initialize(getDefinition());
     }
 

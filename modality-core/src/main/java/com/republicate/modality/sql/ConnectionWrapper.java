@@ -688,6 +688,18 @@ public class ConnectionWrapper
             {
                 Statement targetStatement = statement;
 
+                /* TODO URGENT BROKEN
+                while (targetStatement.isWrapperFor(Statement.class))
+                {
+                    Statement wrapped = targetStatement.unwrap(Statement.class);
+                    if (wrapped == targetStatement)
+                    {
+                        break;
+                    }
+                    targetStatement = wrapped;
+                }
+                */
+
                 if (lastInsertIdMethod == null)
                 {
                     synchronized(this)
@@ -708,6 +720,10 @@ public class ConnectionWrapper
                                 }
                                 lastInsertIdClass = Class.forName(classAndMethod.substring(0, lastDot));
                                 String methodName = classAndMethod.substring(lastDot + 1);
+                                if (methodName.endsWith("()"))
+                                {
+                                    methodName = methodName.substring(0, methodName.length() - 2);
+                                }
                                 lastInsertIdMethod = lastInsertIdClass.getMethod(methodName);
                             }
                             catch (NoSuchMethodException | ClassNotFoundException e)
@@ -718,29 +734,21 @@ public class ConnectionWrapper
                     }
                 }
 
-                /* TODO URGENT BROKEN
-                while (targetStatement.isWrapperFor(Statement.class))
-                {
-                    Statement wrapped = targetStatement.unwrap(Statement.class);
-                    if (wrapped == targetStatement)
-                    {
-                        break;
-                    }
-                    targetStatement = wrapped;
-                }
-                */
-
                 // TEMPORARY HACK - tomcat jdbc2 + mysql
                 try
                 {
-                    Method getDelegateMethod = targetStatement.getClass().getMethod("getDelegate");
-                    targetStatement = (Statement)getDelegateMethod.invoke(targetStatement);
-                    targetStatement = (Statement)getDelegateMethod.invoke(targetStatement);
+                    while (!lastInsertIdClass.isAssignableFrom(targetStatement.getClass()))
+                    {
+                        Method getDelegateMethod = targetStatement.getClass().getMethod("getDelegate");
+                        targetStatement = (Statement) getDelegateMethod.invoke(targetStatement);
+                    }
                     targetStatement = (Statement)targetStatement.unwrap(lastInsertIdClass);
                 }
                 catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
                 {
-                    throw new SQLException("cannot get last insert id", e);
+
+                    // just retry the unwrapping
+                    targetStatement = (Statement) targetStatement.unwrap(lastInsertIdClass);
                 }
 
                 try

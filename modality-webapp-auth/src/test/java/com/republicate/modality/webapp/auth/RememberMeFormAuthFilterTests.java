@@ -128,6 +128,7 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
+        expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
         filterChain.doFilter(request, response);
 
         replayAll();
@@ -177,6 +178,7 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
+        expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
 
         filterChain.doFilter(request, response);
 

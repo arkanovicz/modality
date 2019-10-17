@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -90,7 +91,7 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
 
     protected void processProtectedRequest(USER logged, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
-        logger.debug("user going towards {}: {}", request.getRequestURI(), displayUser(logged));
+        logger.debug("user '{}' going towards {}", displayUser(logged), URLDecoder.decode(request.getRequestURI(), request.getCharacterEncoding()));
         filterChain.doFilter(request, response);
     }
 

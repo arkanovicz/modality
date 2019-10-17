@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class ValueFilterHandler extends FilterHandler<Serializable>
 {
-    protected static Logger logger = LoggerFactory.getLogger(ValueFilterHandler.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public ValueFilterHandler(String configurationPrefix)
     {

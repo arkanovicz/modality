@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 public class ReverseEngineer
 {
-    protected static Logger logger = LoggerFactory.getLogger(ReverseEngineer.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     private static final String STOCK_DRIVERS_PATH = "com/republicate/modality/drivers/";
 

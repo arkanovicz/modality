@@ -38,7 +38,7 @@ import javax.sql.DataSource;
  */
 public class ConnectionPool implements Serializable
 {
-    protected static Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
+    protected static Logger logger = LoggerFactory.getLogger("sql");
 
     /**
      * Constructor.

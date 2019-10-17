@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class StatementPool implements /* Runnable, */ Pool
 {
-    protected Logger logger = LoggerFactory.getLogger(StatementPool.class);
+    protected Logger logger = LoggerFactory.getLogger("sql");
 
     public StatementPool(ConnectionPool connectionPool)
     {

@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class SqlUtils
 {
-    protected static Logger logger = LoggerFactory.getLogger(SqlUtils.class);
+    protected static Logger logger = LoggerFactory.getLogger("sql");
 
     // that's crazy to have to code such a method...
     // in Ruby for instance, it's :

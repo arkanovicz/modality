@@ -82,11 +82,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 {
     public BaseModel()
     {
-        this(null);
+        this("model");
     }
 
     public BaseModel(String modelId)
     {
+        super(modelId);
         // CB TODO - add suffixes to the default id when initializing several models without id
         setModelId(Optional.ofNullable(modelId).orElse(DEFAULT_MODEL_ID));
     }

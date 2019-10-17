@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class PooledStatement extends Pooled implements RowValues
 {
-    protected static Logger logger = LoggerFactory.getLogger(PooledStatement.class);
+    protected static Logger logger = LoggerFactory.getLogger("sql");
 
 
     /** org.apache.velocity.tools.generic.ValueParser$ValueParserSub class, if found in the classpath. * /

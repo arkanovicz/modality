@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class Identifiers extends FilterHandler<String>
 {
-    protected static Logger logger = LoggerFactory.getLogger(Identifiers.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public Identifiers()
     {

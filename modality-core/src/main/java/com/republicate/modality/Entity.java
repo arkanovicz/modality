@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class Entity extends BaseEntity implements Iterable<Instance>
 {
-    protected static Logger logger = LoggerFactory.getLogger(Entity.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public Entity(String name, Model model)
     {
@@ -70,11 +70,13 @@ public class Entity extends BaseEntity implements Iterable<Instance>
 
     public Instance fetch(Serializable... key) throws SQLException
     {
+        getLogger().trace("fetch {}", getName());
         return getFetchAttribute().retrieve(key);
     }
 
     public Instance fetch(Map key) throws SQLException
     {
+        getLogger().trace("fetch {}", getName());
         return getFetchAttribute().retrieve(key);
     }
 

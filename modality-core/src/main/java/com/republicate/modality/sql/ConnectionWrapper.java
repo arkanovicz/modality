@@ -56,7 +56,7 @@ public class ConnectionWrapper
     implements Connection, Serializable
 {
 
-    protected static Logger logger = LoggerFactory.getLogger(ConnectionWrapper.class);
+    protected static Logger logger = LoggerFactory.getLogger("sql");
 
     /**
      * Constructor.

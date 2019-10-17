@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConversionHandlerImpl implements ConversionHandler
 {
-    protected static Logger logger = LoggerFactory.getLogger("conversion");
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     /**
      * standard narrowing and string parsing conversions.

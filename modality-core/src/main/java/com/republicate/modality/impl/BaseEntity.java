@@ -53,6 +53,7 @@ public abstract class BaseEntity extends AttributeHolder
 {
     public BaseEntity(String name, Model model)
     {
+        super(name);
         this.model = model;
         this.name = name;
     }

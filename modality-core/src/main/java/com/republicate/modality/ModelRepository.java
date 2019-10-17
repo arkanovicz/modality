@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class ModelRepository
 {
-    protected static Logger logger = LoggerFactory.getLogger("model-repository");
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public static void registerModel(Model model)
     {

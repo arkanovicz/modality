@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 public class Model extends BaseModel
 {
-    protected static Logger logger = LoggerFactory.getLogger(Model.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     public Model()
     {

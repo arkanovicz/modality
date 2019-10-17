@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class ChainedMap implements Map
 {
-    protected static Logger logger = LoggerFactory.getLogger(ChainedMap.class);
+    protected static Logger logger = LoggerFactory.getLogger("modality");
 
     private Map source;
     private Map parameters;

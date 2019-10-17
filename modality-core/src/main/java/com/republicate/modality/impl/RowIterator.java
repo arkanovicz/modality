@@ -45,7 +45,7 @@ import java.util.Set;
  */
 public class RowIterator extends InstanceProducer implements Iterator<Instance>, Serializable
 {
-    Logger logger = LoggerFactory.getLogger(RowIterator.class);
+    Logger logger = LoggerFactory.getLogger("sql");
 
     /**
      * Build a new RowIterator.

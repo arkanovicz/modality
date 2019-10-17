@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  */
 public class DriverInfos implements Constants, Serializable
 {
-    protected static Logger logger = LoggerFactory.getLogger(DriverInfos.class);
+    protected static Logger logger = LoggerFactory.getLogger("sql");
 
     /*
      * Constructors

@@ -47,6 +47,13 @@ public abstract class AttributeHolder implements Serializable
 
     protected abstract Logger getLogger();
 
+    private String logName = null;
+
+    public AttributeHolder(String logName)
+    {
+        this.logName = logName;
+    }
+
     protected void initializeAttributes()
     {
         for (Map.Entry<String, Attribute> entry : attributesMap.entrySet())
@@ -126,6 +133,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Serializable evaluate(String name, Map source) throws SQLException
     {
+        getLogger().trace("evaluate {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -141,6 +149,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Serializable evaluate(String name, Map source, Serializable... params) throws SQLException
     {
+        getLogger().trace("evaluate {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -155,6 +164,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Instance retrieve(String name, Serializable... params) throws SQLException
     {
+        getLogger().trace("retrieve {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -169,6 +179,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Instance retrieve(String name, Map source) throws SQLException
     {
+        getLogger().trace("retrieve {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -183,6 +194,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Instance retrieve(String name, Map source, Serializable... params) throws SQLException
     {
+        getLogger().trace("retrieve {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -197,6 +209,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Iterator<Instance> query(String name, Serializable... params) throws SQLException
     {
+        getLogger().trace("query {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -211,6 +224,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Iterator<Instance> query(String name, Map source) throws SQLException
     {
+        getLogger().trace("query {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -225,6 +239,7 @@ public abstract class AttributeHolder implements Serializable
 
     public Iterator<Instance> query(String name, Map source, Serializable... params) throws SQLException
     {
+        getLogger().trace("query {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -239,6 +254,7 @@ public abstract class AttributeHolder implements Serializable
 
     public long perform(String name, Serializable... params) throws SQLException
     {
+        getLogger().trace("perform {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -253,6 +269,7 @@ public abstract class AttributeHolder implements Serializable
 
     public long perform(String name, Map source) throws SQLException
     {
+        getLogger().trace("perform {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {
@@ -267,6 +284,7 @@ public abstract class AttributeHolder implements Serializable
 
     public long perform(String name, Map source, Serializable... params) throws SQLException
     {
+        getLogger().trace("perform {}.{}", logName, name);
         Attribute attribute = getAttribute(name);
         if (attribute == null)
         {

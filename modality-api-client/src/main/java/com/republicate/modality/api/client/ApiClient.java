@@ -340,7 +340,7 @@ public class ApiClient implements Closeable
     protected JsonObject xmlEntityToJson(Reader body) throws IOException
     {
         // An attribute-less XML content can easily be converted into json
-        // or, using 'attribute' and 'content' kays.
+        // or, using 'attribute' and 'content' keys.
         // In any way, we need more informations.
         // Subclasses can inherit and provide the implementation they expect.
         throw new IOException("default implementation does not know how to convert XML into Json");

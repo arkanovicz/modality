@@ -91,7 +91,12 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
 
     protected void processProtectedRequest(USER logged, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
-        logger.debug("user '{}' going towards {}", displayUser(logged), URLDecoder.decode(request.getRequestURI(), request.getCharacterEncoding()));
+        if (logger.isDebugEnabled())
+        {
+            // CB TODO - other uris logging should decode uris
+            String characterEncoding = Optional.ofNullable(request.getCharacterEncoding()).orElse("utf-8");
+            logger.debug("user '{}' going towards {}", displayUser(logged), URLDecoder.decode(request.getRequestURI(), characterEncoding));
+        }
         filterChain.doFilter(request, response);
     }
 

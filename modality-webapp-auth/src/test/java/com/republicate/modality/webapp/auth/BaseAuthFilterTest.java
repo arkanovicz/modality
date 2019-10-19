@@ -71,6 +71,7 @@ public class BaseAuthFilterTest extends BaseWebappMockTest
         recordConfig();
         expect(request.getRequestURI()).andAnswer(eval("/some-uri"));
         expect(request.getParameter("Good-Login")).andAnswer(eval("Nestor"));
+        expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
         expect(request.getRequestURI()).andAnswer(eval("/some-uri"));
         filterChain.doFilter(request, response);
         replayAll();

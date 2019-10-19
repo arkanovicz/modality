@@ -127,8 +127,8 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         expect(session.isNew()).andAnswer(eval(false));
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
-        expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
+        expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         filterChain.doFilter(request, response);
 
         replayAll();
@@ -177,8 +177,8 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         expect(session.isNew()).andAnswer(eval(false)); // TODO - if just logged by cookie, session could still be new
         expect(session.getAttribute("_user_")).andAnswer(evalCapture(user));
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
-        expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
         expect(request.getCharacterEncoding()).andAnswer(eval("utf-8"));
+        expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
 
         filterChain.doFilter(request, response);
 

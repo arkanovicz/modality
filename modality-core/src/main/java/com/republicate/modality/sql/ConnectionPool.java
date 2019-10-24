@@ -144,6 +144,10 @@ public class ConnectionPool implements Serializable
                 stmt.executeUpdate(schemaQuery);
                 stmt.close();
             }
+            else
+            {
+                connection.setSchema(schema);
+            }
         }
 
         // autocommit

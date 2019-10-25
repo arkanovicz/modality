@@ -363,6 +363,11 @@ public class InstanceReference extends Reference implements SlotMap
         return instance.toString();
     }
 
+    public boolean isDirty()
+    {
+        return instance.isDirty();
+    }
+    
     protected Instance getInstance()
     {
         return instance;

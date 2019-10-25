@@ -31,10 +31,10 @@ import javax.servlet.ServletException;
 
 /**
  * <p>Authentication filter relying on a query returning a user instance whenever his/her credentials
- * are correct, using the <code>&lt;login/&gt;</code> and <code>&lt;login/&gt;</code> placeholder parameters.
+ * are correct, using the <code>&lt;login/&gt;</code> and <code>&lt;password/&gt;</code> placeholder parameters.
  * A typical query would be:</p>
  * <pre><code>&lt;row result="user"&gt;
- *   select * from user where login = &lt;login/&gt; and password = sha1(&lt;password/&gt;
+ *   select * from user where login = &lt;login/&gt; and password = sha1(&lt;password/&gt;)
  * &lt;/row&gt;</code></pre>
  * <p>Configuration parameters:</p>
  * <ul>

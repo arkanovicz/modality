@@ -246,6 +246,80 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals(title, newtitle);
     }
 
+    public @Test void testSuccessfulManualTransaction() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        ModelRunnable runnable = new ModelRunnable()
+        {
+            @Override
+            public void run() throws SQLException
+            {
+                Entity book = model.getEntity("book");
+                assertNotNull(book);
+                Instance oneBook = book.fetch(1);
+                assertNotNull(oneBook);
+                String title = oneBook.getString("title");
+                assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+                oneBook.put("title", "Another Title");
+                oneBook.update();
+                String newTitle = oneBook.getString("title");
+                assertEquals("Another Title", newTitle);
+                oneBook.put("title", title);
+                oneBook.update();
+                title = oneBook.getString("title");
+                assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+            }
+        };
+        model.attempt(runnable);
+    }
+
+    public @Test void testUnsuccessfulManualTransaction() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        ModelRunnable runnable = new ModelRunnable()
+        {
+            @Override
+            public void run() throws SQLException
+            {
+                Entity book = model.getEntity("book");
+                assertNotNull(book);
+                Instance oneBook = book.fetch(1);
+                assertNotNull(oneBook);
+                String title = oneBook.getString("title");
+                assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+                oneBook.put("title", "Another Title");
+                oneBook.update();
+                String newTitle = oneBook.getString("title");
+                assertEquals("Another Title", newTitle);
+                Instance anotherBook = book.newInstance(oneBook);
+                anotherBook.put("title", null);
+                anotherBook.insert(); // will fail
+            }
+        };
+        try
+        {
+            model.attempt(runnable);
+            fail("should throw");
+        }
+        catch (SQLException sqle)
+        {
+            Entity book = model.getEntity("book");
+            assertNotNull(book);
+            Instance oneBook = book.fetch(1);
+            assertNotNull(oneBook);
+            String title = oneBook.getString("title");
+            assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+        }
+    }
+
     public @Test void testCollision() throws Exception
     {
         DataSource dataSource = initDataSource();

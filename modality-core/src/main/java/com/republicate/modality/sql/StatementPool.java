@@ -73,39 +73,48 @@ public class StatementPool implements /* Runnable, */ Pool
         logger.trace("prepare-" + query);
 
         PooledStatement statement = null;
-        ConnectionWrapper connection = null;
-        List available = statementsMap.get(query);
+        ConnectionWrapper connection = currentTransactionConnection.get();
+        boolean insideTransaction = false;
 
-        for(Iterator it = available.iterator(); it.hasNext(); )
+        if (connection == null)
         {
-            statement = (PooledStatement)it.next();
-            if(statement.isValid())
+            List available = statementsMap.get(query);
+            for (Iterator it = available.iterator(); it.hasNext(); )
             {
-                if(!statement.isInUse() &&!(connection = statement.getConnection()).isBusy())
+                statement = (PooledStatement) it.next();
+                if (statement.isValid())
                 {
-                    // check connection
-                  if(!connection.isClosed() && (!checkConnections || System.currentTimeMillis() - connection.getLastUse() < checkInterval || connection.check()))
+                    if (!statement.isInUse() && !(connection = statement.getConnection()).isBusy())
                     {
-                        statement.notifyInUse();
-                        return statement;
-                    }
-                    else
-                    {
-                        dropConnection(connection);
-                        it.remove();
+                        // check connection
+                        if (!connection.isClosed() && (!checkConnections || System.currentTimeMillis() - connection.getLastUse() < checkInterval || connection.check()))
+                        {
+                            statement.notifyInUse();
+                            return statement;
+                        }
+                        else
+                        {
+                            dropConnection(connection);
+                            it.remove();
+                        }
                     }
                 }
+                else
+                {
+                    it.remove();
+                }
             }
-            else
+            if (count == maxStatements)
             {
-                it.remove();
+                throw new SQLException("Error: Too many opened prepared statements!");
             }
+            connection = connectionPool.getConnection();
         }
-        if(count == maxStatements)
+        else
         {
-            throw new SQLException("Error: Too many opened prepared statements!");
+            insideTransaction = true;
         }
-        connection = connectionPool.getConnection();
+
         statement = new PooledStatement(connection,
                 update ?
                     connection.prepareStatement(
@@ -113,7 +122,10 @@ public class StatementPool implements /* Runnable, */ Pool
                                     Statement.RETURN_GENERATED_KEYS :
                                     Statement.NO_GENERATED_KEYS) :
                     connection.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
-        statementsMap.put(query, statement);
+        if (!insideTransaction)
+        {
+            statementsMap.put(query, statement);
+        }
         statement.notifyInUse();
         return statement;
     }
@@ -209,6 +221,16 @@ public class StatementPool implements /* Runnable, */ Pool
         clear();
     }
 
+    public static void setCurrentTransactionConnection(ConnectionWrapper connection)
+    {
+        currentTransactionConnection.set(connection);
+    }
+
+    public static void resetCurrentTransactionConnection()
+    {
+        currentTransactionConnection.remove();
+    }
+
     /**
      * debug - get usage statistics.
      *
@@ -282,4 +304,9 @@ public class StatementPool implements /* Runnable, */ Pool
      * max number of statements.
      */
     private static final int maxStatements = 50;
+
+    /**
+     * current transaction connection
+     */
+    private static ThreadLocal<ConnectionWrapper> currentTransactionConnection = new ThreadLocal<>();
 }

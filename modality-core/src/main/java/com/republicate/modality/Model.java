@@ -22,6 +22,7 @@ package com.republicate.modality;
 import com.republicate.modality.impl.BaseModel;
 import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.PooledStatement;
+import com.republicate.modality.sql.StatementPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +96,7 @@ public class Model extends BaseModel
         {
             connection = getModel().getTransactionConnection();
             connection.enterBusyState();
+            StatementPool.setCurrentTransactionConnection(connection);
             operation.run();
             connection.commit();
         }
@@ -117,6 +119,7 @@ public class Model extends BaseModel
         {
             if (connection != null)
             {
+                StatementPool.resetCurrentTransactionConnection();
                 connection.leaveBusyState();
             }
         }

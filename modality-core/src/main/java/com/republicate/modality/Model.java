@@ -93,10 +93,8 @@ public class Model extends BaseModel
         ConnectionWrapper connection = null;
         try
         {
-            long changed = 0;
             connection = getModel().getTransactionConnection();
             connection.enterBusyState();
-
             operation.run();
             connection.commit();
         }

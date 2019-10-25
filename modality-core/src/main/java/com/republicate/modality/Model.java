@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.function.Function;
 
 public class Model extends BaseModel
 {
@@ -62,14 +63,64 @@ public class Model extends BaseModel
         return getStatementPool().prepareQuery(query);
     }
 
+    /**
+     * Prepare an update query.
+     *
+     * @param query an sql query
+     * @return the pooled prepared statement corresponding to the query
+     */
     protected PooledStatement prepareUpdate(String query) throws SQLException
     {
         return getStatementPool().prepareUpdate(query);
     }
 
+    /**
+     * Get a transaction connection with manual commit/rollback
+     * @return a transaction connection
+     * @throws SQLException
+     */
     @Override
     protected ConnectionWrapper getTransactionConnection() throws SQLException
     {
         return super.getTransactionConnection();
+    }
+
+    /**
+     * Perform operations inside a transaction connection
+     */
+    public void attempt(ModelRunnable operation) throws SQLException
+    {
+        ConnectionWrapper connection = null;
+        try
+        {
+            long changed = 0;
+            connection = getModel().getTransactionConnection();
+            connection.enterBusyState();
+
+            operation.run();
+            connection.commit();
+        }
+        catch (SQLException sqle)
+        {
+            try
+            {
+                if (connection != null)
+                {
+                    connection.rollback();
+                }
+            }
+            catch (SQLException sqlee)
+            {
+                logger.error("could not rollback", sqlee);
+            }
+            throw sqle;
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                connection.leaveBusyState();
+            }
+        }
     }
 }

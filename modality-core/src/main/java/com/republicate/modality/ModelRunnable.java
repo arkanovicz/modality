@@ -23,7 +23,7 @@ import java.sql.SQLException;
 
 /**
  * A Runnable-like interface which run() method can throw an SQLException.
- * @see Model.attempt
+ * @see Model#attempt(ModelRunnable)
  */
 
 public interface ModelRunnable

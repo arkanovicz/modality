@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
  * by default all mapped resources are protected.
  *</ul>
  * <p>Configuration parameters can be specified in the <code>modality.properties</code> file, or as configure-param or context-param in the <code>web.xml</code> webapp descriptor.</p>
+ * @param <USER> User class
  */
 
 public abstract class BaseAuthFilter<USER> extends ModalityFilter

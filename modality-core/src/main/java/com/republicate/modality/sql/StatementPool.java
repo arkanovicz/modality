@@ -43,7 +43,7 @@ public class StatementPool implements /* Runnable, */ Pool
 
     public StatementPool(ConnectionPool connectionPool)
     {
-        this(connectionPool, false, 0);
+        this(connectionPool, -1);
     }
 
     /**
@@ -51,14 +51,10 @@ public class StatementPool implements /* Runnable, */ Pool
      *
      * @param connectionPool connection pool
      */
-    public StatementPool(ConnectionPool connectionPool, boolean checkConnections, long checkInterval)
+    public StatementPool(ConnectionPool connectionPool, long connectionsCheckInterval)
     {
         this.connectionPool = connectionPool;
-        this.checkConnections = checkConnections;
-        this.checkInterval = checkInterval;
-
-//      if(checkConnections) checkTimeoutThread = new Thread(this);
-//      checkTimeoutThread.start();
+        this.connectionsCheckInterval = connectionsCheckInterval;
     }
 
     /**
@@ -87,7 +83,7 @@ public class StatementPool implements /* Runnable, */ Pool
                     if (!statement.isInUse() && !(connection = statement.getConnection()).isBusy())
                     {
                         // check connection
-                        if (!connection.isClosed() && (!checkConnections || System.currentTimeMillis() - connection.getLastUse() < checkInterval || connection.check()))
+                        if (!connection.isClosed() && (connectionsCheckInterval < 0 || System.currentTimeMillis() - connection.getLastUse() < connectionsCheckInterval || connection.check()))
                         {
                             statement.notifyInUse();
                             return statement;
@@ -280,14 +276,9 @@ public class StatementPool implements /* Runnable, */ Pool
     private boolean running = true;
 
     /**
-     * do we need to check connections?
+     * connections check interval
      */
-    private boolean checkConnections = true;
-
-    /**
-     * minimal check interval
-     */
-    private long checkInterval;
+    private long connectionsCheckInterval;
 
     /**
      * check delay.

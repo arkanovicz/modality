@@ -31,7 +31,6 @@ public interface Constants
     // String MODEL_LOGGER_NAME = "logger.name";
 
     String MODEL_ID = "id";
-
     String DEFAULT_MODEL_ID = "model";
     
     String MODEL_WRITE_ACCESS = "write";
@@ -72,4 +71,6 @@ public interface Constants
     String MODEL_INSTANCES_CLASSES = "instances.classes";
 
     String MODEL_NAMESPACE_URI = "https://republicate.com/index.html";
+
+    String MODEL_CONNECTIONS_CHECK_INTERVAL = "connections_check_interval";
 }

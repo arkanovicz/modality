@@ -384,7 +384,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         connectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, true, maxConnections);
         transactionConnectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, false, maxConnections);
-        statementPool = new StatementPool(connectionPool);
+        statementPool = new StatementPool(connectionPool, getConnectionsCheckInterval());
     }
 
     protected final void registerModel()
@@ -488,6 +488,16 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             connectionPool.setSchema(schema);
         }
         return getModel();
+    }
+
+    public long getConnectionsCheckInterval()
+    {
+        return connectionsCheckInterval;
+    }
+
+    public void setConnectionsCheckInterval(long connectionsCheckInterval)
+    {
+        this.connectionsCheckInterval = connectionsCheckInterval;
     }
 
     public URL getDefinition()
@@ -1183,6 +1193,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      * Max connections.
      */
     private int maxConnections = 50; // applies to connectionPool and transactionConnectionPool
+
+    /**
+     * Connections check interval, -1 for non
+     * (defaults to 5 minutes)
+     */
+    private long connectionsCheckInterval = 300;
 
     /**
      * Pool of connections for transactions.

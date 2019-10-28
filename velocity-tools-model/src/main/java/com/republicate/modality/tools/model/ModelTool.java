@@ -385,6 +385,31 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
             return ret;
         }
 
+        public Set<Serializable> toSet()
+        {
+            Set<Serializable> ret = null;
+            String colName = null;
+            while (hasNext())
+            {
+                InstanceReference instance = next();
+                if (ret == null)
+                {
+                    if (instance.size() == 1)
+                    {
+                        ret = new TreeSet<>();
+                    }
+                    else
+                    {
+                        error("toSet(): invalid call: instances must have only one value");
+                        return null;
+                    }
+                    colName = instance.keySet().iterator().next();
+                }
+                ret.add(instance.get(colName));
+            }
+            return ret;
+        }
+
         public List<InstanceReference> toList()
         {
             List<InstanceReference> ret = new ArrayList<>();

@@ -184,17 +184,4 @@ under the License.
             </plugins>
         </pluginManagement>
     </build>
-    <!--
-    <profiles>
-        <profile>
-            <id>nexus-release-key</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-    </profiles>
-    -->
 </project>

@@ -19,8 +19,6 @@ package com.republicate.modality.webapp.access;
  * under the License.
  */
 
-import org.apache.commons.lang3.math.NumberUtils;
-
 import java.util.Optional;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpSession;
 import static com.republicate.modality.webapp.auth.BaseSessionAuthFilter.LOGGED_SESSION_KEY;
 
 /**
- *
+ * <p>Access filter specialization for use when the user is stored in the session</p>
  * @param <USER> User class
  */
 

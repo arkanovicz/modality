@@ -20,10 +20,13 @@ package com.republicate.modality.webapp.access;
  */
 
 import com.republicate.modality.webapp.ModalityFilter;
+import com.republicate.modality.webapp.auth.BaseAuthFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -33,14 +36,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import static com.republicate.modality.webapp.auth.BaseAuthFilter.PROTECTED_RESOURCES;
+
 /**
  * <p>Access Control filter skeleton.</p>
  * @param <USER> User class
  */
 
-public abstract class BaseAccessFilter<USER> extends ModalityFilter
+public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
 {
     protected static Logger logger = LoggerFactory.getLogger("access");
+
+    public static String WHITELIST = "access.whitelist";
 
     abstract protected USER getAuthentifiedUser(HttpServletRequest request) throws ServletException;
 
@@ -57,6 +64,18 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
+        String whitelistPattern = findConfigParameter(WHITELIST);
+        if (whitelistPattern != null)
+        {
+            try
+            {
+                whitelistedResources = Pattern.compile(whitelistPattern);
+            }
+            catch (PatternSyntaxException pse)
+            {
+                throw new ServletException("could not configure whitelist pattern", pse);
+            }
+        }
     }
 
     @Override
@@ -65,16 +84,38 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpServletResponse response = (HttpServletResponse)servletResponse;
 
-        USER user = getAuthentifiedUser(request);
-        if (user != null && isGrantedAcess(user, request))
+        String uri = request.getRequestURI();
+
+        if (isProtectedURI(uri))
         {
-            logger.debug("user {} allowed towards {}", displayUser(user), request.getRequestURI());
-            chain.doFilter(request, response);
+            USER user = getAuthentifiedUser(request);
+            if (user == null)
+            {
+                // the authentication filter should have catched it
+                logger.debug("user not logged, not granting access towards protected resource {}", displayUser(user), request.getRequestURI());
+                processForbiddenRequest(request, response, chain);
+            }
+            else
+            {
+                if (isWhitelistedURI(uri))
+                {
+                    logger.debug("user {} granted access towards whitelisted resource {}", displayUser(user), request.getRequestURI());
+                    processPublicRequest(request, response, chain);
+                }
+                else
+                {
+                    if (isGrantedAcess(user, request))
+                    {
+                        logger.debug("user {} granted access towards {}", displayUser(user), request.getRequestURI());
+                        processGrantedAccessRequest(user, request, response, chain);
+                    }
+                }
+            }
         }
         else
         {
-            logger.debug("user {} not granted towards {}", displayUser(user), request.getRequestURI());
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            // not logging anything
+            processPublicRequest(request, response, chain);
         }
     }
 
@@ -82,6 +123,23 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
     public void destroy()
     {
 
+    }
+
+    protected boolean isWhitelistedURI(String uri)
+    {
+        if (whitelistedResources != null)
+        {
+            return whitelistedResources.matcher(uri).matches();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected void processGrantedAccessRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
+    {
+        filterChain.doFilter(request, response);
     }
 
     /**
@@ -96,4 +154,9 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
         // user.getString
         return String.valueOf(user);
     }
+
+    /**
+     * whitelisted protected resources
+     */
+    private Pattern whitelistedResources = null;
 }

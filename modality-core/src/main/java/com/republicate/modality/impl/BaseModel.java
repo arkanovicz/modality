@@ -648,9 +648,17 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                             entity = getEntity(entityName);
                             if (entity != null)
                             {
-                                if (entity.getTable() != null && explicitTables.contains(entityName))
+                                if (entity.getTable() != null)
                                 {
-                                    throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
+                                    if (explicitTables.contains(entityName))
+                                    {
+                                        throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
+                                    }
+                                    else
+                                    {
+                                        // it means the wild guess we made for the table name was wrong
+                                        knownEntitiesByTable.remove(entity.getTable());
+                                    }
                                 }
                                 getLogger().warn("binding entity {} to table {}", entity.getName(), table);
                                 entity.setTable(table);

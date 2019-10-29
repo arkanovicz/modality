@@ -610,11 +610,15 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             connection.enterBusyState();
             ReverseEngineer reverseEngineer = getMetaModel(connection);
 
-            // adapt known entities table case if necessary
+            // we need to temporarily remember whether explicit table names where provided for explicit entities
+            Set<String> explicitTables = new HashSet<>();
+
             for (Entity entity : entitiesMap.values())
             {
                 String table = entity.getTable();
                 if (table == null) table = entity.getName();
+                else explicitTables.add(entity.getName());
+                // adapt known entities table case if necessary
                 table = driverInfos.getTableName(table);
                 entity.setTable(table);
             }
@@ -644,7 +648,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                             entity = getEntity(entityName);
                             if (entity != null)
                             {
-                                if (entity.getTable() != null)
+                                if (entity.getTable() != null && explicitTables.contains(entityName))
                                 {
                                     throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
                                 }

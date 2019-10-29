@@ -162,44 +162,51 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
 
     protected Serializable[] getParamValues(Map source, Serializable[] additionalParams) throws SQLException
     {
-        Serializable[] paramValues = new Serializable[parameterNames.size()];
-        Entity parentEntity = (Entity)Optional.ofNullable(getParent()).filter(x -> x instanceof Entity).orElse(null);
-        Entity sourceEntity = Optional.ofNullable(source).filter(x -> x instanceof Instance).map(i -> ((Instance)i).getEntity()).orElse(null);
-        int additionalParamIndex = 0;
-        if (parentEntity == null && sourceEntity == null)
+        try
         {
-            for (int i = 0; i < paramValues.length; ++i)
+            Serializable[] paramValues = new Serializable[parameterNames.size()];
+            Entity parentEntity = (Entity)Optional.ofNullable(getParent()).filter(x -> x instanceof Entity).orElse(null);
+            Entity sourceEntity = Optional.ofNullable(source).filter(x -> x instanceof Instance).map(i -> ((Instance)i).getEntity()).orElse(null);
+            int additionalParamIndex = 0;
+            if (parentEntity == null && sourceEntity == null)
             {
-                String paramName = parameterNames.get(i);
-                paramValues[i] = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                for (int i = 0; i < paramValues.length; ++i)
+                {
+                    String paramName = parameterNames.get(i);
+                    paramValues[i] = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                }
             }
-        }
-        else if (parentEntity == null || sourceEntity == null || parentEntity == sourceEntity)
-        {
-            Entity entity = parentEntity == null ? sourceEntity : parentEntity;
-            for (int i = 0; i < paramValues.length; ++i)
+            else if (parentEntity == null || sourceEntity == null || parentEntity == sourceEntity)
             {
-                String paramName = parameterNames.get(i);
-                Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
-                paramValues[i] = entity.filterValue(paramName, value);
+                Entity entity = parentEntity == null ? sourceEntity : parentEntity;
+                for (int i = 0; i < paramValues.length; ++i)
+                {
+                    String paramName = parameterNames.get(i);
+                    Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                    paramValues[i] = entity.filterValue(paramName, value);
+                }
             }
-        }
-        else
-        {
-            for (int i = 0; i < paramValues.length; ++i)
+            else
             {
-                String paramName = parameterNames.get(i);
-                Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
-                paramValues[i] = parentEntity.hasColumn(paramName) ?
-                    parentEntity.filterValue(paramName, value) :
-                    sourceEntity.filterValue(paramName, value);
+                for (int i = 0; i < paramValues.length; ++i)
+                {
+                    String paramName = parameterNames.get(i);
+                    Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                    paramValues[i] = parentEntity.hasColumn(paramName) ?
+                        parentEntity.filterValue(paramName, value) :
+                        sourceEntity.filterValue(paramName, value);
+                }
             }
+            if (additionalParamIndex != additionalParams.length)
+            {
+                throw new SQLException("too many parameters provided: got " + additionalParams.length + ", used " + additionalParamIndex);
+            }
+            return paramValues;
         }
-        if (additionalParamIndex != additionalParams.length)
+        catch (ArrayIndexOutOfBoundsException aioobe)
         {
-            throw new SQLException("too many parameters provided");
+            throw new SQLException("too few parameters provided: got " + additionalParams.length + ", needed more");
         }
-        return paramValues;
     }
 
     public String getQuery() throws SQLException

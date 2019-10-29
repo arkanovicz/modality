@@ -20,7 +20,6 @@ package com.republicate.modality.webapp.access;
  */
 
 import com.republicate.modality.webapp.ModalityFilter;
-import com.republicate.modality.webapp.auth.BaseAuthFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import static com.republicate.modality.webapp.auth.BaseAuthFilter.PROTECTED_RESOURCES;
 
@@ -43,7 +41,7 @@ import static com.republicate.modality.webapp.auth.BaseAuthFilter.PROTECTED_RESO
  * @param <USER> User class
  */
 
-public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
+public abstract class BaseAccessFilter<USER> extends ModalityFilter
 {
     protected static Logger logger = LoggerFactory.getLogger("access");
 
@@ -52,6 +50,61 @@ public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
     abstract protected USER getAuthentifiedUser(HttpServletRequest request) throws ServletException;
 
     abstract protected boolean isGrantedAcess(USER user, HttpServletRequest request);
+
+    protected boolean isProtectedURI(String uri)
+    {
+        if (protectedResources != null)
+        {
+            return protectedResources.matcher(uri).matches();
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    protected void processPublicRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
+    {
+        filterChain.doFilter(request, response);
+    }
+
+    protected boolean isWhitelistedURI(String uri)
+    {
+        if (whitelistedResources != null)
+        {
+            return whitelistedResources.matcher(uri).matches();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected void processGrantedAccessRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
+    {
+        filterChain.doFilter(request, response);
+    }
+
+    protected void processForbiddenRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
+    {
+        logger.debug("unauthorized request towards {}", request.getRequestURI());
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    /**
+     * <p>What to display in the logs for a user, like in the logs.</p>
+     * <p>A child class can change it to return something like
+     * <code>return user.getString('login');</code>.</p>
+     * @param user target user
+     * @return string representation for the user
+     */
+    protected String displayUser(USER user)
+    {
+        // user.getString
+        return String.valueOf(user);
+    }
+
+    /* Filter interface */
 
     /**
      * <p>Filter initialization.</p>
@@ -64,6 +117,22 @@ public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
     public void init(FilterConfig filterConfig) throws ServletException
     {
         super.init(filterConfig);
+
+        // read auth.protected regex
+        String protectedResourcesPattern = findConfigParameter(PROTECTED_RESOURCES);
+        if (protectedResourcesPattern != null)
+        {
+            try
+            {
+                protectedResources = Pattern.compile(protectedResourcesPattern);
+            }
+            catch (PatternSyntaxException pse)
+            {
+                throw new ServletException("could not configure protected resources pattern", pse);
+            }
+        }
+
+        // read access.whitelist regex
         String whitelistPattern = findConfigParameter(WHITELIST);
         if (whitelistPattern != null)
         {
@@ -92,7 +161,7 @@ public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
             if (user == null)
             {
                 // the authentication filter should have catched it
-                logger.debug("user not logged, not granting access towards protected resource {}", displayUser(user), request.getRequestURI());
+                logger.debug("user not logged, not granting access towards protected resource {}", request.getRequestURI());
                 processForbiddenRequest(request, response, chain);
             }
             else
@@ -125,38 +194,13 @@ public abstract class BaseAccessFilter<USER> extends BaseAuthFilter<USER>
 
     }
 
-    protected boolean isWhitelistedURI(String uri)
-    {
-        if (whitelistedResources != null)
-        {
-            return whitelistedResources.matcher(uri).matches();
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    protected void processGrantedAccessRequest(USER user, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
-    {
-        filterChain.doFilter(request, response);
-    }
-
     /**
-     * <p>What to display in the logs for a user, like in the logs.</p>
-     * <p>A child class can change it to return something like
-     * <code>return user.getString('login');</code>.</p>
-     * @param user target user
-     * @return string representation for the user
+     * protected resources
      */
-    protected String displayUser(USER user)
-    {
-        // user.getString
-        return String.valueOf(user);
-    }
+    private Pattern protectedResources = null;
 
     /**
-     * whitelisted protected resources
+     * whitelisted resources
      */
     private Pattern whitelistedResources = null;
 }

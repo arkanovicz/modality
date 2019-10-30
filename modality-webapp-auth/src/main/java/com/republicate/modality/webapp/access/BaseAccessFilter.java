@@ -87,7 +87,6 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
 
     protected void processForbiddenRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
-        logger.debug("unauthorized request towards {}", request.getRequestURI());
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
@@ -177,6 +176,12 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
                     {
                         logger.debug("user {} granted access towards {}", displayUser(user), request.getRequestURI());
                         processGrantedAccessRequest(user, request, response, chain);
+                    }
+                    else
+                    {
+                        // the authentication filter should have catched it
+                        logger.debug("user {} was denied access towards protected resource {}", displayUser(user), request.getRequestURI());
+                        processForbiddenRequest(request, response, chain);
                     }
                 }
             }

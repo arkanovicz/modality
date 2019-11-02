@@ -36,6 +36,7 @@ import com.republicate.modality.sql.ConnectionPool;
 import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.Credentials;
 import com.republicate.modality.sql.DriverInfos;
+import com.republicate.modality.sql.PooledDataSource;
 import com.republicate.modality.sql.StatementPool;
 import com.republicate.modality.util.ConversionHandler;
 import com.republicate.modality.util.ConversionHandlerImpl;
@@ -50,6 +51,7 @@ import org.xml.sax.InputSource;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -58,6 +60,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,8 +73,11 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -447,7 +453,24 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     public Model setDataSource(String dataSourceName) throws Exception
     {
         Context ctx = InitialContext.doLookup("java:comp/env");
-        DataSource dataSource = (DataSource)ctx.lookup(dataSourceName);
+        Object resource = ctx.lookup(dataSourceName);
+        if (resource == null)
+        {
+            throw new RuntimeException("Data source not found: " + dataSourceName);
+        }
+        DataSource dataSource = null;
+        if (resource instanceof DataSource)
+        {
+            dataSource = (DataSource) ctx.lookup(dataSourceName);
+        }
+        else if (resource instanceof ConnectionPoolDataSource)
+        {
+            dataSource = new PooledDataSource((ConnectionPoolDataSource)resource);
+        }
+        else
+        {
+            throw new RuntimeException("Data source resource type not handled: " + dataSource.getClass().getName());
+        }
         return setDataSource(dataSource);
     }
 

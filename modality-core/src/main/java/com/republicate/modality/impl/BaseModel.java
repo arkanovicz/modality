@@ -518,9 +518,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return connectionsCheckInterval;
     }
 
-    public void setConnectionsCheckInterval(long connectionsCheckInterval)
+    public Model setConnectionsCheckInterval(long connectionsCheckInterval)
     {
         this.connectionsCheckInterval = connectionsCheckInterval;
+        return getModel();
     }
 
     public URL getDefinition()

@@ -37,14 +37,16 @@ public final class Credentials
         return user != null && password != null;
     }
 
-    public void setUser(String user)
+    public Credentials setUser(String user)
     {
         this.user = user;
+        return this;
     }
 
-    public void setPassword(String password)
+    public Credentials setPassword(String password)
     {
         this.password = password;
+        return this;
     }
 
     public Connection getConnection(DataSource dataSource) throws SQLException

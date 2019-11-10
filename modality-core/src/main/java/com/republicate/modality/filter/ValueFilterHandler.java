@@ -21,12 +21,16 @@ package com.republicate.modality.filter;
 
 import com.republicate.modality.util.Cryptograph;
 import com.republicate.modality.util.TypeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Optional;
 
 public class ValueFilterHandler extends FilterHandler<Serializable>
 {
@@ -48,6 +52,8 @@ public class ValueFilterHandler extends FilterHandler<Serializable>
         addStockObject("base64_encode", x -> TypeUtils.base64Encode(x));
         addStockObject("base64_decode", x -> TypeUtils.base64Decode(x));
         addStockObject("mask", x -> null);
+        addStockObject("no_html", x -> StringUtils.indexOfAny(String.valueOf(x), "<>\"") == -1 ? x : error("invalid character"));
+        addStockObject("escape_html", x -> new HtmlEscaped(x));
     }
 
     @Override
@@ -71,9 +77,31 @@ public class ValueFilterHandler extends FilterHandler<Serializable>
         this.cryptograph = cryptograph;
     }
 
+    // CB TODO - replace with reflection on the presence of setCryptograph, or with a subclass
     public boolean needsCryptograph()
     {
         return needsCryptograph;
+    }
+
+    protected static Serializable error(String message) throws SQLException
+    {
+        throw new SQLException(message);
+    }
+
+    public static class HtmlEscaped implements Serializable
+    {
+        public HtmlEscaped(Serializable value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public String toString()
+        {
+            return Optional.ofNullable(value).map(x -> StringEscapeUtils.escapeHtml4(String.valueOf(x))).orElse("");
+        }
+
+        private Serializable value;
     }
 
     private Cryptograph cryptograph = null;

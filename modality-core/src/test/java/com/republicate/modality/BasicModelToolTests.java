@@ -21,10 +21,15 @@ package com.republicate.modality;
 
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Filter;
+import com.republicate.modality.filter.ValueFilterHandler;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -236,7 +241,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         try
         {
             long count = oneBook.perform("bad_transaction");
-            fail("expecting SQLException");
+            fail("expecting SQLException for bad transaction");
         }
         catch (SQLException sqle)
         {
@@ -400,6 +405,52 @@ public class BasicModelToolTests extends BaseBookshelfTests
         book.update();
         book.refresh();
         assertEquals("2018-05-09", ymd.format(book.get("published")));
+    }
+
+    public @Test void testValueFilters() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Properties props = new Properties();
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "full");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
+        // allow html in book title
+        props.put("model.filters.read.book.title", "escape_html");
+        // disallow html in names
+        props.put("model.filters.write.*.name", "no_html");
+        props.put("model.filters.read.book.title", "escape_html");
+
+        Model model = new Model().configure(props).initialize();
+
+        Instance book = model.getEntity("book").fetch(1);
+        Instance publisher = book.retrieve("publisher");
+
+        // test no_html
+        publisher.put("name", "<forbidden>");
+        try
+        {
+            publisher.update();
+            fail("expecting SQLException for invalid character");
+        }
+        catch (SQLException sqle) {}
+
+        // test escape_html
+        String prevTitle = book.getString("title");
+        String title = "the common <way> is \"hidden\"";
+        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
+        book.put("title", title);
+        book.update();
+        book.refresh();
+        Serializable digestedTitle = book.get("title");
+        assertEquals("did not find an HtmlEscaped object", ValueFilterHandler.HtmlEscaped.class, digestedTitle.getClass());
+        String disgestedTitle = book.getString("title");
+        assertEquals(escapedTitle, disgestedTitle);
+        book.put("title", prevTitle);
+        book.update();
+        book.refresh();
+        assertEquals("something's very wrong", prevTitle, book.getString("title"));
     }
 
     public @Test void testJdbc() throws Exception

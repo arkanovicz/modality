@@ -33,7 +33,7 @@ public abstract class TypeMapper<T extends Serializable> extends ColumnMapper<T>
     }
 
     @Override
-    protected void addEntry(String key, T leaf)
+    protected void addEntry(String key, Filter<T> leaf)
     {
         try
         {
@@ -46,14 +46,14 @@ public abstract class TypeMapper<T extends Serializable> extends ColumnMapper<T>
         }
     }
 
-    protected void addTypeEntry(Class clazz, T leaf)
+    protected void addTypeEntry(Class clazz, Filter<T> leaf)
     {
         typesMapping.put(clazz, leaf);
     }
 
-    public T getTypeEntry(Class clazz)
+    public Filter<T> getTypeEntry(Class clazz)
     {
-        T ret = null;
+        Filter<T> ret = null;
         // apply the most specific one
         while (clazz != null)
         {
@@ -68,5 +68,5 @@ public abstract class TypeMapper<T extends Serializable> extends ColumnMapper<T>
     }
 
 
-    private Map<Class, T> typesMapping = new HashMap<>();
+    private Map<Class, Filter<T>> typesMapping = new HashMap<>();
 }

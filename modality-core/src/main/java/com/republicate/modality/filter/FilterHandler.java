@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 
-public abstract class FilterHandler <T extends Serializable> extends TypeMapper<Filter<T>>
+public abstract class FilterHandler <T extends Serializable> extends TypeMapper<T>
 {
     public FilterHandler(String configurationPrefix)
     {

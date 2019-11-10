@@ -31,7 +31,7 @@ public abstract class TableMapper<T extends Serializable> extends Mapper<T>
     }
 
     @Override
-    protected void addEntry(String pattern, T leaf)
+    protected void addEntry(String pattern, Filter<T> leaf)
     {
         if ("_".equals(pattern))
         {
@@ -50,9 +50,9 @@ public abstract class TableMapper<T extends Serializable> extends Mapper<T>
         }
     }
 
-    public T getTableEntry(String table)
+    public Filter<T> getTableEntry(String table)
     {
-        T ret = null;
+        Filter<T> ret = null;
         for (MappingEntry mappingEntry : tablesMapping.values())
         {
             if (mappingEntry.matches(table))

@@ -40,7 +40,7 @@ public abstract class ColumnMapper<T extends Serializable> extends TableMapper<T
     }
 
     @Override
-    protected void addEntry(String key, T leaf)
+    protected void addEntry(String key, Filter<T> leaf)
     {
         int dot = key.indexOf('.');
         if (dot == -1)
@@ -97,9 +97,9 @@ public abstract class ColumnMapper<T extends Serializable> extends TableMapper<T
     }
     */
 
-    public T getColumnEntry(String table, String column)
+    public Filter<T> getColumnEntry(String table, String column)
     {
-        T ret = null;
+        Filter<T> ret = null;
         for (MappingEntry entry : getTablesMapping().values())
         {
             if (entry.matches(table))
@@ -137,17 +137,17 @@ public abstract class ColumnMapper<T extends Serializable> extends TableMapper<T
         return ret;
     }
 
-    public T getDefaultColumnLeaf()
+    public Filter<T> getDefaultColumnLeaf()
     {
         return defaultColumnLeaf;
     }
 
-    protected void setDefaultColumnLeaf(T defaultColumnLeaf)
+    protected void setDefaultColumnLeaf(Filter<T> defaultColumnLeaf)
     {
         this.defaultColumnLeaf = defaultColumnLeaf;
     }
 
-    private T defaultColumnLeaf = null;
+    private Filter<T> defaultColumnLeaf = null;
 
     private Map<String, Pair<MappingEntry, Map<String, MappingEntry>>> columnsMapping = new HashMap<>();
 }

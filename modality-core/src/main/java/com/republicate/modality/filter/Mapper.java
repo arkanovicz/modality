@@ -43,7 +43,7 @@ public abstract class Mapper<T extends Serializable>
     {
     }
 
-    protected T valueToLeaf(Object value)
+    protected Filter<T> valueToLeaf(Object value)
     {
         if (value == null)
         {
@@ -51,18 +51,18 @@ public abstract class Mapper<T extends Serializable>
         }
         if (value instanceof String)
         {
-            T ret = null;
+            Filter<T> ret = null;
             String[] leaves = ((String)value).split(",\\s*");
             for (String strLeaf : leaves)
             {
-                T leaf = stringToLeaf(strLeaf);
+                Filter<T> leaf = stringToLeaf(strLeaf);
                 ret = ret == null ? leaf : composeLeaves(leaf, ret);
             }
             return ret;
         }
         try
         {
-            return (T)value;
+            return (Filter<T>)value;
         }
         catch (ClassCastException cce)
         {
@@ -70,9 +70,9 @@ public abstract class Mapper<T extends Serializable>
         }
     }
 
-    protected T stringToLeaf(String value)
+    protected Filter<T> stringToLeaf(String value)
     {
-        T ret = getStockObject(value);
+        Filter<T> ret = getStockObject(value);
         if (ret == null)
         {
             ret = classnameToLeaf(value);
@@ -80,7 +80,7 @@ public abstract class Mapper<T extends Serializable>
         return ret;
     }
 
-    protected T classnameToLeaf(String clazz)
+    protected Filter<T> classnameToLeaf(String clazz)
     {
         try
         {
@@ -94,7 +94,7 @@ public abstract class Mapper<T extends Serializable>
         }
     }
 
-    protected T classToLeaf(Class leafClass)
+    protected Filter<T> classToLeaf(Class leafClass)
     {
         try
         {
@@ -107,11 +107,11 @@ public abstract class Mapper<T extends Serializable>
         }
     }
 
-    protected T newObjectToLeaf(Object obj)
+    protected Filter<T> newObjectToLeaf(Object obj)
     {
         try
         {
-            return (T)obj;
+            return (Filter<T>)obj;
         }
         catch (ClassCastException cce)
         {
@@ -119,9 +119,9 @@ public abstract class Mapper<T extends Serializable>
         }
     }
 
-    protected abstract T composeLeaves(T left, T right);
+    protected abstract Filter<T> composeLeaves(Filter<T> left, Filter<T> right);
 
-    protected abstract void addEntry(String key, T leaf);
+    protected abstract void addEntry(String key, Filter<T> leaf);
 
     public void setMapping(String value)
     {
@@ -133,7 +133,7 @@ public abstract class Mapper<T extends Serializable>
             if (eq == -1)
             {
                 // a single default ?
-                T leaf = stringToLeaf(part);
+                Filter<T> leaf = stringToLeaf(part);
                 map.put("*", leaf);
                 map.put("*.*", leaf);
             }
@@ -156,7 +156,7 @@ public abstract class Mapper<T extends Serializable>
         for (Map.Entry entry : (Set<Map.Entry>)map.entrySet())
         {
             String key = (String)entry.getKey();
-            T leaf = valueToLeaf(entry.getValue());
+            Filter<T> leaf = valueToLeaf(entry.getValue());
             addEntry(key, leaf);
         }
     }
@@ -168,18 +168,18 @@ public abstract class Mapper<T extends Serializable>
             this(pattern, null);
         }
 
-        MappingEntry(String pattern, T value)
+        MappingEntry(String pattern, Filter<T> value)
         {
             this.pattern = Pattern.compile(GlobToRegex.toRegex(pattern, "."), Pattern.CASE_INSENSITIVE);
             this.leaf = value;
         }
 
-        public T getLeaf()
+        public Filter<T> getLeaf()
         {
             return leaf;
         }
 
-        public void setLeaf(T leaf)
+        public void setLeaf(Filter<T> leaf)
         {
             this.leaf = leaf;
         }
@@ -190,7 +190,7 @@ public abstract class Mapper<T extends Serializable>
         }
 
         private Pattern pattern;
-        private T leaf;
+        private Filter<T> leaf;
     }
 
     protected String getConfigurationPrefix()
@@ -198,18 +198,18 @@ public abstract class Mapper<T extends Serializable>
         return configurationPrefix;
     }
 
-    protected void addStockObject(String key, T object)
+    protected void addStockObject(String key, Filter<T> object)
     {
         stockObjects.put(key, object);
     }
 
-    protected T getStockObject(String key)
+    protected Filter<T> getStockObject(String key)
     {
         return stockObjects.get(key);
     }
 
     private String configurationPrefix;
 
-    private Map<String, T> stockObjects = new HashMap<>();
+    private Map<String, Filter<T>> stockObjects = new HashMap<>();
 
 }

@@ -17,7 +17,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<model reverse="tables" identifiers.mapping._="lowercase" identifiers.mapping._._="lowercase">
+<model reverse="tables" identifiers.mapping="*=lowercase, *.*=lowercase">
 
     <row name="user_by_credentials" result="user">
         select us_id, login from user where login = <login/> and password = <password/>;

@@ -73,14 +73,22 @@ public class Instance extends SlotTreeMap
     public void readValue(String key, Serializable value) throws SQLException
     {
         // get column if any
-        String colName = entity == null ? key: entity.translateColumnName(key);
-        Entity.Column column = entity.getColumn(colName);
-        if (column != null)
+        String colName;
+        if (entity == null)
         {
-            // filter value
+            colName = key;
+        }
+        else
+        {
+            colName = entity.translateColumnName(key);
             if (value != null)
             {
-                value = entity.getColumn(colName).read(value);
+                Entity.Column column = entity.getColumn(colName);
+                if (column != null)
+                {
+                    // filter value
+                    value = entity.getColumn(colName).read(value);
+                }
             }
         }
         // always put the value, even null

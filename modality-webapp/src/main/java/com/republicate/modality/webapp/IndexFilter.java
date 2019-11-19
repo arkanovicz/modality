@@ -34,17 +34,17 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Neither Apache or J2EE welcome-file is apropriate, since they resort on forwarding.</p>
  * <p><b>If</b> you rely on nginx or apache to serve static files in front of your J2EE container
  * using the <code>ajp</code> protocol on port 8009, then your configuration file should look like (for apache):</p>
- * <code><pre>
+ * <pre><code>
  *     ProxyPassMatch ^/(.*\.vhtml|.*\.do|)$ ajp://localhost:8009/$1
  *
  *     ProxyPassReverse / ajp://localhost:8009/
  *
- *     <Proxy *>
+ *     &lt;Proxy *&gt;
  *         AllowOverride All
  *         Order deny,allow
  *         Allow from all
- *     </Proxy>
- * </pre></code>
+ *     &lt;/Proxy&gt;
+ * </code></pre>
  * <p>Then, for the J2EE container to pick your filter, you must add a filter-mapping towards <code>/*</code>,
  * not <code>/</code>, it would otherwise replace the default content container servlet.</p>
  */

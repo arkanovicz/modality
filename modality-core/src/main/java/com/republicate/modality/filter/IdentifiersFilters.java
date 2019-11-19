@@ -128,11 +128,21 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
     }
 
     /**
-     * Declare setMapping(Map) as a synonym for addMappings(Map), to allow <code>identifiers.mapping</code> in
+     * Declare setMapping(String) as a synonym for addMappings(String), to allow <code>identifiers.mapping</code> in
      * configuration files
      * @param mappings identifier mappings
      */
     public void setMapping(String mappings)
+    {
+        addMappings(mappings);
+    }
+
+    /**
+     * Declare setMapping(Map) as a synonym for addMappings(Map), to allow <code>identifiers.mapping</code> in
+     * configuration files
+     * @param mappings identifier mappings
+     */
+    public void setMapping(Map mappings)
     {
         addMappings(mappings);
     }

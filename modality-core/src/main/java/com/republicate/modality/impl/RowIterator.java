@@ -30,10 +30,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 //import com.republicate.modality.util.UserContext;
@@ -134,7 +132,7 @@ public class RowIterator extends InstanceProducer implements Iterator<Instance>,
             prefetch = false;
 
             Instance row =  newResultInstance();
-            row.setInitialValues(pooledStatement);
+            row.readValues(pooledStatement);
             return row;
         }
         catch(SQLException sqle)

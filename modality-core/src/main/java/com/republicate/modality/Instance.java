@@ -20,7 +20,7 @@ package com.republicate.modality;
  */
 
 import com.republicate.modality.filter.Filter;
-import com.republicate.modality.filter.ValueFilterHandler;
+import com.republicate.modality.filter.ValueFilters;
 import com.republicate.modality.sql.RowValues;
 import com.republicate.modality.util.ChainedMap;
 import com.republicate.modality.util.SlotTreeMap;
@@ -54,44 +54,36 @@ public class Instance extends SlotTreeMap
         this.entity = entity;
     }
 
-    public void setInitialValues(RowValues values) throws SQLException
+    public void readValues(RowValues values) throws SQLException
     {
-        Filter<String> defaultNameMapper = getModel().getIdentifiers().getDefaultColumnLeaf();
-        ValueFilterHandler readFilters = getModel().getFilters().getReadFilters();
+        ValueFilters filters = getModel().getFilters().getReadFilters();
         for (String key : values.keySet())
         {
             Serializable value = values.get(key);
-            setInitialValue(key, value);
+            if (value != null)
+            {
+                value = filters.filter(value);
+            }
+            readValue(key, values.get(key));
         }
         setClean();
         persisted = entity != null && entity.getPrimaryKey().size() > 0 && entity.getPrimaryKey().stream().noneMatch(Objects::isNull);
     }
 
-    public void setInitialValue(String key, Serializable value) throws SQLException
+    public void readValue(String key, Serializable value) throws SQLException
     {
-        Filter<String> defaultNameMapper = getModel().getIdentifiers().getDefaultColumnLeaf();
-        ValueFilterHandler readFilters = getModel().getFilters().getReadFilters();
-        String colName = entity == null ? null : entity.translateColumnName(key);
-        if (colName == null)
+        // get column if any
+        String colName = entity == null ? key: entity.translateColumnName(key);
+        Entity.Column column = entity.getColumn(colName);
+        if (column != null)
         {
-            colName = defaultNameMapper.apply(key);
-        }
-        else
-        {
-            Entity.Column column = entity.getColumn(colName);
-            if (column != null)
+            // filter value
+            if (value != null)
             {
                 value = entity.getColumn(colName).read(value);
             }
         }
-        if (value != null)
-        {
-            Filter<Serializable> filter = readFilters.getTypeEntry(value.getClass());
-            if (filter != null)
-            {
-                value = filter.apply(value);
-            }
-        }
+        // always put the value, even null
         super.put(colName, value);
     }
 

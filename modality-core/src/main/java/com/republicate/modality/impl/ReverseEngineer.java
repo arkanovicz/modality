@@ -21,7 +21,7 @@ package com.republicate.modality.impl;
 
 import com.republicate.modality.Entity;
 import com.republicate.modality.config.ConfigurationException;
-import com.republicate.modality.filter.Identifiers;
+import com.republicate.modality.filter.IdentifiersFilters;
 import com.republicate.modality.sql.DriverInfos;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class ReverseEngineer
 
     public List<Entity.Column> getColumns(Entity entity) throws SQLException
     {
-        Identifiers identifiers = entity.getModel().getIdentifiers();
+        IdentifiersFilters identifiers = entity.getModel().getIdentifiersFilters();
         List<Entity.Column> ret = new ArrayList<>();
         ResultSet columns = null;
         try

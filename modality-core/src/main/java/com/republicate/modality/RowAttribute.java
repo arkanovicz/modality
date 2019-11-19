@@ -61,7 +61,7 @@ public class RowAttribute extends Attribute
             if (result.next())
             {
                 instance = newResultInstance();
-                instance.setInitialValues(statement);
+                instance.readValues(statement);
             }
         }
         finally

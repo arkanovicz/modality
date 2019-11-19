@@ -76,12 +76,12 @@ public class WrappingInstance extends Instance implements Wrapper
     }
 
     @Override
-    public void setInitialValue(String columnName, Serializable value) throws SQLException
+    public void readValue(String columnName, Serializable value) throws SQLException
     {
         Pair<Method, Class> setter = setters.get(columnName);
         if (setter == null)
         {
-            super.setInitialValue(columnName, value);
+            super.readValue(columnName, value);
         }
         else
         {

@@ -1,46 +1,24 @@
 package com.republicate.modality.filter;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 import com.republicate.modality.config.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.ClassUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-public class Identifiers extends FilterHandler<String>
+public class IdentifiersFilters extends ConfigurableFilters<String>
 {
-    protected static Logger logger = LoggerFactory.getLogger("modality");
-
-    public Identifiers()
+    public IdentifiersFilters()
     {
         super("identifiers.mapping");
-        addStockObject("lowercase", x -> x.toLowerCase(Locale.ROOT));
-        addStockObject("uppercase", x -> x.toUpperCase(Locale.ROOT));
-        addStockObject("snake_to_camel", Identifiers::snakeToCamel);
+        addStockFilter("lowercase", x -> x.toLowerCase(Locale.ROOT));
+        addStockFilter("uppercase", x -> x.toUpperCase(Locale.ROOT));
+        addStockFilter("snake_to_camel", IdentifiersFilters::snakeToCamel);
     }
 
     private static final String[] prefixes = { "plural", "getPlural" };
@@ -115,12 +93,6 @@ public class Identifiers extends FilterHandler<String>
     }
 
     @Override
-    protected Logger getLogger()
-    {
-        return logger;
-    }
-
-    @Override
     protected Filter<String> stringToLeaf(String leaf)
     {
         Filter<String> ret = null;
@@ -140,15 +112,31 @@ public class Identifiers extends FilterHandler<String>
 
     public String transformTableName(String sqlTable) throws SQLException
     {
-        Filter<String> filter = getTableEntry(sqlTable);
+        Filter<String> filter = getTableFilter(sqlTable);
         return filter == null ? sqlTable : filter.apply(sqlTable);
     }
 
     public String transformColumnName(String sqlTable, String sqlColumn) throws SQLException
     {
-        Filter<String> filter = getColumnEntry(sqlTable, sqlColumn);
+        Filter<String> filter = getColumnFilter(sqlTable, sqlColumn);
         return filter == null ? sqlColumn : filter.apply(sqlColumn);
     }
 
+    public String transformColumnName(String sqlColumn) throws SQLException
+    {
+        return getDefaultColumnFilter().apply(sqlColumn);
+    }
+
+    /**
+     * Declare setMapping(Map) as a synonym for addMappings(Map), to allow <code>identifiers.mapping</code> in
+     * configuration files
+     * @param mappings identifier mappings
+     */
+    public void setMapping(String mappings)
+    {
+        addMappings(mappings);
+    }
+
     private Filter<String> inflector = Filter.identity();
+
 }

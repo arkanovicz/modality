@@ -83,8 +83,8 @@ public abstract class BaseEntity extends AttributeHolder
             throw new ConfigurationException("column name collision: " + getName() + "." + column.name + " mapped on " + getTable() + "." + previous.sqlName + " and on " + getTable() + "." + column.sqlName);
         }
         column.setIndex(columns.size() - 1);
-        Optional.ofNullable(getModel().getFilters().getReadFilters().getColumnEntry(sqlName, column.sqlName)).ifPresent(filter -> column.setReadFilter(filter));
-        Optional.ofNullable(getModel().getFilters().getWriteFilters().getColumnEntry(sqlName, column.sqlName)).ifPresent(filter -> column.setWriteFilter(filter));
+        column.setReadFilter(getModel().getFilters().getReadFilters().getColumnFilter(sqlName, column.sqlName));
+        column.setWriteFilter(getModel().getFilters().getWriteFilters().getColumnFilter(sqlName, column.sqlName));
         columnsMapping.put(column.sqlName, column.name);
     }
 
@@ -155,7 +155,7 @@ public abstract class BaseEntity extends AttributeHolder
         {
             try
             {
-                ret = getModel().getIdentifiers().getDefaultColumnLeaf().apply(sqlColumnName);
+                ret = getModel().getIdentifiersFilters().getDefaultColumnFilter().apply(sqlColumnName);
             }
             catch (Exception e)
             {
@@ -380,12 +380,9 @@ public abstract class BaseEntity extends AttributeHolder
     protected final Serializable filterValue(String columnName, Serializable value) throws SQLException
     {
         if (value != null)
+
         {
-            Filter<Serializable> typeFilter = getModel().getFilters().getWriteFilters().getTypeEntry(value.getClass());
-            if (typeFilter != null)
-            {
-                value = typeFilter.apply(value);
-            }
+            value = getModel().getFilters().getWriteFilters().filter(value);
             Column column = getColumn(columnName);
             if (column != null)
             {
@@ -525,7 +522,7 @@ public abstract class BaseEntity extends AttributeHolder
 
         public final Serializable read(Serializable value) throws SQLException
         {
-            return readFilter.apply(value);
+            return value == null ? null : readFilter.apply(value);
         }
 
         public final Serializable write(Serializable value) throws SQLException

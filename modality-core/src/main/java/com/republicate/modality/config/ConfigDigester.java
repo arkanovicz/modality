@@ -264,11 +264,11 @@ public class ConfigDigester
 
         // search for a setter
         String setterName = getSetterName(name);
-        Predicate<Class> argumentMatcher = value instanceof String ?
-            ConfigDigester::isScalarType :
-            value instanceof Map ?
-                ConfigDigester::isMapType :
-                null;
+        Predicate<Class> argumentMatcher = value instanceof String
+            ? ConfigDigester::isScalarType
+            : value instanceof Map
+            ? ConfigDigester::isMapType
+            : null;
         if (argumentMatcher == null)
         {
             throw new ConfigurationException("Property " + name + " has unhandled value type " + value.getClass().getName());

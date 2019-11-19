@@ -29,8 +29,8 @@ import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigHelper;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.config.Constants;
-import com.republicate.modality.filter.Identifiers;
-import com.republicate.modality.filter.ValueFilterHandler;
+import com.republicate.modality.filter.IdentifiersFilters;
+import com.republicate.modality.filter.ValueFilters;
 import com.republicate.modality.sql.BasicDataSource;
 import com.republicate.modality.sql.ConnectionPool;
 import com.republicate.modality.sql.ConnectionWrapper;
@@ -51,7 +51,6 @@ import org.xml.sax.InputSource;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -60,7 +59,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,8 +71,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Supplier;
-import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.ConnectionPoolDataSource;
@@ -184,26 +180,16 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             // TODO - Velocity-aware model should be a subclass
             // Optional.ofNullable((VelocityEngine)config.get(MODEL_VELOCITY_ENGINE)).ifPresent(this::setVelocityEngine);
             Optional.ofNullable(config.getString(MODEL_SCHEMA)).ifPresent(this::setSchema);
-            Optional.ofNullable(config.getString(MODEL_IDENTIFIERS_INFLECTOR)).ifPresent(getIdentifiers()::setInflector);
-            Object flatMapping = Optional.ofNullable(config.get(MODEL_IDENTIFIERS_MAPPING)).orElse(config.getSubProperties(MODEL_IDENTIFIERS_MAPPING));
-            if (flatMapping != null)
-            {
-                if (flatMapping instanceof String)
-                {
-                    getIdentifiers().setMapping((String)flatMapping);
-                }
-                else if(flatMapping instanceof Map)
-                {
-                     getIdentifiers().setMapping((Map)flatMapping);
-                }
-                else
-                {
-                    throw new ConfigurationException("expecting a string or a map for property " + MODEL_IDENTIFIERS_MAPPING);
-                }
-            }
-            getIdentifiers().setMapping(config.getSubProperties(MODEL_IDENTIFIERS_MAPPING));
-            getFilters().setReadMapping(config.getSubProperties(MODEL_FILTERS_READ));
-            getFilters().setWriteMapping(config.getSubProperties(MODEL_FILTERS_WRITE));
+            Optional.ofNullable(config.getString(MODEL_IDENTIFIERS_INFLECTOR))
+                .ifPresent(getIdentifiersFilters()::setInflector);
+            Optional.ofNullable(config.get(MODEL_IDENTIFIERS_MAPPING))
+                .ifPresent(getIdentifiersFilters()::addMappings);
+            Optional.ofNullable(config.getSubProperties(MODEL_IDENTIFIERS_MAPPING))
+                .ifPresent(getIdentifiersFilters()::addMappings);
+            Optional.ofNullable(config.getSubProperties(MODEL_FILTERS_READ))
+                .ifPresent(getFilters()::setReadMapping);
+            Optional.ofNullable(config.getSubProperties(MODEL_FILTERS_WRITE))
+                .ifPresent(getFilters()::setWriteMapping);
             Object dataSource = config.get(MODEL_DATASOURCE);
             if (dataSource != null)
             {
@@ -331,7 +317,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             ensureConfigured();
             readDefinition(source);
             connect();
-            getIdentifiers().initialize();
+            getIdentifiersFilters().initialize();
             getFilters().initialize();
             reverseEngineer();
             getInstances().initialize();
@@ -550,7 +536,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return credentials;
     }
 
-    public Identifiers getIdentifiers()
+    public IdentifiersFilters getIdentifiersFilters()
     {
         return identifiers;
     }
@@ -668,7 +654,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                         Entity entity = knownEntitiesByTable.get(table);
                         if (entity == null)
                         {
-                            String entityName = getIdentifiers().transformTableName(table);
+                            String entityName = getIdentifiersFilters().transformTableName(table);
                             entity = getEntity(entityName);
                             if (entity != null)
                             {
@@ -821,7 +807,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private void declareJoinTowardsForeignKey(Entity pkEntity, Entity fkEntity, List<String> fkColumns) throws SQLException
     {
-        String downstreamAttributeName = getIdentifiers().pluralize(fkEntity.getName());
+        String downstreamAttributeName = getIdentifiersFilters().pluralize(fkEntity.getName());
         Attribute previous = pkEntity.getAttribute(downstreamAttributeName);
         if (previous != null)
         {
@@ -835,7 +821,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private void declareExtendedJoin(Entity leftEntity, List<String> leftFKCols, Entity joinEntity, List<String> rightFKCols, Entity rightEntity) throws SQLException
     {
-        String joinAttributeName = getIdentifiers().pluralize(rightEntity.getName());
+        String joinAttributeName = getIdentifiersFilters().pluralize(rightEntity.getName());
         Attribute previous = leftEntity.getAttribute(joinAttributeName);
         if (previous != null)
         {
@@ -868,31 +854,31 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     {
         public FiltersSet()
         {
-            readFilters = new ValueFilterHandler("filters.read");
-            writeFilters = new ValueFilterHandler("filters.write");
+            readFilters = new ValueFilters("filters.read");
+            writeFilters = new ValueFilters("filters.write");
         }
 
-        public ValueFilterHandler getReadFilters()
+        public ValueFilters getReadFilters()
         {
             return readFilters;
         }
 
-        public Model setReadMapping(Map filters) throws Exception
+        public Model setReadMapping(Map filters)
         {
             ensureConfigured();
-            readFilters.setMapping(filters);
+            readFilters.addMappings(filters);
             return getModel();
         }
 
-        public ValueFilterHandler getWriteFilters()
+        public ValueFilters getWriteFilters()
         {
             return writeFilters;
         }
 
-        public Model setWriteMapping(Map filters) throws Exception
+        public Model setWriteMapping(Map filters)
         {
             ensureConfigured();
-            writeFilters.setMapping(filters);
+            writeFilters.addMappings(filters);
             return getModel();
         }
 
@@ -920,6 +906,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 {
                     throw new ConfigurationException("could not initialize cryptograph", e);
                 }
+
         }
 
         private final Cryptograph initCryptograph() throws Exception
@@ -1251,7 +1238,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     /**
      * Identifiers mapper
      */
-    private Identifiers identifiers = new Identifiers();
+    private IdentifiersFilters identifiers = new IdentifiersFilters();
 
     /**
      * Value filters
@@ -1260,12 +1247,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     /**
      * Explicit values converters when reading from database
      */
-    protected ValueFilterHandler readFilters = null;
+    protected ValueFilters readFilters = null;
 
     /**
      * Explicit values converters when writing to database
      */
-    protected ValueFilterHandler writeFilters = null;
+    protected ValueFilters writeFilters = null;
 
     private FiltersSet filters = new FiltersSet();
 

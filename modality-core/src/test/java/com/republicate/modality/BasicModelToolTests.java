@@ -21,15 +21,12 @@ package com.republicate.modality;
 
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.filter.Filter;
-import com.republicate.modality.filter.ValueFilterHandler;
+import com.republicate.modality.filter.ValueFilters;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -120,7 +117,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
-        model.getIdentifiers().setMapping(identMapping);
+        model.getIdentifiersFilters().addMappings(identMapping);
         model.initialize(getResourceReader("test_init_model.xml"));
         Entity book = model.getEntity("book");
         assertNotNull(book);
@@ -151,8 +148,8 @@ public class BasicModelToolTests extends BaseBookshelfTests
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.JOINS);
-        model.getIdentifiers().setInflector("org.atteo.evo.inflector.English");
-        model.getIdentifiers().setMapping("lowercase");
+        model.getIdentifiersFilters().setInflector("org.atteo.evo.inflector.English");
+        model.getIdentifiersFilters().addMappings("lowercase");
         model.initialize(getResourceReader("test_minimal_model.xml"));
 
         // test upstream attribute
@@ -444,7 +441,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         book.update();
         book.refresh();
         Serializable digestedTitle = book.get("title");
-        assertEquals("did not find an HtmlEscaped object", ValueFilterHandler.HtmlEscaped.class, digestedTitle.getClass());
+        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
         String disgestedTitle = book.getString("title");
         assertEquals(escapedTitle, disgestedTitle);
         book.put("title", prevTitle);
@@ -503,6 +500,53 @@ public class BasicModelToolTests extends BaseBookshelfTests
         {
             assertEquals("data exception: invalid character value for cast", sqle.getMessage());
         }
+    }
+
+    public @Test void testValueFiltersRelaxing() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Properties props = new Properties();
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "full");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
+
+        // disallow html everywhere
+        props.put("model.filters.write.*.*", "no_html");
+        // allow html in book title
+        props.put("model.filters.write.book.title", "-no_html");
+        props.put("model.filters.read.book.title", "escape_html");
+
+        Model model = new Model().configure(props).initialize();
+
+        Instance book = model.getEntity("book").fetch(1);
+        Instance publisher = book.retrieve("publisher");
+
+        // test no_html
+        publisher.put("name", "<forbidden>");
+        try
+        {
+            publisher.update();
+            fail("expecting SQLException for invalid character");
+        }
+        catch (SQLException sqle) {}
+
+        // test escape_html
+        String prevTitle = book.getString("title");
+        String title = "the common <way> is \"hidden\"";
+        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
+        book.put("title", title);
+        book.update();
+        book.refresh();
+        Serializable digestedTitle = book.get("title");
+        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
+        String disgestedTitle = book.getString("title");
+        assertEquals(escapedTitle, disgestedTitle);
+        book.put("title", prevTitle);
+        book.update();
+        book.refresh();
+        assertEquals("something's very wrong", prevTitle, book.getString("title"));
     }
 
     public static class MyBook

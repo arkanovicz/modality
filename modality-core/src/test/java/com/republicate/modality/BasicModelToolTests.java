@@ -549,6 +549,36 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals("something's very wrong", prevTitle, book.getString("title"));
     }
 
+    public @Test void testKeysComparison() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Properties props = new Properties();
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "full");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
+
+        Model model = new Model().configure(props).initialize();
+
+        Instance book = model.getEntity("book").fetch(1);
+        Map<String, Serializable> values = new HashMap<>();
+        values.put("book_id", "1");
+        book.putAll(values);
+        book.update();
+        values.put("book_id", 1452345);
+        book.putAll(values);
+        try
+        {
+            book.update();
+            fail("Update should be forbidden if PK did change");
+        }
+        catch (IllegalStateException ise)
+        {
+            assertEquals("instance must be persisted", ise.getMessage());
+        }
+    }
+
     public static class MyBook
     {
         public void setISBN(String isbn) { this.isbn = isbn.toUpperCase(); }

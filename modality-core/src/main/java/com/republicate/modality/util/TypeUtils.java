@@ -21,6 +21,7 @@ package com.republicate.modality.util;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
@@ -389,4 +390,27 @@ public class TypeUtils
     }
 
 
+    /**
+     * Check if two values represent the same value even with different types
+     * @param left left value
+     * @param right right value
+     * @return true if both values will map to the same value in the database
+     */
+    public static boolean sameValues(Serializable left, Serializable right)
+    {
+        if (left == null)
+        {
+            return right == null;
+        }
+        if (right == null)
+        {
+            return left == null;
+        }
+        if (left instanceof Number && right instanceof Number)
+        {
+            return ((Number)left).doubleValue() == ((Number)right).doubleValue();
+        }
+        // resort to string comparison
+        return String.valueOf(left).equals(String.valueOf(right));
+    }
 }

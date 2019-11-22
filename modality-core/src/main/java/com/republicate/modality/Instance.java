@@ -329,22 +329,14 @@ public class Instance extends SlotTreeMap
         super.putAll(map);
         if (persisted)
         {
-            Serializable[] newpk = getPrimaryKey();
-            if (Arrays.equals(pk, newpk))
-            {
-                entity.getNonPrimaryKeyMask().stream()
-                    .filter(col ->
-                    {
-                        String colName = entity.getColumn(col).name;
-                        return !Objects.equals(get(colName), map.get(colName));
-                    })
-                    .forEach(col -> dirtyFlags.set(col));
-            }
-            else
-            {
-                persisted = false;
-            }
-
+            // the persisted flag became false at this point if PK changed
+            entity.getNonPrimaryKeyMask().stream()
+                .filter(col ->
+                {
+                    String colName = entity.getColumn(col).name;
+                    return !Objects.equals(get(colName), map.get(colName));
+                })
+                .forEach(col -> dirtyFlags.set(col));
         }
     }
 
@@ -362,9 +354,9 @@ public class Instance extends SlotTreeMap
             Entity.Column column = entity.getColumn(key);
             if (column != null)
             {
-                if (entity.getPrimaryKeyMask().get(column.getIndex()))
+                if (column.isKeyColumn())
                 {
-                    if (!ret.equals(value))
+                    if (!TypeUtils.sameValues(ret, value))
                     {
                         persisted = false;
                     }

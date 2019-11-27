@@ -31,6 +31,8 @@ under the License.
     <name>${project.groupId}:${project.artifactId}</name>
     <modules>
         <module>modality-example-bookshelf</module>
+        <!-- WiP
         <module>modality-db-diagram</module>
+        -->
     </modules>
 </project>

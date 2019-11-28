@@ -10,12 +10,12 @@ Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_
 
 Child modules:
 
-+ [modality-core](https://github.com/arkanovicz/modality/tree/master/modality-core) - a model layer for a [pull MVC architecture](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based), which encompases a data access layer, a hierarchical and reentrant model definition gathering SQL queries, database values and names filters, ...
-+ [modality-api-client](https://github.com/arkanovicz/modality/tree/master/modality-api-client) - API client utility for JSON/XML APIs.
-+ [modality-api-server](https://github.com/arkanovicz/modality/tree/master/modality-api-server) - API servlet serving Velocity JSON templates.
-+ [modality-webapp](https://github.com/arkanovicz/modality/tree/master/modality-webapp) - servlets and filters for Modality-core configuration and initialization in a J2EE webapp environment.
-+ [modality-webapp-auth](https://github.com/arkanovicz/modality/tree/master/modality-webapp-auth) - authentication filters assortment.
-+ [velocity-tools-apiclient](https://github.com/arkanovicz/modality/tree/master/velocity-tools-apiclient) - view layer API client tool which encapsulates modality-api-client for use with Apache Velocity Tools.
-+ [velocity-tools-model](https://github.com/arkanovicz/modality/tree/master/velocity-tools-model) - view layer model tool which encapsulates modality-core model objects for use with Apache Velocity Tools.
-+ [modality-webapp-oauth-server](https://github.com/arkanovicz/modality/tree/master/modality-webapp-oauth-server) - OAuth2 server (work in progress)
-+ [modality-webapp-oauth-client](https://github.com/arkanovicz/modality/tree/master/modality-webapp-oauth-server) - OAuth2 client (work in progress)
++ [modality-core](modality-core) - a model layer for a [pull MVC architecture](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based), which encompases a data access layer, a hierarchical and reentrant model definition gathering SQL queries, database values and names filters, ...
++ [modality-api-client](modality-api-client) - API client utility for JSON/XML APIs.
++ [modality-api-server](modality-api-server) - API servlet serving Velocity JSON templates.
++ [modality-webapp](modality-webapp) - servlets and filters for Modality-core configuration and initialization in a J2EE webapp environment.
++ [modality-webapp-auth](modality-webapp-auth) - authentication filters assortment.
++ [velocity-tools-apiclient](velocity-tools-apiclient) - view layer API client tool which encapsulates modality-api-client for use with Apache Velocity Tools.
++ [velocity-tools-model](velocity-tools-model) - view layer model tool which encapsulates modality-core model objects for use with Apache Velocity Tools.
++ [modality-webapp-oauth-server](modality-webapp-oauth-server) - OAuth2 server (work in progress)
++ [modality-webapp-oauth-client](modality-webapp-oauth-server) - OAuth2 client (work in progress)

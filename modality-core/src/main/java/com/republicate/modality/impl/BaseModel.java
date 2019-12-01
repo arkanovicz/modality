@@ -321,7 +321,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             getFilters().initialize();
             reverseEngineer();
             getInstances().initialize();
-            initializeAttributes();
+            initializeAttributes(); // root attributes initialization
             registerModel();
         }
         catch (ConfigurationException ce)
@@ -333,6 +333,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             throw new ConfigurationException("could not initialize model", e);
         }
         return getModel();
+    }
+
+    protected void initializeEntities()
+    {
+        for (Entity entity : getEntities().values())
+        {
+            entity.initialize();
+        }
     }
 
     protected void readDefinition(InputSource source) throws Exception
@@ -633,10 +641,13 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 entity.setTable(table);
             }
 
+
+            // build a temporary map of declared entities per tables
+            Map<String, Entity> knownEntitiesByTable = null;
             if (getReverseMode().reverseColumns())
             {
                 // build a temporary map of declared entities per tables
-                Map<String, Entity> knownEntitiesByTable = new TreeMap<>();
+                knownEntitiesByTable = new TreeMap<>();
                 for (Entity entity : entitiesMap.values())
                 {
                     Entity prev = knownEntitiesByTable.put(entity.getTable(), entity);
@@ -645,64 +656,65 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                         throw new ConfigurationException("entity table name collision: entities " + entity.getName() + " and " + prev.getName() + " both reference table " + entity.getTable());
                     }
                 }
+            }
 
-                // reverse enginering of tables if asked so
-                if (getReverseMode().reverseTables())
+            // reverse enginering of tables if asked so
+            if (getReverseMode().reverseTables())
+            {
+                List<String> sqlTables = reverseEngineer.getTables();
+                for (String table : sqlTables)
                 {
-                    List<String> sqlTables = reverseEngineer.getTables();
-                    for (String table : sqlTables)
+                    Entity entity = knownEntitiesByTable.get(table);
+                    if (entity == null)
                     {
-                        Entity entity = knownEntitiesByTable.get(table);
-                        if (entity == null)
+                        String entityName = getIdentifiersFilters().transformTableName(table);
+                        entity = getEntity(entityName);
+                        if (entity != null)
                         {
-                            String entityName = getIdentifiersFilters().transformTableName(table);
-                            entity = getEntity(entityName);
-                            if (entity != null)
+                            if (entity.getTable() != null)
                             {
-                                if (entity.getTable() != null)
+                                if (entitiesWithExplicitTables.contains(entityName))
                                 {
-                                    if (entitiesWithExplicitTables.contains(entityName))
-                                    {
-                                        throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
-                                    }
-                                    else
-                                    {
-                                        // it means the wild guess we made for the table name was wrong
-                                        knownEntitiesByTable.remove(entity.getTable());
-                                    }
+                                    throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
                                 }
-                                getLogger().warn("binding entity {} to table {}", entity.getName(), table);
-                                entity.setTable(table);
-                                knownEntitiesByTable.put(table, entity);
+                                else
+                                {
+                                    // it means the wild guess we made for the table name was wrong
+                                    knownEntitiesByTable.remove(entity.getTable());
+                                }
                             }
-                            else
-                            {
-                                entity = new Entity(entityName, getModel());
-                                entity.setTable(table);
-                                addEntity(entity);
-                                knownEntitiesByTable.put(table, entity);
-                            }
+                            getLogger().warn("binding entity {} to table {}", entity.getName(), table);
+                            entity.setTable(table);
+                            knownEntitiesByTable.put(table, entity);
+                        }
+                        else
+                        {
+                            entity = new Entity(entityName, getModel());
+                            entity.setTable(table);
+                            addEntity(entity);
+                            knownEntitiesByTable.put(table, entity);
                         }
                     }
                 }
+            }
 
+            if (getReverseMode().reverseColumns())
+            {
                 // reverse enginering of columns and primary key
                 for (Entity entity : knownEntitiesByTable.values())
                 {
                     List<Entity.Column> columns = reverseEngineer.getColumns(entity);
-                    if (columns == null)
+                    if (columns.size() == 0)
                     {
                         // it means the sql table does not exist
                         if (entitiesWithExplicitTables.contains(entity.getName()))
                         {
                             throw new ConfigurationException("sql table '" + entity.getTable() + "' not found for entity " + entity.getName());
-                        }
-                        else
+                        } else
                         {
                             entity.setTable(null);
                         }
-                    }
-                    else
+                    } else
                     {
                         for (Entity.Column column : columns)
                         {
@@ -711,63 +723,66 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                         entity.setSqlPrimaryKey(reverseEngineer.getPrimaryKey(entity));
                     }
                 }
+            }
 
-                // reverse enginering of joins, if asked so
+            // initialization point for entities
+            initializeEntities();
+
+            // reverse enginering of joins, if asked so
+            if (getReverseMode().reverseJoins())
+            {
                 Map<Entity, List<Pair<Entity, List<String>>>> potentialJoinTables = new HashMap<>();
-                if (getReverseMode().reverseJoins())
+                for (Entity pkEntity : knownEntitiesByTable.values())
                 {
-                    for (Entity pkEntity : knownEntitiesByTable.values())
+                    List<Pair<String, List<String>>> joins = reverseEngineer.getJoins(pkEntity);
+                    for (Pair<String, List<String>> join : joins)
                     {
-                        List<Pair<String, List<String>>> joins = reverseEngineer.getJoins(pkEntity);
-                        for (Pair<String, List<String>> join : joins)
+                        String fkTable = join.getLeft();
+                        List<String> fkColumns = join.getRight();
+                        Entity fkEntity = knownEntitiesByTable.get(fkTable);
+                        if (fkEntity != null)
                         {
-                            String fkTable = join.getLeft();
-                            List<String> fkColumns = join.getRight();
-                            Entity fkEntity = knownEntitiesByTable.get(fkTable);
-                            if (fkEntity != null)
+                            // define upstream attribute from fk to pk
+                            declareUpstreamJoin(pkEntity, fkEntity, fkColumns);
+
+                            // define downstream attribute from pk to fk
+                            declareJoinTowardsForeignKey(pkEntity, fkEntity, fkColumns);
+
+                            List<Pair<Entity, List<String>>> fks = potentialJoinTables.get(fkEntity);
+                            if (fks == null)
                             {
-                                // define upstream attribute from fk to pk
-                                declareUpstreamJoin(pkEntity, fkEntity, fkColumns);
-
-                                // define downstream attribute from pk to fk
-                                declareJoinTowardsForeignKey(pkEntity, fkEntity, fkColumns);
-
-                                List<Pair<Entity, List<String>>> fks = potentialJoinTables.get(fkEntity);
-                                if (fks == null)
-                                {
-                                    fks = new ArrayList<Pair<Entity, List<String>>>();
-                                    potentialJoinTables.put(fkEntity, fks);
-                                }
-                                fks.add(Pair.of(pkEntity, fkColumns));
+                                fks = new ArrayList<Pair<Entity, List<String>>>();
+                                potentialJoinTables.put(fkEntity, fks);
                             }
+                            fks.add(Pair.of(pkEntity, fkColumns));
                         }
                     }
-                    // reverse enginering of join tables
-                    if (getReverseMode().reverseExtended())
+                }
+                // reverse enginering of join tables
+                if (getReverseMode().reverseExtended())
+                {
+                    for (Map.Entry<Entity, List<Pair<Entity, List<String>>>> entry : potentialJoinTables.entrySet())
                     {
-                        for (Map.Entry<Entity, List<Pair<Entity, List<String>>>> entry : potentialJoinTables.entrySet())
+                        Entity fkEntity = entry.getKey();
+                        List<Pair<Entity, List<String>>> pks = entry.getValue();
+                        // TODO - joins detection should be configurable
+                        // for now:
+                        // - join table must reference two different tables with distinct columns
+                        // - join table name must be a snake case concatenation of both pk tables
+                        if (pks.size() == 2)
                         {
-                            Entity fkEntity = entry.getKey();
-                            List<Pair<Entity, List<String>>> pks = entry.getValue();
-                            // TODO - joins detection should be configurable
-                            // for now:
-                            // - join table must reference two different tables with distinct columns
-                            // - join table name must be a snake case concatenation of both pk tables
-                            if (pks.size() == 2)
+                            List<String> leftFkColumns = pks.get(0).getRight();
+                            List<String> rightFkColumns = pks.get(1).getRight();
+                            if (Collections.disjoint(leftFkColumns, rightFkColumns))
                             {
-                                List<String> leftFkColumns = pks.get(0).getRight();
-                                List<String> rightFkColumns = pks.get(1).getRight();
-                                if (Collections.disjoint(leftFkColumns, rightFkColumns))
+                                Entity leftPK = pks.get(0).getLeft();
+                                Entity rightPK = pks.get(1).getLeft();
+                                String name1 = leftPK.getName() + "_" + rightPK.getName();
+                                String name2 = rightPK.getName() + "_" + leftPK.getName();
+                                if (fkEntity.getName().equals(name1) || fkEntity.getName().equals(name2))
                                 {
-                                    Entity leftPK = pks.get(0).getLeft();
-                                    Entity rightPK = pks.get(1).getLeft();
-                                    String name1 = leftPK.getName() + "_" + rightPK.getName();
-                                    String name2 = rightPK.getName() + "_" + leftPK.getName();
-                                    if (fkEntity.getName().equals(name1) || fkEntity.getName().equals(name2))
-                                    {
-                                        declareExtendedJoin(leftPK, leftFkColumns, fkEntity, rightFkColumns, rightPK);
-                                        declareExtendedJoin(rightPK, rightFkColumns, fkEntity, leftFkColumns, leftPK);
-                                    }
+                                    declareExtendedJoin(leftPK, leftFkColumns, fkEntity, rightFkColumns, rightPK);
+                                    declareExtendedJoin(rightPK, rightFkColumns, fkEntity, leftFkColumns, leftPK);
                                 }
                             }
                         }

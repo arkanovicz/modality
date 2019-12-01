@@ -118,9 +118,6 @@ public abstract class BaseEntity extends AttributeHolder
     protected void setSqlPrimaryKey(String ... sqlPrimaryKey) // receives sql names
     {
         this.sqlPrimaryKey = Arrays.asList(sqlPrimaryKey);
-
-        // now we can initialize entity internal attributes
-        initialize();
     }
 
     public Collection<Entity.Column> getColumns()
@@ -219,6 +216,12 @@ public abstract class BaseEntity extends AttributeHolder
     protected void initialize()
     {
         initializeAttributes();
+        if (sqlName == null)
+        {
+            // entity is not a table
+            return;
+        }
+
         columnNames = columns.values().stream().map(x -> x.name).collect(Collectors.toList());
 
         String tableIdentifier = quoteIdentifier(getTable());

@@ -130,7 +130,7 @@ public class ReverseEngineer
     public List<Entity.Column> getColumns(Entity entity) throws SQLException
     {
         IdentifiersFilters identifiers = entity.getModel().getIdentifiersFilters();
-        List<Entity.Column> ret = new ArrayList<>();
+        List<Entity.Column> ret = new ArrayList<>();;
         ResultSet columns = null;
         try
         {
@@ -144,19 +144,21 @@ public class ReverseEngineer
             catch (SQLException sqle)
             {
                 logger.warn("could not get columns for table {}", table);
-                return null;
             }
-            while (columns.next())
+            if (columns != null)
             {
-                Integer size = columns.getInt("COLUMN_SIZE");
-                if (columns.wasNull()) size = null;
-                String colSqlName = columns.getString("COLUMN_NAME");
-                String colName = identifiers.transformColumnName(table, colSqlName);
-                int dataType = columns.getInt("DATA_TYPE");
-                String gen1 = columns.getString("IS_AUTOINCREMENT");
-                String gen2 = columns.getString("IS_GENERATEDCOLUMN");
-                boolean generated = "YES".equals(gen1) || "YES".equals(gen2);
-                ret.add(new Entity.Column(colName, colSqlName, dataType, size, generated));
+                while (columns.next())
+                {
+                    Integer size = columns.getInt("COLUMN_SIZE");
+                    if (columns.wasNull()) size = null;
+                    String colSqlName = columns.getString("COLUMN_NAME");
+                    String colName = identifiers.transformColumnName(table, colSqlName);
+                    int dataType = columns.getInt("DATA_TYPE");
+                    String gen1 = columns.getString("IS_AUTOINCREMENT");
+                    String gen2 = columns.getString("IS_GENERATEDCOLUMN");
+                    boolean generated = "YES".equals(gen1) || "YES".equals(gen2);
+                    ret.add(new Entity.Column(colName, colSqlName, dataType, size, generated));
+                }
             }
             return ret;
         }

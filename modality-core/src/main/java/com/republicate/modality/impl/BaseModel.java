@@ -702,11 +702,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                             entity.setTable(null);
                         }
                     }
-                    for (Entity.Column column : columns)
+                    else
                     {
-                        entity.addColumn(column);
+                        for (Entity.Column column : columns)
+                        {
+                            entity.addColumn(column);
+                        }
+                        entity.setSqlPrimaryKey(reverseEngineer.getPrimaryKey(entity));
                     }
-                    entity.setSqlPrimaryKey(reverseEngineer.getPrimaryKey(entity));
                 }
 
                 // reverse enginering of joins, if asked so

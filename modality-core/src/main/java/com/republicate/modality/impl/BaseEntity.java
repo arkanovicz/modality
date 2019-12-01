@@ -219,11 +219,6 @@ public abstract class BaseEntity extends AttributeHolder
     protected void initialize()
     {
         initializeAttributes();
-        // TODO - lazy initialization
-        if (sqlName == null)
-        {
-            sqlName = name;
-        }
         columnNames = columns.values().stream().map(x -> x.name).collect(Collectors.toList());
 
         String tableIdentifier = quoteIdentifier(getTable());

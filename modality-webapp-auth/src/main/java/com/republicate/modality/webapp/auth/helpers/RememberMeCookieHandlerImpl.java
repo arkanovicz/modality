@@ -72,11 +72,13 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         if (doCheckCookie == null)
         {
             logger.warn("remember feature disabled: required row attribute 'check_remember_me' does not exist or is not a row attribute");
+            return null;
         }
         Entity users = doCheckCookie.getResultEntity();
         if (users == null || !users.hasPrimaryKey())
         {
             logger.warn("remember feature disabled: 'check_remember_me' attribute doesn't have any resulting instance, or it doesn't have any primary key");
+            return null;
         }
         usersPrimaryKey = users.getPrimaryKey().stream().map(col -> col.name).collect(Collectors.toList());
         doRefreshCookie = model.getAction("refresh_remember_me"); // may be null

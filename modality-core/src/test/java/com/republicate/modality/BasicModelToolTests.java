@@ -684,6 +684,41 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals(3, longId);
     }
 
+    public @Test void testCustomEntity() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.FULL);
+        model.initialize(getResourceReader("test_custom_entity.xml"));
+
+        // first method: using newInstance
+        Entity blobEntity = model.getEntity("blob");
+        assertNotNull(blobEntity);
+        Instance blob = blobEntity.newInstance();
+        assertNotNull(blob);
+        assertEquals("custom entity does not match", blobEntity, blob.getEntity());
+        blob.put("text", "%Life%");
+        Iterator<Instance> related = blob.query("related_books");
+        assertTrue("should find something", related.hasNext());
+        Instance book = related.next();
+        assertFalse("but only one book", related.hasNext());
+        assertNotNull(book);
+        assertEquals("The Astonishing Life of Duncan Moonwalker", book.getString("title"));
+
+        // second method: using row attribute
+        blob = model.retrieve("get_blob", "%Title%");
+        assertNotNull(blob);
+        assertEquals("custom entity does not match", blobEntity, blob.getEntity());
+        blob.put("text", "%Life%");
+        related = blob.query("related_books");
+        assertTrue("should find something", related.hasNext());
+        book = related.next();
+        assertFalse("but only one book", related.hasNext());
+        assertNotNull(book);
+        assertEquals("The Astonishing Life of Duncan Moonwalker", book.getString("title"));
+    }
+
     @BeforeClass
     public static void populateDataSource() throws Exception
     {

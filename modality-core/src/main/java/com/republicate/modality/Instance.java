@@ -67,7 +67,7 @@ public class Instance extends SlotTreeMap
             readValue(key, values.get(key));
         }
         setClean();
-        persisted = entity != null && entity.getPrimaryKey().size() > 0 && entity.getPrimaryKey().stream().noneMatch(Objects::isNull);
+        persisted = lookupPersisted();
     }
 
     public void readValue(String key, Serializable value) throws SQLException
@@ -265,7 +265,7 @@ public class Instance extends SlotTreeMap
         }
         ensureNotPersisted();
         entity.insert(this);
-        persisted = entity != null && entity.getPrimaryKey().size() > 0;
+        persisted = lookupPersisted();
         // the next call is necessary for the following use case:
         // $book.put(...)
         // $book.delete()
@@ -295,10 +295,10 @@ public class Instance extends SlotTreeMap
         }
 
         Serializable[] pk;
-        if (entity != null && (entity.getPrimaryKey()).size() > 0 && Arrays.stream(pk = getPrimaryKey()).noneMatch(Objects::isNull))
+        if (lookupPersisted())
         {
             // TODO - some vendors support upsert
-            Instance prev = entity.fetch(pk);
+            Instance prev = entity.fetch(getPrimaryKey());
             if (prev == null)
             {
                 persisted = false;
@@ -397,6 +397,12 @@ public class Instance extends SlotTreeMap
         {
             throw new IllegalStateException("instance must not be persisted");
         }
+    }
+
+    private boolean lookupPersisted()
+    {
+        List<Entity.Column> pkCols = entity == null ? null : entity.getPrimaryKey();
+        return pkCols != null && pkCols.size() > 0 && pkCols.stream().noneMatch(Objects::isNull);
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException

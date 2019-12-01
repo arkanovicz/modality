@@ -90,7 +90,7 @@ public abstract class BaseEntity extends AttributeHolder
 
     public List<Entity.Column> getPrimaryKey()
     {
-        return Collections.unmodifiableList(primaryKey);
+        return primaryKey == null ? null : Collections.unmodifiableList(primaryKey);
     }
 
     public boolean hasPrimaryKey()

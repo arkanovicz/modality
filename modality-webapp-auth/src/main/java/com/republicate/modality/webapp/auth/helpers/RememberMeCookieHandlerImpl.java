@@ -65,17 +65,18 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         doCreateCookie = model.getAction("create_remember_me");
         if (doCreateCookie == null)
         {
-            throw new ServletException("required action 'create_remember_me' does not exist or is not an action");
+            logger.warn("remember feature disabled: required action 'create_remember_me' does not exist or is not an action");
+            return null;
         }
         doCheckCookie = model.getRowAttribute("check_remember_me");
         if (doCheckCookie == null)
         {
-            throw new ServletException("required row attribute 'check_remember_me' does not exist or is not a row attribute");
+            logger.warn("remember feature disabled: required row attribute 'check_remember_me' does not exist or is not a row attribute");
         }
         Entity users = doCheckCookie.getResultEntity();
         if (users == null || !users.hasPrimaryKey())
         {
-            throw new ServletException("'check_remember_me' attribute doesn't have any resulting instance, or it doesn't have any primary key");
+            logger.warn("remember feature disabled: 'check_remember_me' attribute doesn't have any resulting instance, or it doesn't have any primary key");
         }
         usersPrimaryKey = users.getPrimaryKey().stream().map(col -> col.name).collect(Collectors.toList());
         doRefreshCookie = model.getAction("refresh_remember_me"); // may be null
@@ -92,6 +93,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         cryptograph = new AESCryptograph();
         String seed = getCryptographSeed(model);
         cryptograph.init(seed);
+        active = true;
         return this;
     }
 
@@ -120,6 +122,10 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
 
     private Instance getRememberMe(String rememberMeValue, String requestIp, String requestUA) throws ServletException
     {
+        if (!active)
+        {
+            return null;
+        }
         String decrypted;
         try
         {
@@ -165,7 +171,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     public void setRememberMe(Instance user, HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         String rememberMe = request.getParameter(cookieName);
-        if (rememberMe != null)
+        if (active && rememberMe != null)
         {
             String ip = HttpUtils.getRealIP(request);
             String ua = Optional.ofNullable(request.getHeader("User-Agent")).orElse("");
@@ -193,6 +199,10 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     @Override
     public void resetRememberMe(Instance user, HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
+        if (!active)
+        {
+            return;
+        }
         if (doResetCookie == null)
         {
             RememberMeCookieHandler.super.resetRememberMe(user, request, response);
@@ -206,6 +216,10 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     @Override
     public void refreshRememberMe(Instance user, HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
+        if (!active)
+        {
+            return;
+        }
         if (doRefreshCookie == null)
         {
             RememberMeCookieHandler.super.refreshRememberMe(user, request, response);
@@ -287,7 +301,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         return RandomStringUtils.random(15, characters);
     }
 
-    // config
+    // configuration
     private String cookieName;
     private String cookieDomain;
     private String cookiePath;
@@ -295,7 +309,8 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
     private boolean cookieSecure;
     private Cryptograph cryptograph;
 
-    // configure
+    // attributes
+    private boolean active = false;
     private RowAttribute doCheckCookie = null;
     private List<String> usersPrimaryKey = null;
     private Action doCreateCookie = null;

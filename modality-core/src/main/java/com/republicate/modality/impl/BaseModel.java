@@ -621,13 +621,13 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             ReverseEngineer reverseEngineer = getMetaModel(connection);
 
             // we need to temporarily remember whether explicit table names where provided for explicit entities
-            Set<String> explicitTables = new HashSet<>();
+            Set<String> entitiesWithExplicitTables = new HashSet<>();
 
             for (Entity entity : entitiesMap.values())
             {
                 String table = entity.getTable();
                 if (table == null) table = entity.getName();
-                else explicitTables.add(entity.getName());
+                else entitiesWithExplicitTables.add(entity.getName());
                 // adapt known entities table case if necessary
                 table = driverInfos.getTableName(table);
                 entity.setTable(table);
@@ -649,7 +649,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 // reverse enginering of tables if asked so
                 if (getReverseMode().reverseTables())
                 {
-                    for (String table : reverseEngineer.getTables())
+                    List<String> sqlTables = reverseEngineer.getTables();
+                    for (String table : sqlTables)
                     {
                         Entity entity = knownEntitiesByTable.get(table);
                         if (entity == null)
@@ -660,7 +661,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                             {
                                 if (entity.getTable() != null)
                                 {
-                                    if (explicitTables.contains(entityName))
+                                    if (entitiesWithExplicitTables.contains(entityName))
                                     {
                                         throw new ConfigurationException("entity table name collision: entity " + entity.getName() + " maps both tables " + entity.getTable() + " and " + table);
                                     }
@@ -689,6 +690,18 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 for (Entity entity : knownEntitiesByTable.values())
                 {
                     List<Entity.Column> columns = reverseEngineer.getColumns(entity);
+                    if (columns == null)
+                    {
+                        // it means the sql table does not exist
+                        if (entitiesWithExplicitTables.contains(entity.getName()))
+                        {
+                            throw new ConfigurationException("sql table '" + entity.getTable() + "' not found for entity " + entity.getName());
+                        }
+                        else
+                        {
+                            entity.setTable(null);
+                        }
+                    }
                     for (Entity.Column column : columns)
                     {
                         entity.addColumn(column);

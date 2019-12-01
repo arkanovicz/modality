@@ -136,7 +136,16 @@ public class ReverseEngineer
         {
             // get columns
             String table = entity.getTable();
-            columns = databaseMetaData.getColumns(getCatalog(), getSchema(), table, null);
+            // some sql drivers will throw an exception if table does not exist
+            try
+            {
+                columns = databaseMetaData.getColumns(getCatalog(), getSchema(), table, null);
+            }
+            catch (SQLException sqle)
+            {
+                logger.warn("could not get columns for table {}", table);
+                return null;
+            }
             while (columns.next())
             {
                 Integer size = columns.getInt("COLUMN_SIZE");

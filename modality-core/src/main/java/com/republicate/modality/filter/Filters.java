@@ -77,7 +77,7 @@ public abstract class Filters<V>
         childMap.merge(columnPattern, value, this::aggregate);
         if ("*".equals(tableKey) && "*".equals(columnKey))
         {
-            defaultColumnFilter = value;
+            setDefaultColumnFilter(value);
         }
     }
 
@@ -114,6 +114,11 @@ public abstract class Filters<V>
     public V getDefaultColumnFilter()
     {
         return defaultColumnFilter;
+    }
+
+    protected void setDefaultColumnFilter(V defaultColumnFilter)
+    {
+        this.defaultColumnFilter = defaultColumnFilter;
     }
 
     private Comparator<Pattern> stringComparator = (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));

@@ -22,6 +22,12 @@ import java.util.regex.Pattern;
 public class ConfigurableFilters<T extends Serializable> extends Filters<Filter<T>>
 {
 
+    @Override
+    public void initialize() throws ConfigurationException
+    {
+        setDefaultColumnFilter(getFilter(configuration.getDefaultColumnFilter()));
+    }
+
     /**
      * build filters
      * @param configurationPrefix configuration prefix

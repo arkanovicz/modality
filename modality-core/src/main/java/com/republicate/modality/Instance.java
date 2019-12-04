@@ -76,7 +76,7 @@ public class Instance extends SlotTreeMap
         String colName;
         if (entity == null)
         {
-            colName = key;
+            colName = getModel().getIdentifiersFilters().transformColumnName(key);
         }
         else
         {

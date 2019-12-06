@@ -203,7 +203,7 @@ public class WebappModelProvider extends WebappModalityConfig
         }
         catch (ConfigurationException ce)
         {
-            logger.error("could not configure and initialize model {}", modelId, ce);
+            logger.error("could not configure or initialize model '{}'", modelId, ce);
         }
         return model;
     }

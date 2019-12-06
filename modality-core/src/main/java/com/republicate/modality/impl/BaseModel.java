@@ -265,10 +265,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return new TreeMap(); // TODO
     }
 
+
     /*
      * Initialization
      */
-
     public Model initialize()
     {
         ensureConfigured();
@@ -323,14 +323,15 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             getInstances().initialize();
             initializeAttributes(); // root attributes initialization
             registerModel();
+            initialized = true;
         }
         catch (ConfigurationException ce)
         {
-            throw ce;
+            throw initializationError = ce;
         }
         catch (Exception e)
         {
-            throw new ConfigurationException("could not initialize model", e);
+            throw initializationError = new ConfigurationException("could not initialize model", e);
         }
         return getModel();
     }
@@ -390,6 +391,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     protected final void registerModel()
     {
         ModelRepository.registerModel(servletContext, getModel());
+    }
+
+    protected void checkInitialized()
+    {
+        if (!initialized)
+        {
+            throw Optional.ofNullable(initializationError).orElse(new ConfigurationException("model hasn't been initialized"));
+        }
     }
 
     /*
@@ -1176,6 +1185,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private boolean configuring = false;
     private boolean configured = false;
+    private boolean initialized = false;
+    private ConfigurationException initializationError = null;
 
     private Object servletContext = null;
 

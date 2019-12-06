@@ -61,6 +61,7 @@ public class Model extends BaseModel
      */
     protected PooledStatement prepareQuery(String query) throws SQLException
     {
+        checkInitialized();
         return getStatementPool().prepareQuery(query);
     }
 
@@ -72,6 +73,7 @@ public class Model extends BaseModel
      */
     protected PooledStatement prepareUpdate(String query) throws SQLException
     {
+        checkInitialized();
         return getStatementPool().prepareUpdate(query);
     }
 
@@ -83,6 +85,7 @@ public class Model extends BaseModel
     @Override
     protected ConnectionWrapper getTransactionConnection() throws SQLException
     {
+        checkInitialized();
         return super.getTransactionConnection();
     }
 
@@ -91,6 +94,7 @@ public class Model extends BaseModel
      */
     public void attempt(ModelRunnable operation) throws SQLException
     {
+        checkInitialized();
         ConnectionWrapper connection = null;
         try
         {

@@ -323,6 +323,7 @@ public abstract class BaseEntity extends AttributeHolder
             upstreamAttribute.addParameter(translateColumnName(fkColumns.get(col)));
         }
         addAttribute(upstreamAttribute);
+        upstreamAttribute.initialize();
     }
 
     public void declareDownstreamJoin(String downstreamAttributeName, Entity fkEntity, List<String> fkColumns)
@@ -340,6 +341,7 @@ public abstract class BaseEntity extends AttributeHolder
             downstreamAttribute.addParameter(translateColumnName(sqlPrimaryKey.get(col)));
         }
         addAttribute(downstreamAttribute);
+        downstreamAttribute.initialize();
     }
 
     public void declareExtendedJoin(String joinAttributeName, List<String> leftFKCols, Entity joinEntity, List<String> rightFKCols, Entity rightEntity)
@@ -368,6 +370,7 @@ public abstract class BaseEntity extends AttributeHolder
             extendedJoin.addParameter(translateColumnName(sqlPrimaryKey.get(col)));
         }
         addAttribute(extendedJoin);
+        extendedJoin.initialize();
     }
 
     protected final String quoteIdentifier(String id)

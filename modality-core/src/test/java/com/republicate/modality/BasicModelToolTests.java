@@ -719,6 +719,25 @@ public class BasicModelToolTests extends BaseBookshelfTests
         assertEquals("The Astonishing Life of Duncan Moonwalker", book.getString("title"));
     }
 
+    public @Test void testMixedParams() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.FULL);
+        model.initialize(getResourceReader("test_mixed_params.xml"));
+        for (int test = 1; test < 3; ++test)
+        {
+            Instance book = model.getEntity("book").fetch(1);
+            assertNotNull(book);
+            Iterator<Instance> it = book.query("find_similar_books_" + test, "2018-01-01", "2018-12-01");
+            assertNotNull(it);
+            Instance similarBook = it.next();
+            assertNotNull(similarBook);
+            assertEquals(book, similarBook);
+        }
+    }
+
     @BeforeClass
     public static void populateDataSource() throws Exception
     {

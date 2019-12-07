@@ -27,10 +27,14 @@ import com.republicate.modality.sql.RowValues;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * <p>BaseAttribute interface</p>
@@ -63,6 +67,23 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
             }
             setResultEntity(entity);
         }
+        if (parameterNames.size() > 0)
+        {
+            paramMapping = new int[parameterNames.size()];
+            Map<String, Integer> paramOrders = new HashMap<String, Integer>();
+            int paramIndex = 0;
+            for (int i = 0; i < parameterNames.size(); ++i)
+            {
+                String paramName = parameterNames.get(i);
+                Integer order = paramOrders.get(paramName);
+                if (order == null)
+                {
+                    paramOrders.put(paramName, order = paramIndex++);
+                }
+                paramMapping[i] = order;
+            }
+        }
+
     }
 
     public String getName()
@@ -160,6 +181,14 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         return paramValues;
     }
 
+    private static int bitsBefore(BitSet bitset, int i)
+    {
+        BitSet mask = new BitSet();
+        mask.set(0, i);
+        mask.and(bitset);
+        return mask.cardinality();
+    }
+
     protected Serializable[] getParamValues(Map source, Serializable[] additionalParams) throws SQLException
     {
         try
@@ -167,13 +196,24 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
             Serializable[] paramValues = new Serializable[parameterNames.size()];
             Entity parentEntity = (Entity)Optional.ofNullable(getParent()).filter(x -> x instanceof Entity).orElse(null);
             Entity sourceEntity = Optional.ofNullable(source).filter(x -> x instanceof Instance).map(i -> ((Instance)i).getEntity()).orElse(null);
-            int additionalParamIndex = 0;
+            BitSet sourcedParams = new BitSet();
+            BitSet providedParams = new BitSet();
             if (parentEntity == null && sourceEntity == null)
             {
                 for (int i = 0; i < paramValues.length; ++i)
                 {
                     String paramName = parameterNames.get(i);
-                    paramValues[i] = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                    if (source.containsKey(paramName))
+                    {
+                        paramValues[i] = (Serializable)source.get(paramName);
+                        sourcedParams.set(paramMapping[i]);
+                    }
+                    else
+                    {
+                        int paramOrder = paramMapping[i];
+                        paramValues[i] = additionalParams[paramOrder - bitsBefore(sourcedParams, paramOrder)];
+                        providedParams.set(paramOrder);
+                    }
                 }
             }
             else if (parentEntity == null || sourceEntity == null || parentEntity == sourceEntity)
@@ -181,8 +221,19 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
                 Entity entity = parentEntity == null ? sourceEntity : parentEntity;
                 for (int i = 0; i < paramValues.length; ++i)
                 {
+                    Serializable value;
                     String paramName = parameterNames.get(i);
-                    Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                    if (source.containsKey(paramName))
+                    {
+                        value = (Serializable)source.get(paramName);
+                        sourcedParams.set(paramMapping[i]);
+                    }
+                    else
+                    {
+                        int paramOrder = paramMapping[i];
+                        value = additionalParams[paramOrder - bitsBefore(sourcedParams, paramOrder)];
+                        providedParams.set(paramOrder);
+                    }
                     paramValues[i] = entity.filterValue(paramName, value);
                 }
             }
@@ -191,15 +242,26 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
                 for (int i = 0; i < paramValues.length; ++i)
                 {
                     String paramName = parameterNames.get(i);
-                    Serializable value = source.containsKey(paramName) ? (Serializable)source.get(paramName) : additionalParams[additionalParamIndex++];
+                    Serializable value;
+                    if (source.containsKey(paramName))
+                    {
+                        value = (Serializable)source.get(paramName);
+                        sourcedParams.set(paramMapping[i]);
+                    }
+                    else
+                    {
+                        int paramOrder = paramMapping[i];
+                        value = additionalParams[paramOrder - bitsBefore(sourcedParams, paramOrder)];
+                        providedParams.set(paramOrder);
+                    }
                     paramValues[i] = parentEntity.hasColumn(paramName) ?
                         parentEntity.filterValue(paramName, value) :
                         sourceEntity.filterValue(paramName, value);
                 }
             }
-            if (additionalParamIndex != additionalParams.length)
+            if (providedParams.cardinality() != additionalParams.length)
             {
-                throw new SQLException("too many parameters provided: got " + additionalParams.length + ", used " + additionalParamIndex);
+                throw new SQLException("too many parameters provided: got " + additionalParams.length + ", used " + providedParams.cardinality());
             }
             return paramValues;
         }
@@ -235,4 +297,5 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
     private String attributeName = null;
     private String query = "";
     protected List<String> parameterNames = new ArrayList<>();
+    protected int paramMapping[] = null;
 }

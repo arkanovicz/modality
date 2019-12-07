@@ -55,6 +55,7 @@ public class Transaction extends Action
     @Override
     public long performImpl(Serializable... paramValues) throws SQLException
     {
+        // CB TODO - review parameters mapping as in BaseAttribute for redundancy handling
         ConnectionWrapper connection = null;
         try
         {
@@ -100,6 +101,7 @@ public class Transaction extends Action
     @Override
     protected void initialize()
     {
+        super.initialize();
         try
         {
             statements = SqlUtils.splitStatements(getQuery(), getModel().getDriverInfos().getIdentifierQuoteChar());

@@ -132,15 +132,23 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         return paramValues;
     }
 
-    protected Serializable[] getParamValues(Serializable[] paramValues) throws SQLException
+    protected Serializable[] getParamValues(Serializable[] rawParamValues) throws SQLException
     {
+        Serializable[] paramValues = new Serializable[parameterNames.size()];
         Entity entity = (Entity)Optional.ofNullable(getParent()).filter(x -> x instanceof Entity).orElse(null);
-        if (entity != null)
+        if (entity == null)
+        {
+            for (int i = 0; i < paramValues.length; ++i)
+            {
+                paramValues[i] = rawParamValues[paramMapping[i]];
+            }
+        }
+        else
         {
             for (int i = 0; i < paramValues.length; ++i)
             {
                 String paramName = parameterNames.get(i);
-                paramValues[i] = entity.filterValue(paramName, paramValues[i]);
+                paramValues[i] = entity.filterValue(paramName, rawParamValues[paramMapping[i]]);
             }
         }
         return paramValues;

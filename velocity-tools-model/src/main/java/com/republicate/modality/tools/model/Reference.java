@@ -44,14 +44,22 @@ public abstract class Reference
 
     protected void error(String message, Object... arguments)
     {
-        // The default implementation just log the error.
-        getModelTool().getLog().error(message, arguments);
-
+        // The default implementation log the error and set the thread-local error, adding the throwable message at end
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);
         String msg = tuple.getMessage();
         Throwable err = tuple.getThrowable();
-        getModelTool().getLog().error(msg, err);
-        getModelTool().setLastError(msg);
+
+        if (err == null)
+        {
+            getModelTool().getLog().error(msg);
+        }
+        else
+        {
+            getModelTool().getLog().error(msg, err);
+            StringBuilder appender = new StringBuilder();
+            appender.append(msg).append(" - ").append(err.getMessage());
+            getModelTool().setLastError(appender.toString());
+        }
 
         // TODO - this is a good insertion point for a pluggable error handler
     }

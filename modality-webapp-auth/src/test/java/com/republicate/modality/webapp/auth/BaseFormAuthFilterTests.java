@@ -78,8 +78,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
     protected void recordFilterConfig(boolean redirectTowardsLogin, boolean redirectGetRequests, boolean forwardPostRequests) throws Exception
     {
         expect(filterConfig.getServletContext()).andAnswer(eval(servletContext)).anyTimes();
-        expect(filterConfig.getInitParameter(WebappModelProvider.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
-        expect(servletContext.getInitParameter(WebappModelProvider.MODALITY_CONFIG_KEY)).andAnswer(eval(null));
+        expect(filterConfig.getInitParameter(WebappModelProvider.MODALITY_USER_CONFIG_KEY)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(WebappModelProvider.MODALITY_USER_CONFIG_KEY)).andAnswer(eval(null));
         expect(servletContext.getResourceAsStream("/WEB-INF/modality.properties")).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));
         expect(servletContext.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));

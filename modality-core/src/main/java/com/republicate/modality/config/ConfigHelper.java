@@ -174,7 +174,7 @@ public class ConfigHelper
         URL url = null;
         boolean webContext = false;
 
-        // check if we're a view tool:
+        // check if we're in a view tools context:
         // 1) we must find the  ServletContext and ServletUtils classes
         // 2) we must have a servletContext
         Class servletContextClass = null;

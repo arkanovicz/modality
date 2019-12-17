@@ -30,7 +30,7 @@ import javax.servlet.ServletException;
 
 public class WebappModalityConfig
 {
-    public static final String MODALITY_CONFIG_KEY = "modality.config";
+    public static final String MODALITY_USER_CONFIG_KEY = "modality.config";
     public static final String MODALITY_DEFAULT_CONFIG = "com/republicate/modality/modality.properties";
     public static final String MODALITY_DEFAULT_USER_CONFIG = "/WEB-INF/modality.properties";
 
@@ -91,7 +91,7 @@ public class WebappModalityConfig
 
     private void loadUserConfig() throws ServletException
     {
-        String modalityConfigPath = getWebConfig().findInitParameter(MODALITY_CONFIG_KEY);
+        String modalityConfigPath = getWebConfig().findInitParameter(MODALITY_USER_CONFIG_KEY);
         boolean mandatory = modalityConfigPath != null;
         if (modalityConfigPath == null)
         {

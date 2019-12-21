@@ -83,6 +83,16 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     }
     */
 
+    public ModelTool()
+    {
+    }
+
+    public ModelTool(Model model)
+    {
+        this.model = model;
+        this.canWrite = model.getWriteAccess() == Model.WriteAccess.VTL;
+    }
+
     private static NavigableSet<String> modelKeys = new TreeSet<String>(Arrays.asList(
         Model.MODEL_WRITE_ACCESS, Model.MODEL_REVERSE_MODE, Model.MODEL_CONFIGURATION, Model.MODEL_DEFINITION, Model.MODEL_SCHEMA,
         Model.MODEL_IDENTIFIERS_INFLECTOR, Model.MODEL_IDENTIFIERS_MAPPING,

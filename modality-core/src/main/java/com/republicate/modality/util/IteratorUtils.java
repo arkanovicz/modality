@@ -40,7 +40,7 @@ public class IteratorUtils
             Instance instance = iterator.next();
             Serializable key = instance.get(keyColumn);
             Instance previous = ret.put(key, instance);
-            if (previous == null)
+            if (previous != null)
             {
                 throw new RuntimeException("toMap(): column " + keyColumn + " is not a key");
             }

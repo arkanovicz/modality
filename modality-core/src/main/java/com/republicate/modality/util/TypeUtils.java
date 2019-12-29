@@ -37,6 +37,29 @@ public class TypeUtils
         return value == null ? null : value.toString();
     }
 
+    public static Character toChar(Object value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+        if (value instanceof Character)
+        {
+            return (Character)value;
+        }
+        if (value instanceof Boolean)
+        {
+            return ((Boolean)value).booleanValue()
+                ? 't'
+                : 'f';
+        }
+        if (value instanceof String && ((String) value).length() == 1)
+        {
+            return ((String)value).charAt(0);
+        }
+        return null;
+    }
+
     public static Boolean toBoolean(Object value)
     {
         if (value == null)
@@ -73,6 +96,30 @@ public class TypeUtils
         }
         return false;
     }
+
+    public static Byte toByte(Object value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+        if (value instanceof Number)
+        {
+            return ((Number)value).byteValue();
+        }
+        if (value instanceof String)
+        {
+            try
+            {
+                return Byte.valueOf((String)value);
+            }
+            catch (NumberFormatException nfe)
+            {
+            }
+        }
+        return null;
+    }
+
 
     public static Short toShort(Object value)
     {

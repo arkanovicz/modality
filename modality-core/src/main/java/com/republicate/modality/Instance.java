@@ -33,6 +33,8 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +117,116 @@ public class Instance extends SlotTreeMap
         return ret;
     }
 
+    public String evaluateString(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toString(evaluate(name, params));
+    }
+
+    public Character evaluateChar(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toChar(evaluate(name, params));
+    }
+
+    public Boolean evaluateBoolean(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toBoolean(evaluate(name, params));
+    }
+
+    public Byte evaluateByte(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toByte(evaluate(name, params));
+    }
+
+    public Short evaluateShort(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toShort(evaluate(name, params));
+    }
+
+    public Integer evaluateInteger(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toInteger(evaluate(name, params));
+    }
+
+    public Long evaluateLong(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toLong(evaluate(name, params));
+    }
+
+    public Float evaluateFloat(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toFloat(evaluate(name, params));
+    }
+
+    public Double evaluateDouble(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toDouble(evaluate(name, params));
+    }
+
+    public Date evaluateDate(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toDate(evaluate(name, params));
+    }
+
+    public Calendar evaluateCalendar(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toCalendar(evaluate(name, params));
+    }
+
+    public String evaluateString(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toString(evaluate(name, params));
+    }
+
+    public Character evaluateChar(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toChar(evaluate(name, params));
+    }
+
+    public Boolean evaluateBoolean(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toBoolean(evaluate(name, params));
+    }
+
+    public Byte evaluateByte(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toByte(evaluate(name, params));
+    }
+
+    public Short evaluateShort(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toShort(evaluate(name, params));
+    }
+
+    public Integer evaluateInteger(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toInteger(evaluate(name, params));
+    }
+
+    public Long evaluateLong(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toLong(evaluate(name, params));
+    }
+
+    public Float evaluateFloat(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toFloat(evaluate(name, params));
+    }
+
+    public Double evaluateDouble(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toDouble(evaluate(name, params));
+    }
+
+    public Date evaluateDate(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toDate(evaluate(name, params));
+    }
+
+    public Calendar evaluateCalendar(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toCalendar(evaluate(name, params));
+    }
+
     public Instance retrieve(String name, Map params) throws SQLException
     {
         return entity.retrieve(name, params == null ? (Map)this : new ChainedMap(this, params));
@@ -168,9 +280,19 @@ public class Instance extends SlotTreeMap
         return TypeUtils.toString(get(name));
     }
 
+    public Character getChar(String name)
+    {
+        return TypeUtils.toChar(get(name));
+    }
+
     public Boolean getBoolean(String name)
     {
         return TypeUtils.toBoolean(get(name));
+    }
+
+    public Byte getByte(String name)
+    {
+        return TypeUtils.toByte(get(name));
     }
 
     public Short getShort(String name)
@@ -196,6 +318,16 @@ public class Instance extends SlotTreeMap
     public Double getDouble(String name)
     {
         return TypeUtils.toDouble(get(name));
+    }
+    
+    public Date getDate(String name)
+    {
+        return TypeUtils.toDate(get(name));
+    }
+
+    public Calendar getCalendar(String name)
+    {
+        return TypeUtils.toCalendar(get(name));
     }
 
     public final Model getModel()

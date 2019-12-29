@@ -1,4 +1,6 @@
-# Modality
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arkanovicz/modality/master/src/site/modality.svg" width="256" title="Github Logo">
+</p>
 
 Modality is a set of tools which stick to the J2EE and JDBC standards to provide a lightweight, loosely coupled and highly cusomizable [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture based on the Java J2EE servlets API.
 

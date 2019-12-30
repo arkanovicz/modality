@@ -38,4 +38,10 @@ under the License.
             update book set title = (select title from buffer) where book_id = <book_id/> and some illegal sql;
         </action>
     </book>
+    <action name="new_book">
+        insert into book (title, publisher_id) values (<title/>, 1);
+    </action>
+    <action name="cleanup_books">
+        delete from book where book_id &gt; 1;
+    </action>
 </model>

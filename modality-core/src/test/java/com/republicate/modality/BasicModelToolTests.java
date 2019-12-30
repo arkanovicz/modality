@@ -738,6 +738,43 @@ public class BasicModelToolTests extends BaseBookshelfTests
         }
     }
 
+    public @Test void testGeneratedColumns() throws Exception
+    {
+        Model model = new Model();
+        DataSource dataSource = initDataSource();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        try
+        {
+            model.perform("new_book", "My Recipies");
+        }
+        finally
+        {
+            model.perform("cleanup_books");
+        }
+    }
+
+    public @Test void testGeneratedColumns2() throws Exception
+    {
+        Model model = new Model();
+        DataSource dataSource = initDataSource();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        try
+        {
+            Instance book = model.getEntity("book").newInstance();
+            book.put("title", "My Recipies");
+            book.put("publisher_id", 1);
+            book.insert();
+        }
+        finally
+        {
+            model.perform("cleanup_books");
+        }
+    }
+
     @BeforeClass
     public static void populateDataSource() throws Exception
     {

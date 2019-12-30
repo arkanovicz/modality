@@ -33,7 +33,7 @@ create table book
 (
     book_id int identity not null,
     title varchar(200) not null,
-    published date not null,
+    published date default current_date not null,
     publisher_id int not null,
     primary key (book_id),
     foreign key (publisher_id) references publisher (publisher_id)

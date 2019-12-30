@@ -169,6 +169,15 @@ public abstract class BaseEntity extends AttributeHolder
 
     public void insert(Map source) throws SQLException
     {
+        BitSet fieldsMask = new BitSet();
+        for (int c = 0; c < columnNames.size(); ++c)
+        {
+            if (source.containsKey(columnNames.get(c)))
+            {
+                fieldsMask.set(c);
+            }
+        }
+        Action insert = insertPerColumnsMask.computeIfAbsent(fieldsMask, this::generateInsertAction);
         long ret = insert.perform(source);
         if (primaryKey.size() == 1 && primaryKey.get(0).generated)
         {
@@ -258,40 +267,42 @@ public abstract class BaseEntity extends AttributeHolder
             update.addQueryPart(" WHERE ");
             addKeyMapToAttribute(update);
             update.initialize();
-
-            insert = new Action("insert", this);
-            insert.addQueryPart("INSERT INTO " + tableIdentifier + "(");
-            int nonGeneratedColumns = 0;
-            List<String> params = new ArrayList<>();
-            for (Entity.Column column : columns.values())
-            {
-                if (!column.generated)
-                {
-                    if (nonGeneratedColumns++ > 0)
-                    {
-                        insert.addQueryPart(", ");
-                    }
-                    insert.addQueryPart(quoteIdentifier(column.sqlName));
-                    params.add(column.name);
-                }
-            }
-            insert.addQueryPart(") VALUES (");
-            int col = 0;
-            for (String param : params)
-            {
-                if (col++ > 0)
-                {
-                    insert.addQueryPart(", ");
-                }
-                insert.addParameter(param);
-            }
-            insert.addQueryPart(")");
-            insert.initialize();
-            if (primaryKey.size() == 1 && primaryKey.get(0).generated)
-            {
-                insert.setGeneratedKeyColumn(sqlPrimaryKey.get(0));
-            }
         }
+    }
+
+    private Action generateInsertAction(BitSet columnMask)
+    {
+        Action insert = new Action("insert", this);
+        insert.addQueryPart("INSERT INTO " + quoteIdentifier(getTable()) + "(");
+        List<String> params = new ArrayList<>();
+        int col = 0;
+        for (int i = columnMask.nextSetBit(0); i >= 0; i = columnMask.nextSetBit(i+1))
+        {
+            Entity.Column column = columns.get(columnNames.get(i));
+            if (col++ > 0)
+            {
+                insert.addQueryPart(", ");
+            }
+            insert.addQueryPart(quoteIdentifier(column.sqlName));
+            params.add(column.name);
+        }
+        insert.addQueryPart(") VALUES (");
+        col = 0;
+        for (String param : params)
+        {
+            if (col++ > 0)
+            {
+                insert.addQueryPart(", ");
+            }
+            insert.addParameter(param);
+        }
+        insert.addQueryPart(")");
+        insert.initialize();
+        if (primaryKey.size() == 1 && primaryKey.get(0).generated)
+        {
+            insert.setGeneratedKeyColumn(sqlPrimaryKey.get(0));
+        }
+        return insert;
     }
 
     private void addKeyMapToAttribute(Attribute attribute)
@@ -459,10 +470,8 @@ public abstract class BaseEntity extends AttributeHolder
     private RowsetAttribute iterateAttribute = null;
 
     private Action delete = null;
-
-    private Action insert = null;
-
     private Action update = null;
+    private Map<BitSet, Action> insertPerColumnsMask = new HashMap<BitSet, Action>();
 
     private InstanceBuilder instanceBuilder = null;
 

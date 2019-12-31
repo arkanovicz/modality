@@ -116,8 +116,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         // expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
         // expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
         // Capture<Model> modelCapture = new Capture<>();
-        // servletContext.setAttribute(eq("model"), capture(modelCapture));
-        // expect(servletContext.getAttribute("model")).andAnswer(eval(null));
+        // servletContext.setAttribute(eq("_MODEL_model"), capture(modelCapture));
+        // expect(servletContext.getAttribute("_MODEL_model")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
     }
 

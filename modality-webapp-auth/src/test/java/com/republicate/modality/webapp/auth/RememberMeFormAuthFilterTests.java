@@ -82,8 +82,8 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
         Capture<Model> model = new Capture<>();
-        servletContext.setAttribute(eq("model"), capture(model));
-        expect(servletContext.getAttribute("model")).andAnswer(evalCapture(model));
+        servletContext.setAttribute(eq("_MODEL_model"), capture(model));
+        expect(servletContext.getAttribute("_MODEL_model")).andAnswer(evalCapture(model));
 
         // GET /index.vhtml : save request and redirect to /login.vhtml
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));
@@ -153,8 +153,8 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
         Capture<Model> model = new Capture<>();
-        servletContext.setAttribute(eq("model"), capture(model));
-        expect(servletContext.getAttribute("model")).andAnswer(evalCapture(model));
+        servletContext.setAttribute(eq("_MODEL_model"), capture(model));
+        expect(servletContext.getAttribute("_MODEL_model")).andAnswer(evalCapture(model));
 
         // GET /index.vhtml : log by cookie
         expect(request.getRequestURI()).andAnswer(eval("/index.vhtml"));

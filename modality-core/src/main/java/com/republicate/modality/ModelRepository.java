@@ -123,6 +123,8 @@ public class ModelRepository
 
     private static class ContextAttributeStore implements ModelStore
     {
+        private static final String ATTRIBUTE_PREFIX = "_MODEL_";
+
         public ContextAttributeStore(Object context)
         {
             this.context = context;
@@ -133,7 +135,7 @@ public class ModelRepository
         {
             try
             {
-                Object ret = attributeGetter.invoke(context, id);
+                Object ret = attributeGetter.invoke(context, ATTRIBUTE_PREFIX + id);
                 if (ret != null && !(ret instanceof Model))
                 {
                     throw new RuntimeException("model repository internal error");
@@ -152,7 +154,7 @@ public class ModelRepository
         {
             try
             {
-                attributeSetter.invoke(context, model.getModelId(), model);
+                attributeSetter.invoke(context, ATTRIBUTE_PREFIX + model.getModelId(), model);
                 // also register it in the static repository
                 // registerModel(ModelRepository.class.getClassLoader(), model);
             }

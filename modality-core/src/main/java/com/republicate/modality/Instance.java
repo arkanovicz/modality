@@ -539,6 +539,12 @@ public class Instance extends SlotTreeMap
 
     private void writeObject(ObjectOutputStream out) throws IOException
     {
+        if (model == null)
+        {
+            // the only way this can happen is when instance has ben deserialized
+            // while corresponding model has never been initialized
+            throw new IOException("cannot serialize instance again: its model was never initialized");
+        }
         out.defaultWriteObject();
         out.writeObject(model.getModelId());
         out.writeObject(entity == null ? null : entity.getName());
@@ -549,7 +555,7 @@ public class Instance extends SlotTreeMap
         in.defaultReadObject();
         String modelId = (String)in.readObject();
         String entityName = (String)in.readObject();
-        ModelRepository.getModel(modelId);
+        model = ModelRepository.getModel(modelId);
         if (model == null)
         {
             // lazy initialization

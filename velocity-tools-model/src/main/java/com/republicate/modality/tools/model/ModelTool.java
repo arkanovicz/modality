@@ -451,7 +451,7 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     {
         in.defaultReadObject();
         String modelId = (String)in.readObject();
-        ModelRepository.getModel(modelId);
+        model = ModelRepository.getModel(ModelRepository.ALL_CONTEXTS, modelId);
         if (model == null)
         {
             // lazy initialization

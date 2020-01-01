@@ -18,6 +18,12 @@ public class ModelRepository
 {
     protected static Logger logger = LoggerFactory.getLogger("modality");
 
+    // a special context which, when used with getModel(), means to search
+    // for the model in all repository contexts - used by Instance.readObject()
+    // during session deserialization, where it looks difficult to get a hold
+    // on a servletContext object without resorting to static methods
+    public static final Object ALL_CONTEXTS = "_EVERYWHERE_";
+
     public static void registerModel(Model model)
     {
         registerModel(null, model);
@@ -68,6 +74,19 @@ public class ModelRepository
         {
             context = ModelRepository.class.getClassLoader();
         }
+        else if (context == ALL_CONTEXTS)
+        {
+            // search everywhere
+            for (ModelStore store : contextMap.values())
+            {
+                model = store.get(modelId);
+                if (model != null)
+                {
+                    return model;
+                }
+            }
+            return null;
+        }
         ModelStore store = contextMap.get(context);
         if (store != null)
         {
@@ -78,6 +97,7 @@ public class ModelRepository
 
     public static void addModelListener(String modelId, Consumer<Model> consumer)
     {
+        // we cannot contextualize those model listeners for session deserialization to work properly...
         logger.debug("[model-repository] added listener towards model {} : {}", modelId, consumer.getClass().getName());
         List<Consumer<Model>> listeners = modelListeners.get(modelId);
         if (listeners == null)

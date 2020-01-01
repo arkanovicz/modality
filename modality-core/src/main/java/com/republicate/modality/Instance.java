@@ -555,7 +555,9 @@ public class Instance extends SlotTreeMap
         in.defaultReadObject();
         String modelId = (String)in.readObject();
         String entityName = (String)in.readObject();
-        model = ModelRepository.getModel(modelId);
+        // we'd like to get a reference to the newly allocated servletContext object, but alas we can't,
+        // so search for the model in all contexts
+        model = ModelRepository.getModel(ModelRepository.ALL_CONTEXTS, modelId);
         if (model == null)
         {
             // lazy initialization
@@ -567,7 +569,18 @@ public class Instance extends SlotTreeMap
             entity = model.getEntity(entityName);
             if (entity == null)
             {
-                throw new IOException("could not de-serialize instance: entity '" + entityName + "' not found");
+                throw new IOException("could not deserialize instance: entity '" + entityName + "' not found");
+            }
+            if (persisted)
+            {
+                try
+                {
+                    refresh();
+                }
+                catch (SQLException sqle)
+                {
+                    throw new IOException("could not refresh deserialized instance", sqle);
+                }
             }
         }
     }

@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.republicate.modality.webapp.auth.BaseAuthFilter.PROTECTED_RESOURCES;
+import static com.republicate.modality.webapp.auth.BaseAuthFilter.PUBLIC_RESOURCES;
 
 /**
  * <p>Access Control filter skeleton.</p>
@@ -56,6 +57,10 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
         if (protectedResources != null)
         {
             return protectedResources.matcher(uri).matches();
+        }
+        else if (publicResources != null)
+        {
+            return !publicResources.matcher(uri).matches();
         }
         else
         {
@@ -124,6 +129,24 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
             try
             {
                 protectedResources = Pattern.compile(protectedResourcesPattern);
+            }
+            catch (PatternSyntaxException pse)
+            {
+                throw new ServletException("could not configure protected resources pattern", pse);
+            }
+        }
+
+        // read auth.public regex
+        String publicResourcesPattern = findConfigParameter(PUBLIC_RESOURCES);
+        if (publicResourcesPattern != null)
+        {
+            if (protectedResourcesPattern != null)
+            {
+                throw new ServletException("define auth.protected or auth.public, but not both");
+            }
+            try
+            {
+                publicResources = Pattern.compile(publicResourcesPattern);
             }
             catch (PatternSyntaxException pse)
             {
@@ -203,6 +226,11 @@ public abstract class BaseAccessFilter<USER> extends ModalityFilter
      * protected resources
      */
     private Pattern protectedResources = null;
+
+    /**
+     * public resources
+     */
+    private Pattern publicResources = null;
 
     /**
      * whitelisted resources

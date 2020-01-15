@@ -85,6 +85,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(servletContext.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(BaseAuthFilter.REALM)).andAnswer(eval("TESTS"));
         expect(filterConfig.getInitParameter(BaseAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.PUBLIC_RESOURCES)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(BaseAuthFilter.PUBLIC_RESOURCES)).andAnswer(eval(null));
         expect(servletContext.getContextPath()).andReturn("/");
         expect(filterConfig.getInitParameter(BaseSessionAuthFilter.MAX_INACTIVE_INTERVAL)).andAnswer(eval("0"));
         expect(filterConfig.getInitParameter(BaseSessionAuthFilter.LOGGED_SESSION_KEY)).andAnswer(eval("_user_"));

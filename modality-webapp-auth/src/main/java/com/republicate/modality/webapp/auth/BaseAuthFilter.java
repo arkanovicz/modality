@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * <p>Authentication filter skeleton.</p>
  * <p>The filter should map all protected resources URIs. It can also map a wider range, provided
- * you have configured the <code>auth.protected</code> URI regex or overridden
+ * you have configured either the <code>auth.protected</code> or the <code>auth.public</code> URI regex or overridden
  * the <code>isProtectedURI(uri)</code> method.</p>
  * <p>Configuration parameters:</p>
  * <ul>
@@ -65,12 +65,17 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
 
     public static final String REALM = "auth.realm";
     public static final String PROTECTED_RESOURCES = "auth.protected";
+    public static final String PUBLIC_RESOURCES = "auth.public";
 
     protected boolean isProtectedURI(String uri)
     {
         if (protectedResources != null)
         {
             return protectedResources.matcher(uri).matches();
+        }
+        else if (publicResources != null)
+        {
+            return !publicResources.matcher(uri).matches();
         }
         else
         {
@@ -133,6 +138,22 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
                 throw new ServletException("could not configure protected resources pattern", pse);
             }
         }
+        String publicResourcesPattern = findConfigParameter(PUBLIC_RESOURCES);
+        if (publicResourcesPattern != null)
+        {
+            if (protectedResourcesPattern != null)
+            {
+                throw new ServletException("configure auth.protected or auth.public, but not both");
+            }
+            try
+            {
+                publicResources = Pattern.compile(publicResourcesPattern);
+            }
+            catch (PatternSyntaxException pse)
+            {
+                throw new ServletException("could not configure protected resources pattern", pse);
+            }
+        }
     }
 
     @Override
@@ -185,6 +206,7 @@ public abstract class BaseAuthFilter<USER> extends ModalityFilter
 
     private String realm = null;
     private Pattern protectedResources = null;
+    private Pattern publicResources = null;
 
     // for oauth
     // ...

@@ -51,6 +51,8 @@ public class BaseAuthFilterTest extends BaseWebappMockTest
         expect(servletContext.getInitParameter(WebappModelProvider.MODEL_ID)).andAnswer(eval(null));
         expect(filterConfig.getInitParameter(BaseAuthFilter.REALM)).andAnswer(eval("TESTS"));
         expect(filterConfig.getInitParameter(BaseAuthFilter.PROTECTED_RESOURCES)).andAnswer(eval(".*"));
+        expect(filterConfig.getInitParameter(BaseAuthFilter.PUBLIC_RESOURCES)).andAnswer(eval(null));
+        expect(servletContext.getInitParameter(BaseAuthFilter.PUBLIC_RESOURCES)).andAnswer(eval(null));
     }
 
     @Test

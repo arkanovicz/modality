@@ -88,6 +88,7 @@ public class SqlUtils
     {
         sqlTypeToClass = new HashMap<Integer, Class>();
         sqlTypeToClass.put(Types.BIGINT, BigInteger.class);
+        sqlTypeToClass.put(Types.BIT, Boolean.class);
         sqlTypeToClass.put(Types.BOOLEAN, Boolean.class);
         sqlTypeToClass.put(Types.CHAR, String.class);
         sqlTypeToClass.put(Types.DATE, java.sql.Date.class);

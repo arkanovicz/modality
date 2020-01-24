@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="176.91428"
-     inkscape:cy="88.342497"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="117.55539"
+     inkscape:cy="-173.87188"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -115,8 +115,8 @@
        inkscape:connector-curvature="0" />
     <path
        id="path32-3"
-       style="fill:#4d4d4d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.04035022"
-       d="m 84.978495,237.0152 h 1.907549 v 59.98653 h -1.907549 v -59.98653 0"
+       style="fill:#4d4d4d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.02848275"
+       d="m 85.259011,245.15315 h 1.346517 v 42.34381 h -1.346517 v -42.34381 0"
        inkscape:connector-curvature="0" />
     <g
        transform="matrix(0.1984661,0,0,0.1984661,32.593116,83.37332)"

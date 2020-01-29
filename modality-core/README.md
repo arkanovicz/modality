@@ -73,7 +73,11 @@ specific entity instances. There are three types of attributes:
 + **Row** attributes, corresponding to the **`retrieve()`** method, returning an instance.
 + **Rowset** attributes, corresponding to the **`query()`** method, returning an iterator over instances.
 
-Attributes are defined via the XML model definition file.
+Attributes are defined via the XML model definition file. Row and rowset attributes can be given a `result` XML attribute, referencing an entity of the model. This way, you can chain such attributes, for instance:
+
+    $book.author.birth_country.name
+
+When reverse enginering joins, foreign key attributes like `$book.author` are available straight out of the box.
 
 > Let's define a new root attribute to get all the books published after a certain date in the XML model definition file.
 > 
@@ -144,3 +148,4 @@ If a path is given using the configuration key `model.definition`, it will be se
 + in the webapp servlet context resources when in a web environment
 + in the filesystem, and also with /WEB-INF/ prefixed when in a web environment
 
+[TODO - add more examples]

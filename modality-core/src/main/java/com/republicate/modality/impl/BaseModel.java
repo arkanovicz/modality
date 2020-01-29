@@ -439,6 +439,22 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return getModel();
     }
 
+    public Model setReverseMode(String reverseMode)
+    {
+        ensureConfigured();
+        try
+        {
+            this.reverseMode = ReverseMode.valueOf(ReverseMode.class, reverseMode.toUpperCase(Locale.ROOT));
+        }
+        catch (NullPointerException | IllegalArgumentException e)
+        {
+            String msg = "provided constant is not a valid reverse mode: "+ reverseMode;
+            getLogger().error(msg, e);
+            throw new ConfigurationException(msg, e);
+        }
+        return getModel();
+    }
+
     // TODO - Velocity-aware model should be a subclass
     /*
     public VelocityEngine getVelocityEngine()

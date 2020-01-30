@@ -3,6 +3,7 @@ package com.republicate.modality.filter;
 import com.republicate.modality.config.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.ClassUtils;
+import org.atteo.evo.inflector.English;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,6 +11,8 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static org.atteo.evo.inflector.English.MODE.ENGLISH_CLASSICAL;
 
 public class IdentifiersFilters extends ConfigurableFilters<String>
 {
@@ -19,9 +22,12 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
         addStockFilter("lowercase", x -> x.toLowerCase(Locale.ROOT));
         addStockFilter("uppercase", x -> x.toUpperCase(Locale.ROOT));
         addStockFilter("snake_to_camel", IdentifiersFilters::snakeToCamel);
+        addStockFilter("plural_en", x -> enInflector.getPlural(x));
     }
 
     private static final String[] prefixes = { "plural", "getPlural" };
+
+    private static final English enInflector = new English(ENGLISH_CLASSICAL);
 
     public static String snakeToCamel(String snake)
     {

@@ -40,7 +40,7 @@ It comprises:
 > bookstore.setDatasource("jndi/my_bookstore").setReverseMode("joins").initialize();
 > ```
 
-**Entities** represent the business logic concepts of the model. They often correspond to a database table.
+**Entities** represent the business logic concepts of the model. They can be reverse enginered from the working schema tables, and can be associated with a user provided POJO class.
 >
 > For instance, let's get the entity for our "books" table:
 >
@@ -73,11 +73,11 @@ specific entity instances. There are three types of attributes:
 + **Row** attributes, corresponding to the **`retrieve()`** method, returning an instance.
 + **Rowset** attributes, corresponding to the **`query()`** method, returning an iterator over instances.
 
-Attributes are defined via the XML model definition file. Row and rowset attributes can be given a `result` XML attribute, referencing an entity of the model. This way, you can chain such attributes, for instance:
+Join attributes (aka `$book.author`) can be reverse enginered : 1-n for `joins` reverse mode and both 1-1 and n-n for `extended` reverse mode.
+
+Other attributes are defined via the XML model definition file. Row and rowset attributes can be given a `result` XML attribute, referencing an entity of the model. This way, you can chain such attributes, for instance:
 
     $book.author.birth_country.name
-
-When reverse enginering joins, foreign key attributes like `$book.author` are available straight out of the box.
 
 > Let's define a new root attribute to get all the books published after a certain date in the XML model definition file.
 > 
@@ -115,6 +115,18 @@ Actions with more than one statement are **Transactions**. Actions return the nu
 
 Each of the above methods can be invoked from the model object itself or from an instance, and can take additional query parameter arguments (or a { name => value } map of those arguments).
 
+Manual transactions can be performed via the `Model.attempt()` method which expects a ModelRunnable functional object and handles commit and rollback operations:
+
+```java
+try {
+    model.attempt(() -> {
+        ... crud operations ...
+    });
+} catch(SQLException sqle) {
+    ... handle error ...
+}
+```
+
 Here's the [Javadoc](https://republicate.com/modality/apidocs/) (wip).
 
 ### Configuration
@@ -149,3 +161,59 @@ If a path is given using the configuration key `model.definition`, it will be se
 + in the filesystem, and also with /WEB-INF/ prefixed when in a web environment
 
 [TODO - add more examples]
+
+## Filtering
+
+Filters mappings associate a table or column name or pattern (or a Java or SQL data type) to a filter which can be:
+
++ a named stock filter
++ a regex
++ a class name
++ a sequence of the above items (applied from left to right)
++ a closure
+
+If a stock filter name is prefixed with '-', the corresponding filter is never applied to the specified mapping.  
+
+Filters can be used to transform:
+
++ SQL identifiers (for instance to remove a common prefix from column names)
++ values read from the database
++ values written to the database
+
+Apart from custom closures, filters can be defined from within `modality.properties` (or from a schema-specific model properties file).
+
+### Table and column names filtering
+
+Available stock filters: `lowercase`, `uppercase`, `snake_to_camel`, `plural_en`
+
+Examples:
+
+```properties
+# use lowercase everywhere, pluralize tables names
+model.identifiers.mapping.* = lowercase, plural_en
+model.identifiers.mapping.*.* = lowercase
+
+# remove foo_ prefix from table names
+model.identifiers.mapping.foo_* = /foo_(.*)/$1/
+```
+
+### Value filters
+
+Available stock filters: `lowercase`, `uppercase`, `calendar_to_date`, `date_to_calendar`, `number_to_boolean`, `obfuscate`, `deobfuscate`, `base64_encode`, `base64_decode`, `mask`, `no_html`, `escape_html`
+
+Examples:
+```properties
+# Work with Calendar objects, let the database see Date objects
+model.filters.write.java.util.calendar = calendar_to_date
+model.filters.read.java.sql.Date = date_to_calendar
+
+# Never return the users.password field
+model.filters.read.user.password = mask
+
+# disallow html by default in all fields
+model.filters.write.*.* = no_html
+# but allow html in fields prefixed by "html_"
+model.filters.write.*.html_* = -no_html
+# and escape html at rendering for those field
+model.filters.read.*.html_* = escape_html
+```

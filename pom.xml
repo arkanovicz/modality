@@ -70,6 +70,7 @@ under the License.
         <slf4j.version>1.7.26</slf4j.version>
         <servlet.version>3.1.0</servlet.version>
         <velocity-tools.version>3.1-SNAPSHOT</velocity-tools.version>
+        <jetty.version>9.4.9.v20180320</jetty.version>
     </properties>
     <!-- as long as we are using snapshot versions for Velocity and Velocity Tools,
          make sure we use the lastest ones

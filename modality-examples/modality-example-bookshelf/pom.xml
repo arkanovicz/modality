@@ -114,12 +114,19 @@ under the License.
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.7.9</version>
                 <configuration>
                     <skip>${maven.test.skip}</skip>
                     <container>
                         <containerId>jetty9x</containerId>
                         <timeout>1800000</timeout> <!-- @@ for debugging -->
+                        <!-- plugin tries to use http instead of https -->
+                        <!-- TODO - replace cargo with the jetty maven plugin -->
+                        <artifactInstaller>
+                            <groupId>org.eclipse.jetty</groupId>
+                            <artifactId>jetty-distribution</artifactId>
+                            <version>${jetty.version}</version>
+                        </artifactInstaller>
                         <dependencies>
                             <dependency>
                                 <groupId>org.apache.commons</groupId>

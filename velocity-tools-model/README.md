@@ -8,11 +8,10 @@ The ModelTool exposes a model definition to the view.
 
 TODO
 
-    - fetching: #set($book = 
+    - fetching: #set($book = $bookstore.fetch(1))
     - properties and joins: $book.publisher.address.zip
     - loops: #foreach($author.books) ...
     - attributes: $book.most_recent_edition.year
-
 
 ## Upgrading Velosurf Webapps
 

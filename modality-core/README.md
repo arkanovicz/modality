@@ -83,7 +83,7 @@ Other attributes are defined via the XML model definition file. Row and rowset a
 
     $book.author.birth_country.name
 
-> Let's define a new root attribute to get all the books published after a certain date in the XML model definition file.
+> Let's define a new root attribute to get all the books published after a certain date in the XML model definition file
 > 
 > ```xml
 > <rowset name="published_after" result="books">
@@ -91,7 +91,7 @@ Other attributes are defined via the XML model definition file. Row and rowset a
 > </rowset>
 > ```
 >
-> and use this attribute from java
+> and use this attribute from java:
 > 
 > ```java
 > Iterator<Instance> bookIterator = model.query("published_after", "2018-01-01");
@@ -99,8 +99,9 @@ Other attributes are defined via the XML model definition file. Row and rowset a
 >     Instance book = bookIterator.next();
 >     System.out.println(book.getString("title") + " / published on " + dateFormat.format(book.getDate("publication_date")))
 > }
->
-> Let's define programmatically a new book attribute returning the number of total books for the book author.
+> ```
+> 
+> Let's define a new book attribute returning the number of total books for the book author
 > 
 > ```xml
 > <books>
@@ -110,6 +111,8 @@ Other attributes are defined via the XML model definition file. Row and rowset a
 > </books>
 > ```
 >
+> and use this attribute from java:
+> 
 > ```java
 > int melvilleBooksCount = mobyDick.evaluateInteger("same_author_count");
 > ```

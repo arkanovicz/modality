@@ -164,6 +164,19 @@ If a path is given using the configuration key `model.definition`, it will be se
 + in the webapp servlet context resources when in a web environment
 + in the filesystem, and also with /WEB-INF/ prefixed when in a web environment
 
+![Model Configuration](https://raw.githubusercontent.com/arkanovicz/modality/master/src/site/model_configuration.png)
+
+
+### Getting an Existing Model
+
+You can get an existing model:
+
++ by using the ModelRepository
++ in a webapp context, by using a WebappModelAccessor
++ in a Velocity Tools webapp context, by inheriting your tools from ModelConfig
+
+![Existing Model](https://raw.githubusercontent.com/arkanovicz/modality/master/src/site/existing_model.png)
+
 [TODO - add more examples]
 
 ## Filtering

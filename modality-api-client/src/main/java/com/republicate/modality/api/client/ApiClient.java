@@ -19,9 +19,7 @@ package com.republicate.modality.api.client;
  * under the License.
  */
 
-import com.github.cliftonlabs.json_simple.JsonException;
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
+import com.republicate.json.Json;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpEntity;
@@ -51,7 +49,10 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -95,22 +96,22 @@ public class ApiClient implements Closeable
             .build();
     }
 
-    public JsonObject get(String url, String ... params) throws IOException
+    public Json.Object get(String url, String ... params) throws IOException
     {
         return get(url, null, params);
     }
 
-    public JsonObject get(String url, Pair<String, String> header, String ... params) throws IOException
+    public Json.Object get(String url, Pair<String, String> header, String ... params) throws IOException
     {
         return get(url, header, paramsToMap(params));
     }
 
-    public JsonObject get(String url, Map<String, String> params) throws IOException
+    public Json.Object get(String url, Map<String, String> params) throws IOException
     {
         return get(url, null, params);
     }
 
-    public JsonObject get(String url, Pair<String, String> header, Map<String, String> params) throws IOException
+    public Json.Object get(String url, Pair<String, String> header, Map<String, String> params) throws IOException
     {
         HttpGet req = null;
         try
@@ -131,17 +132,17 @@ public class ApiClient implements Closeable
         }
     }
 
-    public JsonObject post(String url, String ... params) throws IOException
+    public Json.Object post(String url, String ... params) throws IOException
     {
         return post(url, null, params);
     }
 
-    public JsonObject post(String url, Pair<String, String> header, String ... params) throws IOException
+    public Json.Object post(String url, Pair<String, String> header, String ... params) throws IOException
     {
         return post(url, header, paramsToMap(params));
     }
 
-    public JsonObject post(String url, Pair<String, String> header, Map<String, String> params) throws IOException
+    public Json.Object post(String url, Pair<String, String> header, Map<String, String> params) throws IOException
     {
         HttpPost req = null;
         try
@@ -168,12 +169,12 @@ public class ApiClient implements Closeable
         }
     }
 
-    public JsonObject post(String url, JsonObject params) throws IOException
+    public Json.Object post(String url, Json.Object params) throws IOException
     {
         return post(url, null, params);
     }
 
-    public JsonObject post(String url, Pair<String, String> header, JsonObject params) throws IOException
+    public Json.Object post(String url, Pair<String, String> header, Json.Object params) throws IOException
     {
         HttpPost req = null;
         try
@@ -182,8 +183,9 @@ public class ApiClient implements Closeable
             req.setHeader("Accept", "*/*");
             EntityTemplate entity = new EntityTemplate(outputstream ->
             {
-                outputstream.write(params.toJson().getBytes(StandardCharsets.UTF_8));
-                outputstream.flush();
+                Writer writer = new OutputStreamWriter(outputstream, StandardCharsets.UTF_8);
+                params.toString(writer);
+                writer.flush();
             });
             entity.setContentType(ContentType.APPLICATION_JSON.toString());
             return submit(req, header, entity);
@@ -194,12 +196,12 @@ public class ApiClient implements Closeable
         }
     }
 
-    protected JsonObject submit(HttpEntityEnclosingRequestBase req, HttpEntity httpEntity) throws IOException
+    protected Json.Object submit(HttpEntityEnclosingRequestBase req, HttpEntity httpEntity) throws IOException
     {
         return submit(req, null, httpEntity);
     }
 
-    protected JsonObject submit(HttpEntityEnclosingRequestBase req, Pair<String, String> header, HttpEntity httpEntity) throws IOException
+    protected Json.Object submit(HttpEntityEnclosingRequestBase req, Pair<String, String> header, HttpEntity httpEntity) throws IOException
     {
         if (httpEntity != null)
         {
@@ -208,7 +210,7 @@ public class ApiClient implements Closeable
         return submit(req, header);
     }
 
-    protected JsonObject submit(HttpRequestBase req, Pair<String, String> header) throws IOException
+    protected Json.Object submit(HttpRequestBase req, Pair<String, String> header) throws IOException
     {
         if (header != null)
         {
@@ -217,10 +219,10 @@ public class ApiClient implements Closeable
         return submit(req);
     }
 
-    protected JsonObject submit(HttpRequestBase req) throws IOException
+    protected Json.Object submit(HttpRequestBase req) throws IOException
     {
         req.setHeader("Accept", "*/*");
-        JsonObject ret = null;
+        Json.Object ret = null;
         HttpResponse resp = client.execute(req);
         StatusLine statusLine = resp.getStatusLine();
         int status = statusLine.getStatusCode();
@@ -234,11 +236,11 @@ public class ApiClient implements Closeable
             Charset charset = getCharset(entity);
             Reader body = new InputStreamReader(entity.getContent(), charset);
             ContentType contentType = ContentType.get(entity);
-            ret = entityToJson(body, contentType, charset);
             if (logger.isTraceEnabled())
             {
                 logger.trace("response: {}", ret);
             }
+            ret = entityToJson(body, contentType, charset).asObject(); // will throw if result is an array
         }
         else
         {
@@ -254,9 +256,9 @@ public class ApiClient implements Closeable
         return ret;
     }
 
-    protected JsonObject entityToJson(Reader body, ContentType contentType, Charset charset) throws IOException
+    protected Json entityToJson(Reader body, ContentType contentType, Charset charset) throws IOException
     {
-        JsonObject ret = null;
+        Json ret = null;
         switch (contentType.getMimeType())
         {
             case "application/json":
@@ -274,9 +276,9 @@ public class ApiClient implements Closeable
         return ret;
     }
 
-    protected JsonObject jsonEntityToJson(Reader body) throws IOException
+    protected Json jsonEntityToJson(Reader body) throws IOException
     {
-        JsonObject ret = null;
+        Json ret = null;
         Object rawJson = null;
         try
         {
@@ -285,39 +287,39 @@ public class ApiClient implements Closeable
                 // Debugging version
                 String got = IOUtils.toString(body);
                 logger.trace("body: {}", got);
-                rawJson = Jsoner.deserialize(got);
+                rawJson = Json.parse(got);
             }
             else
             {
-                rawJson = Jsoner.deserialize(body);
+                rawJson = Json.parse(body);
             }
         }
-        catch (JsonException je)
+        catch (IOException ioe)
         {
-            throw new ClientProtocolException("Invalid json", je);
+            throw new ClientProtocolException("Invalid json", ioe);
         }
-        if (rawJson instanceof JsonObject)
+        if (rawJson instanceof Json)
         {
-            ret = (JsonObject) rawJson;
+            ret = (Json) rawJson;
         }
         else
         {
-            ret = new JsonObject();
-            ret.put("root", rawJson);
+            ret = new Json.Object();
+            ret.asObject().put("root", (Serializable)rawJson);
         }
         return ret;
     }
 
-    protected JsonObject formEntityToJson(Reader body) throws IOException
+    protected Json formEntityToJson(Reader body) throws IOException
     {
         return formEntityToJson(body, StandardCharsets.UTF_8);
     }
 
-    protected JsonObject formEntityToJson(Reader body, Charset charset) throws IOException
+    protected Json formEntityToJson(Reader body, Charset charset) throws IOException
     {
-        JsonObject ret = null;
+        Json.Object ret = null;
         String bodyContent = IOUtils.toString(body);
-        ret = new JsonObject();
+        ret = new Json.Object();
         String keyValuePairs[] = bodyContent.split("&");
         for (String keyValue : keyValuePairs)
         {
@@ -337,7 +339,7 @@ public class ApiClient implements Closeable
         return ret;
     }
 
-    protected JsonObject xmlEntityToJson(Reader body) throws IOException
+    protected Json xmlEntityToJson(Reader body) throws IOException
     {
         // An attribute-less XML content can easily be converted into json
         // or, using 'attribute' and 'content' keys.

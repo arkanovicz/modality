@@ -19,8 +19,7 @@ package com.republicate.modality.api.client;
  * under the License.
  */
 
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
+import com.republicate.json.Json;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
@@ -58,16 +57,16 @@ public class ApiClientTests
             "Connection: Keep-Alive\r\n" +
             "Content-Type: application/json\r\n";
         private ServerSocket serverSocket;
-        private Map<Pair<String, String>, JsonObject> contents = new ConcurrentHashMap<>();
-        private Map<Pair<String, String>, CompletableFuture<Pair<String, JsonObject>>> logs = new ConcurrentHashMap<>();
+        private Map<Pair<String, String>, Json.Object> contents = new ConcurrentHashMap<>();
+        private Map<Pair<String, String>, CompletableFuture<Pair<String, Json.Object>>> logs = new ConcurrentHashMap<>();
 
         Pattern reqPattern = Pattern.compile("^(GET|POST) (/[^ ?]+)(?:\\?(\\S+))? HTTP/1.1\r\n");
 
-        public Future<Pair<String, JsonObject>> addContent(String method, String uri, JsonObject response)
+        public Future<Pair<String, Json.Object>> addContent(String method, String uri, Json.Object response)
         {
             Pair<String, String> key = Pair.of(method, uri);
             contents.put(key, response);
-            CompletableFuture<Pair<String, JsonObject>> ret = new CompletableFuture<>();
+            CompletableFuture<Pair<String, Json.Object>> ret = new CompletableFuture<>();
             logs.put(key, ret);
             return ret;
         }
@@ -181,24 +180,24 @@ public class ApiClientTests
                             tmp += '?' + extra;
                         }
                         Pair<String, String> key = Pair.of(method, tmp);
-                        CompletableFuture<Pair<String, JsonObject>> response = logs.get(key);
+                        CompletableFuture<Pair<String, Json.Object>> response = logs.get(key);
                         if (response == null)
                         {
                             throw new Exception("content not found");
                         }
 
-                        JsonObject receivedJson = null;
+                        Json.Object receivedJson = null;
                         int start = request.indexOf('{');
                         int end = request.lastIndexOf('}');
                         if (start != -1 && end != -1)
                         {
                             String content = request.substring(start, end + 1);
-                            Object obj = Jsoner.deserialize(content);
-                            if (obj == null || !(obj instanceof JsonObject))
+                            Object obj = Json.parse(content);
+                            if (obj == null || !(obj instanceof Json.Object))
                             {
                                 throw new Exception("invalid json object: " + content);
                             }
-                            receivedJson = (JsonObject) obj;
+                            receivedJson = (Json.Object) obj;
                         }
                         else
                         {
@@ -215,7 +214,7 @@ public class ApiClientTests
                         }
                         response.complete(Pair.of(extra, receivedJson));
                         out.print(HEADERS);
-                        String content = contents.get(key).toJson();
+                        String content = contents.get(key).toString();
                         byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
                         out.print("Content-Length: " + bytes.length + "\r\n\r\n");
                         out.print(content);
@@ -310,16 +309,16 @@ public class ApiClientTests
     @Test
     public void testGET() throws Exception
     {
-        JsonObject out = new JsonObject();
+        Json.Object out = new Json.Object();
         out.put("status", "ok");
 
-        Future<Pair<String, JsonObject>> promise = server.addContent("GET", "/check-status?foo=bar", out);
+        Future<Pair<String, Json.Object>> promise = server.addContent("GET", "/check-status?foo=bar", out);
 
         ApiClient client = new ApiClient();
-        JsonObject ret = client.get("http://localhost:" + TestServer.PORT + "/check-status", "foo", "bar");
+        Json.Object ret = client.get("http://localhost:" + TestServer.PORT + "/check-status", "foo", "bar");
         assertEquals(out, ret);
 
-        Pair<String, JsonObject> sent = promise.get();
+        Pair<String, Json.Object> sent = promise.get();
         assertEquals("foo=bar", sent.getKey());
         assertEquals(null, sent.getValue());
     }
@@ -327,19 +326,19 @@ public class ApiClientTests
     @Test
     public void testPOSTjson() throws Exception
     {
-        JsonObject in = new JsonObject();
-        in.put("foo", BigDecimal.valueOf(5));
+        Json.Object in = new Json.Object();
+        in.put("foo", 5l);
         in.put("bar", "something");
-        JsonObject out = new JsonObject();
+        Json.Object out = new Json.Object();
         out.put("status", "ok");
 
-        Future<Pair<String, JsonObject>> promise = server.addContent("POST", "/check-status", out);
+        Future<Pair<String, Json.Object>> promise = server.addContent("POST", "/check-status", out);
 
         ApiClient client = new ApiClient();
-        JsonObject ret = client.post("http://localhost:" + TestServer.PORT + "/check-status", in);
+        Json.Object ret = client.post("http://localhost:" + TestServer.PORT + "/check-status", in);
         assertEquals(out, ret);
 
-        Pair<String, JsonObject> sent = promise.get();
+        Pair<String, Json.Object> sent = promise.get();
         assertEquals("", sent.getKey());
         assertEquals(in, sent.getValue());
     }
@@ -347,16 +346,16 @@ public class ApiClientTests
     @Test
     public void testPOSTparams() throws Exception
     {
-        JsonObject out = new JsonObject();
+        Json.Object out = new Json.Object();
         out.put("status", "ok");
 
-        Future<Pair<String, JsonObject>> promise = server.addContent("POST", "/check-status", out);
+        Future<Pair<String, Json.Object>> promise = server.addContent("POST", "/check-status", out);
 
         ApiClient client = new ApiClient();
-        JsonObject ret = client.post("http://localhost:" + TestServer.PORT + "/check-status", "foo", "bar");
+        Json.Object ret = client.post("http://localhost:" + TestServer.PORT + "/check-status", "foo", "bar");
         assertEquals(out, ret);
 
-        Pair<String, JsonObject> sent = promise.get();
+        Pair<String, Json.Object> sent = promise.get();
         assertEquals("foo=bar", sent.getKey());
         assertNull(sent.getValue());
     }

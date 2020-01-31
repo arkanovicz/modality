@@ -207,6 +207,12 @@ under the License.
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
     <profiles>
         <profile>

@@ -26,7 +26,11 @@ Child modules:
 + [modality-webapp-oauth-server](modality-webapp-oauth-server) - OAuth2 server (work in progress)
 + [modality-webapp-oauth-client](modality-webapp-oauth-server) - OAuth2 client (work in progress)
 
-The flagship module, [modality-core](modality-core), is a full fledged ORM usable on its own.
+The flagship module, [modality-core](modality-core), is a full fledged ORM, mature and usable on its own. It's a complete 2019' rewrite of the [Velosurf](https://github.com/arkanovicz/velosurf) library, which is a Velocity-specific ORM (which I maintained for 18 years). The Velocity specific stuff now belongs to the `velocity-model-tool` package.
+
+Release 1.0 doesn't publish any `modality-webapp-oauth-*`, nor the `modality-api-server` and `velocity-tools-apiclient` modules, which aren't ready.
+
+Modules `modality-webapp` and `modality-webapp-auth` have been published with v1.0 because they are needed by `modality-example-bookshelf`, but shall undergo some refactoring. 
 
 # Usage
 
@@ -37,10 +41,7 @@ Include the needed module(s) in your `pom.xml`'s dependencies section as follow:
       <dependency>
           <groupId>com.republicate.modality</groupId>
           <artifactId>modality-core</artifactId>
-          <version>1.0-SNAPSHOT</version>
+          <version>1.0</version>
       </dependency>
 
-# History
-
-While being a new project, Modality rests on the history of the [Velosurf](https://github.com/arkanovicz/velosurf) ORM library (which was first published in 2002).
 

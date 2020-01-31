@@ -22,11 +22,11 @@ under the License.
     <parent>
         <groupId>com.republicate.modality</groupId>
         <artifactId>modality</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
-    <groupId>com.republicate.modality</groupId>
+
     <artifactId>modality-examples</artifactId>
-    <version>1.0-SNAPSHOT</version>
+
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <modules>

@@ -24,9 +24,11 @@ under the License.
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+
     <groupId>com.republicate.modality</groupId>
     <artifactId>modality</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>J2EE MVC Toolbox for Lightweight Pull Model Webapps</description>
@@ -35,13 +37,17 @@ under the License.
         <module>modality-core</module>
         <module>modality-webapp</module>
         <module>modality-webapp-auth</module>
+        <module>modality-api-client</module>
+        <!-- no release yet
         <module>modality-webapp-oauth-client</module>
         <module>modality-webapp-oauth-server</module>
+        -->
         <module>modality-examples</module>
-        <module>modality-api-client</module>
+        <!-- no release yet
         <module>modality-api-server</module>
-        <module>velocity-tools-model</module>
         <module>velocity-tools-apiclient</module>
+        -->
+        <module>velocity-tools-model</module>
     </modules>
     <licenses>
         <license>

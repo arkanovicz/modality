@@ -48,8 +48,12 @@ It comprises:
 > Entity books = bookstore.getEntity("books");
 > ```
 
-**Instances** are individual representations of entities, with specific values. They often correspond to a table row values. Apart from specific cases
-(like the logged user in the session), instances lifetime should not exceed the query.
+**Instances** are individual representations of entities, with specific values, with typed getters. They often correspond to a table row values.
+
+When they belong to an entity with a primary key:
+
++ they can be fetched using **`entity.fetch(PK values...)`** and created using **`entity.newInstance({optional initial values map})`**
++ they have **`insert()`**, **`update()`**, **`upsert()`**, **`delete()`**, **`refresh()`** methods
 
 > Let's do some CRUD operations
 > ```java

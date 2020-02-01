@@ -9,7 +9,7 @@ Lightweight ORM for Java, providing:
 ## Rationale
 
 + Pull MVC model ORM with easy syntax
-+ ease of use from Java as well from VTL
++ ease of use from Java as well as from template languages like VTL
 + respect the SQL language
     - no error prone persistence *at all*, minimal caching
     - no limitating `.select(...).where(...)` dialect
@@ -20,7 +20,7 @@ Lightweight ORM for Java, providing:
 
 ## Features
 
-+ optional reverse-enginering of 1-n and n-n joins
++ optional reverse engineering of 1-n and n-n joins
 + centralized model definition gathering all SQL code
 + fully configurable mapping of tables and columns identifiers
 + fully configurable mapping of values

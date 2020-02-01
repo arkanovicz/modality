@@ -1,11 +1,10 @@
 # Modality Core
 
-Lightweight ORM.
+Lightweight ORM for Java, providing:
 
-It comprises:
-
-- A lightweight but highly configurable ORM
+- An automatic reverse enginering of database structure
 - An extensible XML model definition schema
+- Custom filtering of identifiers an values
 
 ## Rationale
 

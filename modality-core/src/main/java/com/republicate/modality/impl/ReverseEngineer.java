@@ -143,7 +143,7 @@ public class ReverseEngineer
             }
             catch (SQLException sqle)
             {
-                logger.warn("could not get columns for table {}", table);
+                logger.warn("could not get columns for table {}", table, sqle);
             }
             if (columns != null)
             {

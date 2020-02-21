@@ -382,6 +382,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         DriverInfos stockInfos = new DriverInfos();
         ConfigDigester.setProperties(this, props);
         getDriverInfos().setDefaults(stockInfos);
+        getDriverInfos().log():
 
         connectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, true, maxConnections);
         transactionConnectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, false, maxConnections);

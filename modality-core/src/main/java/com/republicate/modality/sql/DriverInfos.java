@@ -70,6 +70,20 @@ public class DriverInfos implements Constants, Serializable
         setIdentifierQuoteChar(idQuoteChar == null ? null : String.valueOf(idQuoteChar));
     }
 
+    public void log()
+    {
+        logger.info("driver tag: {}", getTag());
+        logger.info("driver catalog: {}", getCatalog());
+        logger.info("driver ping query: {}", getPingQuery());
+        logger.info("driver tables case sensivity: {}", getTablesCaseSensitivity());
+        logger.info("driver schema query: {}", getSchemaQuery());
+        logger.info("driver last insert id policy: {}", getLastInsertIdPolicy());
+        logger.info("driver strict column types: {}", isStrictColumnTypes());
+        logger.info("driver column markers: {}", hasColumnMarkers());
+        logger.info("driver ignore tables pattern: {}", getIgnoreTablesPattern());
+        logger.info("driver identifier quote char: <{}>", getIdentifierQuoteChar());
+    }
+
     /*
      * Getters and setters
      */
@@ -175,7 +189,7 @@ public class DriverInfos implements Constants, Serializable
             }
         }
     }
-    
+
     public String getLastInsertIdQuery()
     {
         return lastInsertIdQuery;

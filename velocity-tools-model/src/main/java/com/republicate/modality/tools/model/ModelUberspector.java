@@ -61,7 +61,11 @@ public class ModelUberspector extends AbstractChainableUberspector
                 }
                 else if (obj instanceof InstanceReference)
                 {
-                    ret = getAttributeMethod(InstanceReference.class, ((InstanceReference)obj).getInstance().getEntity(), methodName, args);
+                    Entity entity = ((InstanceReference)obj).getInstance().getEntity();
+                    if (entity != null)
+                    {
+                        ret = getAttributeMethod(InstanceReference.class, entity, methodName, args);
+                    }
                 }
             }
             catch(NoSuchMethodException e)

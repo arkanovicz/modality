@@ -34,5 +34,7 @@ Components:
 + [modality-webapp-auth](modality-webapp-auth) - authentication filters assortment.
 + [velocity-tools-apiclient](velocity-tools-apiclient) - view layer API client tool which encapsulates modality-api-client for use with Apache Velocity Tools.
 + [velocity-tools-model](velocity-tools-model) - view layer model tool which encapsulates modality-core model objects for use with Apache Velocity Tools.
++ [modality-webapp-oauth-server](modality-webapp-oauth-server) - OAuth2 server (work in progress)
++ [modality-webapp-oauth-client](modality-webapp-oauth-server) - OAuth2 client (work in progress)
 
 Modules `modality-webapp` and `modality-webapp-auth` have been published with v1.0 because they are needed by `modality-example-bookshelf`, but shall undergo some refactoring. 

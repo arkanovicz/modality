@@ -6,7 +6,7 @@
 
 # Modality ORM library
 
-Encompases a data access layer, a hierarchical and reentrant model definition gathering SQL queries, database values and names custom filters and much more. See [modality-core's REAME](modality-core).
+Encompases a data access layer, a hierarchical and reentrant model definition gathering SQL queries, database values, names custom filters and much more. See [modality-core's REAME](modality-core).
 
 Usage: include the needed module(s) in your `pom.xml`'s dependencies section as follow:
 

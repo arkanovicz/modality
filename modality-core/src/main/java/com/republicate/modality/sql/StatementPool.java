@@ -30,6 +30,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is a pool of PooledPreparedStatements.
@@ -41,9 +43,9 @@ public class StatementPool implements /* Runnable, */ Pool
 {
     protected Logger logger = LoggerFactory.getLogger("sql");
 
-    public StatementPool(ConnectionPool connectionPool)
+    public StatementPool(String modelId, ConnectionPool connectionPool)
     {
-        this(connectionPool, -1);
+        this(modelId, connectionPool, -1);
     }
 
     /**
@@ -51,8 +53,9 @@ public class StatementPool implements /* Runnable, */ Pool
      *
      * @param connectionPool connection pool
      */
-    public StatementPool(ConnectionPool connectionPool, long connectionsCheckInterval)
+    public StatementPool(String modelId, ConnectionPool connectionPool, long connectionsCheckInterval)
     {
+        this.modelId = modelId;
         this.connectionPool = connectionPool;
         this.connectionsCheckInterval = connectionsCheckInterval;
     }
@@ -69,7 +72,7 @@ public class StatementPool implements /* Runnable, */ Pool
         logger.trace("prepare-" + query);
 
         PooledStatement statement = null;
-        ConnectionWrapper connection = currentTransactionConnection.get();
+        ConnectionWrapper connection = getCurrentTransactionConnection(modelId);
         boolean insideTransaction = false;
 
         if (connection == null)
@@ -217,14 +220,19 @@ public class StatementPool implements /* Runnable, */ Pool
         clear();
     }
 
-    public static void setCurrentTransactionConnection(ConnectionWrapper connection)
+    public static void setCurrentTransactionConnection(String modelId, ConnectionWrapper connection)
     {
-        currentTransactionConnection.set(connection);
+        currentTransactionConnection.get().put(modelId, connection);
     }
 
-    public static void resetCurrentTransactionConnection()
+    public static void resetCurrentTransactionConnection(String modelId)
     {
-        currentTransactionConnection.remove();
+        currentTransactionConnection.get().remove(modelId);
+    }
+
+    public static ConnectionWrapper getCurrentTransactionConnection(String modelId)
+    {
+        return currentTransactionConnection.get().get(modelId);
     }
 
     /**
@@ -281,6 +289,11 @@ public class StatementPool implements /* Runnable, */ Pool
     private long connectionsCheckInterval;
 
     /**
+     * model id
+     */
+    private String modelId = null;
+
+    /**
      * check delay.
      */
 
@@ -299,5 +312,5 @@ public class StatementPool implements /* Runnable, */ Pool
     /**
      * current transaction connection
      */
-    private static ThreadLocal<ConnectionWrapper> currentTransactionConnection = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, ConnectionWrapper>> currentTransactionConnection = ThreadLocal.withInitial(() -> new ConcurrentHashMap<>());
 }

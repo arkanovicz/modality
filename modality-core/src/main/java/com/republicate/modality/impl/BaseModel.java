@@ -386,7 +386,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
         connectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, true, maxConnections);
         transactionConnectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, false, maxConnections);
-        statementPool = new StatementPool(connectionPool, getConnectionsCheckInterval());
+        statementPool = new StatementPool(getModelId(), connectionPool, getConnectionsCheckInterval());
     }
 
     protected final void registerModel()

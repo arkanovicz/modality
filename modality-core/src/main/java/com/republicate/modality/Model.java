@@ -100,7 +100,7 @@ public class Model extends BaseModel
         {
             connection = getModel().getTransactionConnection();
             connection.enterBusyState();
-            StatementPool.setCurrentTransactionConnection(connection);
+            StatementPool.setCurrentTransactionConnection(getModelId(), connection);
             operation.run();
             connection.commit();
         }
@@ -123,7 +123,7 @@ public class Model extends BaseModel
         {
             if (connection != null)
             {
-                StatementPool.resetCurrentTransactionConnection();
+                StatementPool.resetCurrentTransactionConnection(getModelId());
                 connection.leaveBusyState();
             }
         }

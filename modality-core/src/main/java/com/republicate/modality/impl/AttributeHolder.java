@@ -30,11 +30,14 @@ import com.republicate.modality.ScalarAttribute;
 import com.republicate.modality.Transaction;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.sql.SqlUtils;
+import com.republicate.modality.util.TypeUtils;
 import org.slf4j.Logger;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -161,6 +164,118 @@ public abstract class AttributeHolder implements Serializable
         }
         return ((ScalarAttribute)attribute).evaluate(source, params);
     }
+
+    public String evaluateString(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toString(evaluate(name, params));
+    }
+
+    public Character evaluateChar(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toChar(evaluate(name, params));
+    }
+
+    public Boolean evaluateBoolean(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toBoolean(evaluate(name, params));
+    }
+
+    public Byte evaluateByte(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toByte(evaluate(name, params));
+    }
+
+    public Short evaluateShort(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toShort(evaluate(name, params));
+    }
+
+    public Integer evaluateInteger(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toInteger(evaluate(name, params));
+    }
+
+    public Long evaluateLong(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toLong(evaluate(name, params));
+    }
+
+    public Float evaluateFloat(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toFloat(evaluate(name, params));
+    }
+
+    public Double evaluateDouble(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toDouble(evaluate(name, params));
+    }
+
+    public Date evaluateDate(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toDate(evaluate(name, params));
+    }
+
+    public Calendar evaluateCalendar(String name, Map params) throws SQLException
+    {
+        return TypeUtils.toCalendar(evaluate(name, params));
+    }
+
+    public String evaluateString(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toString(evaluate(name, params));
+    }
+
+    public Character evaluateChar(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toChar(evaluate(name, params));
+    }
+
+    public Boolean evaluateBoolean(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toBoolean(evaluate(name, params));
+    }
+
+    public Byte evaluateByte(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toByte(evaluate(name, params));
+    }
+
+    public Short evaluateShort(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toShort(evaluate(name, params));
+    }
+
+    public Integer evaluateInteger(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toInteger(evaluate(name, params));
+    }
+
+    public Long evaluateLong(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toLong(evaluate(name, params));
+    }
+
+    public Float evaluateFloat(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toFloat(evaluate(name, params));
+    }
+
+    public Double evaluateDouble(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toDouble(evaluate(name, params));
+    }
+
+    public Date evaluateDate(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toDate(evaluate(name, params));
+    }
+
+    public Calendar evaluateCalendar(String name, Serializable... params) throws SQLException
+    {
+        return TypeUtils.toCalendar(evaluate(name, params));
+    }
+
+// ---    
 
     public Instance retrieve(String name, Serializable... params) throws SQLException
     {

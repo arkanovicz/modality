@@ -35,10 +35,4 @@ public class VelosurfEntityReference extends EntityReference
     {
         super(entity, modelReference);
     }
-
-    public boolean insert(Map values)
-    {
-        InstanceReference instance = newInstance(values);
-        return instance.insert();
-    }
 }

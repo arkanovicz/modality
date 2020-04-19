@@ -179,10 +179,22 @@ public abstract class BaseEntity extends AttributeHolder
         }
         Action insert = insertPerColumnsMask.computeIfAbsent(fieldsMask, this::generateInsertAction);
         long ret = insert.perform(source);
-        if (primaryKey.size() == 1 && primaryKey.get(0).generated)
+        boolean used = false;
+        if (primaryKey != null && primaryKey.size() > 0)
         {
-            Column keyColumn = primaryKey.get(0);
-            source.put(keyColumn.name, ret);
+            for (int i = 0; i < primaryKey.size(); ++i)
+            {
+                Column keyColumn = primaryKey.get(i);
+                if (keyColumn.generated)
+                {
+                    if (used)
+                    {
+                        throw new SQLException("several generated keys not supported");
+                    }
+                    source.put(keyColumn.name, ret);
+                    used = true;
+                }
+            }
         }
     }
 

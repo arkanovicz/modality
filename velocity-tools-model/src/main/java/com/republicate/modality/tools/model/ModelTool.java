@@ -122,7 +122,8 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
 
         if (model.isConfigured())
         {
-            getLog().warn("model {} is already initialized, skipping configuration with tools params: {}", modelParams);
+            // CB TODO - warn only if tool is provided with actual configuration values
+            // getLog().warn("model {} is already initialized, skipping configuration with tools params: {}", modelParams);
         }
         else
         {

@@ -16,7 +16,7 @@ Usage: include the needed module(s) in your `pom.xml`'s dependencies section as 
           <version>1.0</version>
       </dependency>
 
-# Mocality Web anti-framework
+# Modality Web anti-framework
 
 While the ORM is usable on its own or within other Java/Kotlin web frameworks, the project comes with a companion set of tools which stick to the J2EE and JDBC standards to provide a lightweight, loosely coupled and highly cusomizable [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) [pull](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based) architecture based on the Java J2EE servlets API.
 

@@ -48,6 +48,7 @@ under the License.
         <module>velocity-tools-apiclient</module>
         -->
         <module>velocity-tools-model</module>
+        <module>modality-kotlin-annotations</module>
     </modules>
     <licenses>
         <license>

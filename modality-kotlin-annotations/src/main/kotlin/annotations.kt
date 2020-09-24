@@ -1,4 +1,4 @@
-package com.republicate.modality.kotlin;
+package com.republicate.modality.annotations;
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)

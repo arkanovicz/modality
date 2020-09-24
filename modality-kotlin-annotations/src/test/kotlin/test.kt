@@ -1,10 +1,12 @@
-import com.republicate.modality.kotlin.Entity
+package com.republicate.modality.annotations.test
+
 import com.republicate.modality.Model
+import com.republicate.modality.annotations.Entity
+import java.net.URL
 import javax.sql.DataSource
 import org.apache.commons.dbcp2.BasicDataSource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeAll
-import java.net.URL
 
 @Entity(name = "book")
 class Book {
@@ -25,7 +27,7 @@ class ModalityAnnotationTests {
                 password = "";
                 val connection = getConnection()
                 val statement = connection.createStatement()
-                val sql = getResource("bookshelf.sql")!!.readText()
+                val sql = getResource("/bookshelf.sql")!!.readText()
                 for (command in sql.split(";")) {
                     if (command.trim().isEmpty()) continue;
                     statement.executeUpdate(command);

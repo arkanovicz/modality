@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * various SQL-related helpers.
@@ -115,19 +116,41 @@ public class SqlUtils
         return sqlTypeToClass.get(type);
     }
 
+    /**
+     * @param query
+     * @param identifierQuoteChar
+     * @return
+     * @since Modalidy  1.1
+     */
     public static List<String> splitStatements(String query, Character identifierQuoteChar)
     {
+        return splitStatements(query, identifierQuoteChar, false);
+    }
+
+    public enum SplitState
+    {
+        NORMAL,
+        COMMENT,
+        IDENTIFIER,
+        LITERAL,
+        DOLLAR
+    }
+
+    public static List<String> splitStatements(String query, Character identifierQuoteChar, boolean considerDollar)
+    {
         List<String> ret = new ArrayList<>();
-        int state = 0;
+        Stack<SplitState> state = new Stack<>();
+        state.push(SplitState.NORMAL);
+        int dollars = 0;
         boolean afterHyphen = false;
         StringBuilder currentQuery = new StringBuilder();
         for (int i = 0; i < query.length(); ++i)
         {
             Character c = query.charAt(i);
-            currentQuery.append(c);
-            switch (state)
+            currentQuery.append(c); // CB TODO - filter comments?
+            switch (state.peek())
             {
-                case 0: // normal
+                case NORMAL: // normal
                 {
                     switch (c)
                     {
@@ -136,7 +159,7 @@ public class SqlUtils
                             if (afterHyphen)
                             {
                                 afterHyphen = false;
-                                state = 1; // switch to comment
+                                state.push(SplitState.COMMENT);
                             }
                             else
                             {
@@ -146,7 +169,7 @@ public class SqlUtils
                         }
                         case '\'':
                         {
-                            state = 3; // switch to string literal
+                            state.push(SplitState.LITERAL);
                             break;
                         }
                         case ';':
@@ -159,41 +182,57 @@ public class SqlUtils
                             }
                             break;
                         }
+                        case '$':
+                            if (considerDollar)
+                            {
+                                dollars = 1;
+                                state.push(SplitState.DOLLAR);
+                            }
+                            break;
                         default:
                         {
                             if (c == identifierQuoteChar)
                             {
-                                state = 2; // switch to identifier
+                                state.push(SplitState.IDENTIFIER);
                                 break;
                             }
                         }
                     }
                     break;
                 }
-                case 1: // comment
+                case COMMENT:
                 {
                     if (c == '\n')
                     {
-                        state = 0; // switch back to normal
+                        state.pop();
                     }
                     break;
                 }
-                case 2: // identifier
+                case IDENTIFIER:
                 {
                     if (c == identifierQuoteChar)
                     {
-                        state = 0; // switch back to normal
+                        state.pop();
                     }
                     break;
                 }
-                case 3: // string literal
+                case LITERAL:
                 {
                     if (c == '\'')
                     {
-                        state = 0; // switch back to normal
+                        state.pop();
                     }
                     break;
                 }
+                case DOLLAR: // (no support for nested $$ blocks - CB TODO)
+                    if (c == '$')
+                    {
+                        if (++dollars == 4)
+                        {
+                            dollars = 0;
+                            state.pop();
+                        }
+                    }
             }
         }
         String nextQuery = currentQuery.toString().trim();

@@ -104,7 +104,8 @@ public class Transaction extends Action
         super.initialize();
         try
         {
-            statements = SqlUtils.splitStatements(getQuery(), getModel().getDriverInfos().getIdentifierQuoteChar());
+            boolean considerDollar = getModel().getDriverInfos().getTag().equals("postgresql");
+            statements = SqlUtils.splitStatements(getQuery(), getModel().getDriverInfos().getIdentifierQuoteChar(), considerDollar);
         }
         catch (SQLException sqle)
         {

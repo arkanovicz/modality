@@ -71,6 +71,10 @@ public class Entity extends BaseEntity implements Iterable<Instance>
     public Instance fetch(Serializable... key) throws SQLException
     {
         getLogger().trace("fetch {}", getName());
+        if (getFetchAttribute() == null)
+        {
+            throw new SQLException("Cannot fetch entity " + getName() + ": no primary key");
+        }
         return getFetchAttribute().retrieve(key);
     }
 

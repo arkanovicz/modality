@@ -128,7 +128,7 @@ public class ConnectionPool implements Serializable
      */
     private ConnectionWrapper createConnection() throws SQLException
     {
-        logger.info("Creating a new connection.");
+        logger.info("Creating a new connection{}.", schema != null && schema.length() > 0 ? " on schema " + schema : "");
 
         Connection connection = credentials.getConnection(dataSource);
 

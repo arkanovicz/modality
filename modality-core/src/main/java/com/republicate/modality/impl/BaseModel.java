@@ -46,6 +46,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.tools.XmlUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
@@ -92,6 +94,18 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         super(modelId);
         // CB TODO - add suffixes to the default id when initializing several models without id
         setModelId(Optional.ofNullable(modelId).orElse(DEFAULT_MODEL_ID));
+    }
+
+    private Logger logger = LoggerFactory.getLogger("modality");
+
+    public Logger getLogger()
+    {
+        return logger;
+    }
+
+    public void setLoggerName(String loggerName)
+    {
+        logger = LoggerFactory.getLogger(loggerName);
     }
 
     /*
@@ -175,6 +189,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         try
         {
             config.setPrefix("model.");
+            Optional.ofNullable(config.getString(MODEL_LOGGER_NAME)).ifPresent(this::setLoggerName);
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -415,7 +430,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     {
         this.modelId = modelId;
     }
-    
+
     public WriteAccess getWriteAccess()
     {
         return writeAccess;

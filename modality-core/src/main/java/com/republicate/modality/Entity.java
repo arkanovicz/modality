@@ -33,8 +33,6 @@ import java.util.Map;
 
 public class Entity extends BaseEntity implements Iterable<Instance>
 {
-    protected static Logger logger = LoggerFactory.getLogger("modality");
-
     public Entity(String name, Model model)
     {
         super(name, model);
@@ -43,7 +41,7 @@ public class Entity extends BaseEntity implements Iterable<Instance>
 
     public Logger getLogger()
     {
-        return logger;
+        return getModel().getLogger();
     }
 
     public Iterator<Instance> iterate() throws SQLException

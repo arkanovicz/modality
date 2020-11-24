@@ -31,8 +31,6 @@ import java.util.function.Function;
 
 public class Model extends BaseModel
 {
-    protected static Logger logger = LoggerFactory.getLogger("modality");
-
     public Model()
     {
         super();
@@ -41,11 +39,6 @@ public class Model extends BaseModel
     public Model(String modelId)
     {
         super(modelId);
-    }
-
-    public Logger getLogger()
-    {
-        return logger;
     }
 
     public Model getModel()
@@ -115,7 +108,7 @@ public class Model extends BaseModel
             }
             catch (SQLException sqlee)
             {
-                logger.error("could not rollback", sqlee);
+                getLogger().error("could not rollback", sqlee);
             }
             throw sqle;
         }

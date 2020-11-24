@@ -27,8 +27,7 @@ public interface Constants
 
     String MODALITY_DEFAULTS_PATH = "com/republicate/modality/" + MODALITY_PROPERTIES;
 
-    // TODO
-    // String MODEL_LOGGER_NAME = "logger.name";
+    String MODEL_LOGGER_NAME = "logger.name";
 
     String MODEL_ID = "id";
     String DEFAULT_MODEL_ID = "model";

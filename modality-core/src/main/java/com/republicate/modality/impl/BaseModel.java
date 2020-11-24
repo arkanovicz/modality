@@ -103,6 +103,9 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return logger;
     }
 
+    /**
+     * @Since Modality 1.1
+     */
     public Model setLoggerName(String loggerName)
     {
         this.logger = LoggerFactory.getLogger(loggerName);

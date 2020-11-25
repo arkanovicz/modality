@@ -22,6 +22,7 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
         addStockFilter("lowercase", x -> x.toLowerCase(Locale.ROOT));
         addStockFilter("uppercase", x -> x.toUpperCase(Locale.ROOT));
         addStockFilter("snake_to_camel", IdentifiersFilters::snakeToCamel);
+        addStockFilter("camel_to_snake", IdentifiersFilters::camelToSnake);
         addStockFilter("plural_en", x -> enInflector.getPlural(x));
     }
 
@@ -32,7 +33,7 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
     public static String snakeToCamel(String snake)
     {
         snake = snake.toLowerCase(Locale.ROOT);
-        String[] parts = snake.split("_");
+        String[] parts = snake.split("_"); // CB TODO factorize regex building
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (String part : parts)
@@ -44,6 +45,23 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
             }
         }
         return builder.length() == 0 ? "_" : builder.toString();
+    }
+
+    public static String camelToSnake(String camel)
+    {
+        String[] parts = camel.split("(?<=[a-z])(?=[A-Z])"); // CB TODO factorize regex building
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (String part : parts)
+        {
+            if (part.length() > 0)
+            {
+                if (!first) builder.append('_');
+                builder.append(part.toLowerCase(Locale.ROOT));
+                first = false;
+            }
+        }
+        return builder.toString();
     }
 
     public void setInflector(String inflector)

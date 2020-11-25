@@ -133,6 +133,7 @@ public class SqlUtils
         COMMENT,
         IDENTIFIER,
         LITERAL,
+        PARENTHESE,
         DOLLAR
     }
 
@@ -143,6 +144,7 @@ public class SqlUtils
         state.push(SplitState.NORMAL);
         int dollars = 0;
         boolean afterHyphen = false;
+        int parLevel = 0;
         StringBuilder currentQuery = new StringBuilder();
         for (int i = 0; i < query.length(); ++i)
         {
@@ -174,12 +176,25 @@ public class SqlUtils
                         }
                         case ';':
                         {
-                            String nextQuery = currentQuery.toString().trim();
-                            if (nextQuery.length() > 0)
+                            if (parLevel == 0)
                             {
-                                ret.add(nextQuery);
-                                currentQuery = new StringBuilder();
+                                String nextQuery = currentQuery.toString().trim();
+                                if (nextQuery.length() > 0)
+                                {
+                                    ret.add(nextQuery);
+                                    currentQuery = new StringBuilder();
+                                }
                             }
+                            break;
+                        }
+                        case '(':
+                        {
+                            ++parLevel;
+                            break;
+                        }
+                        case ')':
+                        {
+                            --parLevel;
                             break;
                         }
                         case '$':

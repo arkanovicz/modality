@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>BaseAttribute interface</p>
@@ -283,6 +285,31 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
     {
         return query;
     }
+
+    /**
+     * @since Modality 1.1
+     */
+    public void mergeQuery(Map<String, ?> context) throws SQLException // CB TODO - synchronizations? concurrent execution vs. merging? Escaping?
+    {
+        StringBuilder mergedQuery = new StringBuilder();
+        String qry = getQuery();
+        Matcher matcher = mergeLexer.matcher(qry);
+        int pos = 0;
+        while (matcher.find())
+        {
+            if (matcher.start() > pos) mergedQuery.append(qry.substring(pos, matcher.start()));
+            String reference = matcher.group().substring(1);
+            String value = String.valueOf(context.get(reference));
+            if (value == null) throw new SQLException("Undefined reference: @" + reference);
+            mergedQuery.append(value);
+            pos = matcher.end();
+        }
+        mergedQuery.append(qry.substring(pos));
+        setQuery(mergedQuery.toString());
+        initialize();
+    }
+
+    private Pattern mergeLexer = Pattern.compile("@\\w+");
 
     protected void setParameterNames(List<String> parameterNames)
     {

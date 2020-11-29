@@ -38,11 +38,11 @@ import org.slf4j.helpers.MessageFormatter;
  * </ul>
  */
 
-public abstract class Reference
+public interface Reference
 {
-    protected abstract ModelTool getModelTool();
+    ModelTool getModelTool();
 
-    protected void error(String message, Object... arguments)
+    default void error(String message, Object... arguments)
     {
         // The default implementation log the error and set the thread-local error, adding the throwable message at end
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, arguments);

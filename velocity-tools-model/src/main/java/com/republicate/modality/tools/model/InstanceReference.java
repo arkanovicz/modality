@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class InstanceReference extends Reference implements SlotMap
+public class InstanceReference implements Reference, SlotMap
 {
     public InstanceReference(Instance instance, ModelTool modelReference)
     {
@@ -352,7 +352,7 @@ public class InstanceReference extends Reference implements SlotMap
     }
 
     @Override
-    protected ModelTool getModelTool()
+    public ModelTool getModelTool()
     {
         return modelReference;
     }

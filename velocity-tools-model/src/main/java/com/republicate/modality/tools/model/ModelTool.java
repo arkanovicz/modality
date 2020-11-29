@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
 
 @ValidScope(Scope.APPLICATION)
 @DefaultKey("model")
-public class ModelTool extends SafeConfig implements Constants, Serializable
+public class ModelTool extends SafeConfig implements Constants, Reference, Serializable
 {
     public static final String MODEL_TOOLS_DEFAULTS_PATH = "com/republicate/modality/tools/model/tools.xml";
 
@@ -91,6 +91,12 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     {
         this.model = model;
         this.canWrite = model.getWriteAccess() == Model.WriteAccess.VTL;
+    }
+
+    @Override
+    public ModelTool getModelTool()
+    {
+        return this;
     }
 
     private static NavigableSet<String> modelKeys = new TreeSet<String>(Arrays.asList(
@@ -317,12 +323,6 @@ public class ModelTool extends SafeConfig implements Constants, Serializable
     public Iterator<InstanceReference> createInstanceReferenceIterator(Iterator<Instance> query)
     {
         return new InstanceReferenceIterator(query);
-    }
-
-    protected void error(String message, Object... arguments)
-    {
-        // default implementation only logs
-        getLog().error(message, arguments);
     }
 
     @Override

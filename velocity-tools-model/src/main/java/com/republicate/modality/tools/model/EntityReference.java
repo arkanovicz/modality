@@ -36,7 +36,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EntityReference extends Reference implements Serializable
+public class EntityReference implements Reference, Serializable
 {
     public EntityReference(Entity entity, ModelTool modelReference)
     {
@@ -386,7 +386,7 @@ public class EntityReference extends Reference implements Serializable
 
 
     @Override
-    protected ModelTool getModelTool()
+    public ModelTool getModelTool()
     {
         return modelReference;
     }

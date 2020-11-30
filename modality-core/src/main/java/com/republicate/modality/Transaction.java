@@ -95,7 +95,19 @@ public class Transaction extends Action
 
     protected List<String> getStatements() throws SQLException
     {
+        if (statements == null)
+        {
+            if (originalQuery == null) throw new SQLException("unhandled case");
+            return splitStatements();
+        }
         return statements;
+    }
+
+    private List<String> splitStatements() throws SQLException
+    {
+        boolean considerDollar = getModel().getDriverInfos().getTag().equals("postgresql");
+        Character quoteChar = getModel().getDriverInfos().getIdentifierQuoteChar();
+        return SqlUtils.splitStatements(getQuery(), quoteChar, considerDollar);
     }
 
     @Override
@@ -104,8 +116,7 @@ public class Transaction extends Action
         super.initialize();
         try
         {
-            boolean considerDollar = getModel().getDriverInfos().getTag().equals("postgresql");
-            statements = SqlUtils.splitStatements(getQuery(), getModel().getDriverInfos().getIdentifierQuoteChar(), considerDollar);
+            statements = splitStatements();
         }
         catch (SQLException sqle)
         {
@@ -113,6 +124,13 @@ public class Transaction extends Action
         }
     }
 
-    private List<String> statements = new ArrayList<>();
+    @Override
+    protected synchronized void setQuery(String qry)
+    {
+        super.setQuery(qry);
+        statements = null; // triggers recalculation
+    }
+
+    private List<String> statements = null;
     private List<List<String>> parameterNamesLists = new ArrayList<>();
 }

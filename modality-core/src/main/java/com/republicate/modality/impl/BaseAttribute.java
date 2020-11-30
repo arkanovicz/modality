@@ -318,7 +318,7 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         initialize();
     }
 
-    private String originalQuery = null;
+    protected String originalQuery = null;
 
     private Pattern mergeLexer = Pattern.compile("@\\w+");
 

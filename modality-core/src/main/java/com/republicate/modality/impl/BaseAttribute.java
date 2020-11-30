@@ -308,7 +308,7 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
         {
             if (matcher.start() > pos) mergedQuery.append(originalQuery.substring(pos, matcher.start()));
             String reference = matcher.group().substring(1);
-            String value = Optional.of(context.get(reference)).map(val -> String.valueOf(val)).orElse(matcher.group());
+            String value = Optional.ofNullable(context.get(reference)).map(val -> String.valueOf(val)).orElse(matcher.group());
             if (value == null) throw new SQLException("Undefined reference: @" + reference);
             mergedQuery.append(value);
             pos = matcher.end();

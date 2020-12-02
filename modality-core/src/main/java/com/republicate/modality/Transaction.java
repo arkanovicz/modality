@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Transaction extends Action
@@ -65,8 +66,17 @@ public class Transaction extends Action
             int param = 0;
             for (String individualStatement : getStatements())
             {
+                if (getModel().getLogger().isTraceEnabled())
+                {
+                    getModel().getLogger().trace("prepare-{}", individualStatement);
+                    getModel().getLogger().trace("params-{}", Arrays.asList(paramValues));
+                }
                 PreparedStatement statement = connection.prepareStatement(individualStatement);
                 int paramCount = statement.getParameterMetaData().getParameterCount();
+                if (getModel().getLogger().isTraceEnabled())
+                {
+                    getModel().getLogger().trace("params-{}", Arrays.asList(paramValues).subList(param, param + paramCount));
+                }
                 for (int i = 1; i <= paramCount; ++i)
                 {
                     statement.setObject(i, paramValues[param++]);

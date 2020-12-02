@@ -69,7 +69,7 @@ public class StatementPool implements /* Runnable, */ Pool
      */
     protected synchronized PooledStatement prepareStatement(String query, boolean update) throws SQLException
     {
-        logger.trace("prepare-" + query);
+        logger.trace("prepare-{}", query);
 
         PooledStatement statement = null;
         ConnectionWrapper connection = getCurrentTransactionConnection(modelId);

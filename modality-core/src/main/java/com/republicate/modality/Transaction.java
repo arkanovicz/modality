@@ -23,11 +23,13 @@ import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.impl.AttributeHolder;
 import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.SqlUtils;
+import com.republicate.modality.sql.StatementPool;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,10 +60,20 @@ public class Transaction extends Action
     {
         // CB TODO - review parameters mapping as in BaseAttribute for redundancy handling
         ConnectionWrapper connection = null;
+        Savepoint savepoint = null;
         try
         {
             long changed = 0;
-            connection = getModel().getTransactionConnection();
+            // support nested transactions using savepoints (CB TODO - add test case)
+            connection = StatementPool.getCurrentTransactionConnection(getModel().getModelId());
+            if (connection != null)
+            {
+                savepoint = connection.setSavepoint();
+            }
+            else
+            {
+                connection = getModel().getTransactionConnection();
+            }
             connection.enterBusyState();
             int param = 0;
             for (String individualStatement : getStatements())
@@ -89,7 +101,14 @@ public class Transaction extends Action
         {
             if (connection != null)
             {
-                connection.rollback();
+                if (savepoint != null)
+                {
+                    connection.rollback(savepoint);
+                }
+                else
+                {
+                    connection.rollback();
+                }
             }
             throw sqle;
         }

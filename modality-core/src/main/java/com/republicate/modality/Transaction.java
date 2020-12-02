@@ -69,7 +69,6 @@ public class Transaction extends Action
                 if (getModel().getLogger().isTraceEnabled())
                 {
                     getModel().getLogger().trace("prepare-{}", individualStatement);
-                    getModel().getLogger().trace("params-{}", Arrays.asList(paramValues));
                 }
                 PreparedStatement statement = connection.prepareStatement(individualStatement);
                 int paramCount = statement.getParameterMetaData().getParameterCount();

@@ -74,6 +74,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiClient implements Closeable
 {
+    private static final int TIMEOUT = 30000; // 30 sec
     protected Logger logger = LoggerFactory.getLogger("api-client");
 
     public ApiClient()
@@ -86,11 +87,11 @@ public class ApiClient implements Closeable
                 SSLConnectionSocketFactory.getDefaultHostnameVerifier()))
             .setConnectionTimeToLive(1, TimeUnit.MINUTES)
             .setDefaultSocketConfig(SocketConfig.custom()
-                .setSoTimeout(5000)
+                .setSoTimeout(TIMEOUT)
                 .build())
             .setDefaultRequestConfig(RequestConfig.custom()
-                .setConnectTimeout(5000)
-                .setSocketTimeout(5000)
+                .setConnectTimeout(TIMEOUT)
+                .setSocketTimeout(TIMEOUT)
                 .setCookieSpec(CookieSpecs.STANDARD)
                 .build())
             .build();
@@ -236,10 +237,6 @@ public class ApiClient implements Closeable
             Charset charset = getCharset(entity);
             Reader body = new InputStreamReader(entity.getContent(), charset);
             ContentType contentType = ContentType.get(entity);
-            if (logger.isTraceEnabled())
-            {
-                logger.trace("response: {}", ret);
-            }
             ret = entityToJson(body, contentType, charset).asObject(); // will throw if result is an array
         }
         else

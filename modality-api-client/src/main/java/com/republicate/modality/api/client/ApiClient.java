@@ -57,6 +57,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,28 +110,26 @@ public class ApiClient implements Closeable
 
     public Json.Object get(String url, Map<String, String> params) throws IOException
     {
-        return get(url, null, params);
+        return get(url, (Pair<String, String>)null, params);
     }
 
     public Json.Object get(String url, Pair<String, String> header, Map<String, String> params) throws IOException
     {
+        return get(url, header == null ? null : Collections.singletonMap(header.getKey(), header.getValue()), params);
+    }
+
+    public Json.Object get(String url, Map<String, String> headers, Map<String, String> params) throws IOException
+    {
         HttpGet req = null;
-        try
+        StringBuilder  paramsString = new StringBuilder();
+        for (Map.Entry<String, String> param : params.entrySet())
         {
-            StringBuilder  paramsString = new StringBuilder();
-            for (Map.Entry<String, String> param : params.entrySet())
-            {
-                paramsString.append(paramsString.length() > 0 ? '&' : '?');
-                paramsString.append(param.getKey()).append('=').append(param.getValue());
-            }
-            String paramsUrl = url + paramsString.toString();
-            req = new HttpGet(paramsUrl);
-            return submit(req, header);
+            paramsString.append(paramsString.length() > 0 ? '&' : '?');
+            paramsString.append(param.getKey()).append('=').append(param.getValue());
         }
-        finally
-        {
-            req.releaseConnection();
-        }
+        String paramsUrl = url + paramsString.toString();
+        req = new HttpGet(paramsUrl);
+        return submit(req, headers);
     }
 
     public Json.Object post(String url, String ... params) throws IOException
@@ -145,112 +144,117 @@ public class ApiClient implements Closeable
 
     public Json.Object post(String url, Pair<String, String> header, Map<String, String> params) throws IOException
     {
-        HttpPost req = null;
-        try
-        {
-            req = new HttpPost(url);
-            req.setHeader("Accept", "*/*");
-            if (header != null)
-            {
-                req.setHeader(header.getLeft(), header.getRight());
-            }
-            List<NameValuePair> reqParams = new ArrayList<NameValuePair>();
-            for (Map.Entry<String, String> param : params.entrySet())
-            {
-                reqParams.add(new BasicNameValuePair(param.getKey(), param.getValue()));
+        return post(url, header == null ? null : Collections.singletonMap(header.getKey(), header.getValue()), params);
+    }
 
-            }
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(reqParams, "UTF-8");
-            entity.setContentType(ContentType.APPLICATION_FORM_URLENCODED.toString());
-            return submit(req, header, entity);
-        }
-        finally
+    public Json.Object post(String url, Map<String, String> headers, Map<String, String> params) throws IOException
+    {
+        HttpPost req = new HttpPost(url);
+        req.setHeader("Accept", "*/*");
+        List<NameValuePair> reqParams = new ArrayList<NameValuePair>();
+        for (Map.Entry<String, String> param : params.entrySet())
         {
-            closeRequest(req);
+            reqParams.add(new BasicNameValuePair(param.getKey(), param.getValue()));
+
         }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(reqParams, "UTF-8");
+        entity.setContentType(ContentType.APPLICATION_FORM_URLENCODED.toString());
+        return submit(req, headers, entity);
     }
 
     public Json.Object post(String url, Json.Object params) throws IOException
     {
-        return post(url, null, params);
+        return post(url, (Pair<String, String>)null, params);
     }
 
     public Json.Object post(String url, Pair<String, String> header, Json.Object params) throws IOException
     {
+        return post(url, header == null ? null : Collections.singletonMap(header.getKey(), header.getValue()), params);
+    }
+
+    public Json.Object post(String url, Map<String, String> headers, Json.Object params) throws IOException
+    {
         HttpPost req = null;
+        req = new HttpPost(url);
+        EntityTemplate entity = new EntityTemplate(outputstream ->
+        {
+            Writer writer = new OutputStreamWriter(outputstream, StandardCharsets.UTF_8);
+            params.toString(writer);
+            writer.flush();
+        });
+        entity.setContentType(ContentType.APPLICATION_JSON.toString());
+        return submit(req, headers, entity);
+    }
+
+    protected Json.Object submit(HttpRequestBase req, Map<String, String> headers) throws IOException
+    {
+        if (headers != null)
+        {
+            headers.forEach((header, value) -> req.setHeader(header, value));
+        }
+        return submit(req);
+    }
+
+    protected Json.Object submit(HttpEntityEnclosingRequestBase req, Map<String, String> headers, HttpEntity httpEntity) throws IOException
+    {
+        if (headers != null)
+        {
+            headers.forEach((header, value) -> req.setHeader(header, value));
+        }
+        if (httpEntity != null)
+        {
+            req.setEntity(httpEntity);
+        }
+        return submit(req);
+    }
+
+
+    protected Json.Object submit(HttpRequestBase req) throws IOException
+    {
         try
         {
-            req = new HttpPost(url);
-            req.setHeader("Accept", "*/*");
-            EntityTemplate entity = new EntityTemplate(outputstream ->
+            if (!req.containsHeader("Accept"))
             {
-                Writer writer = new OutputStreamWriter(outputstream, StandardCharsets.UTF_8);
-                params.toString(writer);
-                writer.flush();
-            });
-            entity.setContentType(ContentType.APPLICATION_JSON.toString());
-            return submit(req, header, entity);
+                req.setHeader("Accept", "*/*");
+            }
+            Json.Object ret = null;
+            HttpResponse resp = client.execute(req);
+            StatusLine statusLine = resp.getStatusLine();
+            int status = statusLine.getStatusCode();
+            if (status >= 200 && status < 300)
+            {
+                HttpEntity entity = resp.getEntity();
+                if (entity == null)
+                {
+                    throw new ClientProtocolException("Response is empty");
+                }
+                Charset charset = getCharset(entity);
+                Reader body = new InputStreamReader(entity.getContent(), charset);
+                ContentType contentType = ContentType.get(entity);
+                ret = entityToJson(body, contentType, charset).asObject(); // will throw if result is an array
+            }
+            else
+            {
+                String error = "request failed: " + status + " " + statusLine.getReasonPhrase();
+                logger.error(error);
+                HttpEntity entity = resp.getEntity();
+                if (entity == null)
+                {
+                    throw new ClientProtocolException("Response is empty");
+                }
+                String body = EntityUtils.toString(entity);
+                if (body != null)
+                {
+                    logger.error("error body = " + body);
+                }
+                throw new IOException(error);
+            }
+            return ret;
         }
         finally
         {
             closeRequest(req);
         }
-    }
-
-    protected Json.Object submit(HttpEntityEnclosingRequestBase req, HttpEntity httpEntity) throws IOException
-    {
-        return submit(req, null, httpEntity);
-    }
-
-    protected Json.Object submit(HttpEntityEnclosingRequestBase req, Pair<String, String> header, HttpEntity httpEntity) throws IOException
-    {
-        if (httpEntity != null)
-        {
-            req.setEntity(httpEntity);
-        }
-        return submit(req, header);
-    }
-
-    protected Json.Object submit(HttpRequestBase req, Pair<String, String> header) throws IOException
-    {
-        if (header != null)
-        {
-            req.setHeader(header.getKey(), header.getValue());
-        }
-        return submit(req);
-    }
-
-    protected Json.Object submit(HttpRequestBase req) throws IOException
-    {
-        req.setHeader("Accept", "*/*");
-        Json.Object ret = null;
-        HttpResponse resp = client.execute(req);
-        StatusLine statusLine = resp.getStatusLine();
-        int status = statusLine.getStatusCode();
-        if (status >= 200 && status < 300)
-        {
-            HttpEntity entity = resp.getEntity();
-            if (entity == null)
-            {
-                throw new ClientProtocolException("Response is empty");
-            }
-            Charset charset = getCharset(entity);
-            Reader body = new InputStreamReader(entity.getContent(), charset);
-            ContentType contentType = ContentType.get(entity);
-            ret = entityToJson(body, contentType, charset).asObject(); // will throw if result is an array
-        }
-        else
-        {
-            HttpEntity entity = resp.getEntity();
-            if (entity == null)
-            {
-                throw new ClientProtocolException("Response is empty");
-            }
-            String body = EntityUtils.toString(entity);
-            logger.error("error body = " + body);
-
-        }
-        return ret;
     }
 
     protected Json entityToJson(Reader body, ContentType contentType, Charset charset) throws IOException

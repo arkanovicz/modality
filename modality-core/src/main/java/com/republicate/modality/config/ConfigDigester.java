@@ -32,6 +32,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -297,23 +298,15 @@ public class ConfigDigester
             throw new ConfigurationException("no setter for property " + name + " on class " + bean.getClass());
         }
         setter.setAccessible(true);
-        Object argument;
         Class paramClass = setter.getParameterTypes()[setter.getParameterCount() - 1];
-        if (paramClass == String.class || Map.class.isAssignableFrom(paramClass))
+        Object argument;
+        try
         {
-            argument = value;
+            argument = convertParamToClass(value, paramClass);
         }
-        else if (paramClass == Boolean.TYPE)
+        catch (IllegalArgumentException iae)
         {
-            argument = TypeUtils.toBoolean(value);
-        }
-        else if (Enum.class.isAssignableFrom(paramClass) && value instanceof String)
-        {
-            argument = Enum.valueOf(paramClass, ((String)value).toUpperCase());
-        }
-        else
-        {
-            throw new ConfigurationException("cannot convert value to setter argument: " + setterName + "(" + paramClass + ")");
+            throw new ConfigurationException("cannot convert value to setter argument: " + setterName + "(" + paramClass + ")", iae);
         }
         switch (setter.getParameterCount())
         {
@@ -419,7 +412,13 @@ public class ConfigDigester
 
     public static boolean isScalarType(Class typeClass)
     {
-        return scalarTypes.contains(typeClass) || Enum.class.isAssignableFrom(typeClass);
+        // also allows arrays of scalar types (vararg)
+        return scalarTypes.contains(typeClass)
+            || Enum.class.isAssignableFrom(typeClass)
+            || (typeClass.isArray() && (
+                scalarTypes.contains(typeClass.getComponentType())
+                || Enum.class.isAssignableFrom(typeClass.getComponentType())
+            ));
     }
 
     public static boolean isMapType(Class typeClass)
@@ -427,6 +426,45 @@ public class ConfigDigester
         return Map.class.isAssignableFrom(typeClass);
     }
 
+    public static Object convertParamToClass(Object value, Class clazz) throws ConfigurationException
+    {
+        Object ret;
+        if (clazz == String.class || Map.class.isAssignableFrom(clazz))
+        {
+            ret = value;
+        }
+        else if (clazz == Boolean.TYPE)
+        {
+            ret = TypeUtils.toBoolean(value);
+        }
+        else if (Enum.class.isAssignableFrom(clazz) && value instanceof String)
+        {
+            ret = Enum.valueOf(clazz, ((String)value).toUpperCase());
+        }
+        else if (clazz.isArray())
+        {
+            Class componentClass = clazz.getComponentType();
+            if (value instanceof String)
+            {
+                String args[] = ((String)value).split(",");
+                ret = Array.newInstance(componentClass, args.length);
+                for (int i = 0; i < args.length; ++i)
+                {
+                    Array.set(ret, i, convertParamToClass(args[i].trim(), componentClass));
+                }
+            }
+            else
+            {
+                ret = Array.newInstance(componentClass, 1);
+                Array.set(ret, 0, convertParamToClass(value, componentClass));
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("value cannot be converted to " + clazz.getSimpleName() + " : " + value);
+        }
+        return ret;
+    }
 
     private Stack<Element> xmlPath = new Stack<>();
     private Stack<Object> beanStack = new Stack<>();

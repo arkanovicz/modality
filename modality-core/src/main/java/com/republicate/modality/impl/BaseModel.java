@@ -765,7 +765,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                         {
                             entity.addColumn(column);
                         }
-                        entity.setSqlPrimaryKey(reverseEngineer.getPrimaryKey(entity));
+                        // do not overwrite primary key if it has been set by config (for views, per instance)
+                        if (entity.getSqlPrimaryKey() == null)
+                        {
+                            entity.setSqlPrimaryKey(reverseEngineer.getPrimaryKey(entity));
+                        }
                     }
                 }
             }

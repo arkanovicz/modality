@@ -21,6 +21,11 @@ package com.republicate.modality;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,15 +33,50 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.sql.DataSource;
 
-public class BaseBookshelfTests
+import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.AnsiFormat;
+import com.diogonunes.jcolor.Attribute;
+
+interface Colorizer
 {
+    AnsiFormat blue = new AnsiFormat(Attribute.BRIGHT_BLUE_TEXT());
+    AnsiFormat green = new AnsiFormat(Attribute.BRIGHT_GREEN_TEXT());
+    AnsiFormat red = new AnsiFormat(Attribute.BRIGHT_RED_TEXT());
+    AnsiFormat bold = new AnsiFormat(Attribute.BOLD());
+
+    default String blue(String str)
+    {
+        return Ansi.colorize(str, blue);
+    }
+    default String green(String str)
+    {
+        return Ansi.colorize(str, green);
+    }
+    default String red(String str)
+    {
+        return Ansi.colorize(str, red);
+    }
+    default String bold(String str)
+    {
+        return Ansi.colorize(str, bold);
+    }
+
+
+}
+
+public class BaseBookshelfTests implements Colorizer
+{
+    protected static Logger logger = LoggerFactory.getLogger("tests");
+
     protected static DataSource initDataSource() throws Exception
     {
         BasicDataSource ds = new BasicDataSource();
@@ -134,5 +174,29 @@ public class BaseBookshelfTests
         }
     }
 
+    /*
+     * Print current test name in log
+     */
+
+    @Before
+    public void setUp() throws Exception
+    {
+        String niceName = formatTestName(name.getMethodName());
+        logger.info(bold("******************************** " + this.getClass().getSimpleName() + " > " + niceName + " ********************************"));
+        // TODO - CB - Resetting the database between each test doesn't work for now, we ought to refresh webapp db connections,
+        // otherwise Modality reverse enginering fails randomly.
+        // resetDatabase();
+    }
+
+    private String formatTestName(String methodName) throws Exception
+    {
+        String parts[] = methodName.split("(?<=[a-z])(?=[A-Z0-9])|(?<=[a-z0-9])(?=[A-Z])|(?:^test)?_");
+        String niceName = Arrays.stream(parts).filter(p -> !p.isEmpty()).collect(Collectors.joining(" "));
+        return niceName;
+    }
+
+    @Rule
+    public TestName name = new TestName();
 
 }
+

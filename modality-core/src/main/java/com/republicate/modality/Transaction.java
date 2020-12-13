@@ -62,7 +62,6 @@ public class Transaction extends Action
         // CB TODO - review parameters mapping as in BaseAttribute for redundancy handling
         ConnectionWrapper connection = null;
         Savepoint savepoint = null;
-        boolean ownsConnection = false;
         try
         {
             long changed = 0;
@@ -70,7 +69,6 @@ public class Transaction extends Action
             connection = StatementPool.getCurrentTransactionConnection(getModel().getModelId());
             if (connection == null)
             {
-                ownsConnection = true;
                 connection = getModel().getTransactionConnection();
                 StatementPool.setCurrentTransactionConnection(getModel().getModelId(), connection);
             }
@@ -137,7 +135,7 @@ public class Transaction extends Action
             if (connection != null)
             {
                 connection.leaveBusyState();
-                if (ownsConnection)
+                if (savepoint == null) // means we own the transaction connection
                 {
                     StatementPool.resetCurrentTransactionConnection(getModel().getModelId());
                 }

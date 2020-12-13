@@ -22,6 +22,7 @@ package com.republicate.modality.impl;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.config.ConfigurationException;
+import com.republicate.modality.sql.NonPositionedParameter;
 import com.republicate.modality.sql.RowValues;
 
 import java.io.Serializable;
@@ -136,22 +137,32 @@ public abstract class BaseAttribute extends InstanceProducer implements Serializ
 
     protected Serializable[] getParamValues(Serializable[] rawParamValues) throws SQLException
     {
-        Serializable[] paramValues = new Serializable[parameterNames.size()];
+        int nonPositionedParametersCount = 0;
+        for (Serializable rawParamValue : rawParamValues)
+        {
+            if (rawParamValue != null && rawParamValue instanceof NonPositionedParameter) ++nonPositionedParametersCount;
+        }
+        Serializable[] paramValues = new Serializable[parameterNames.size() + nonPositionedParametersCount];
         Entity entity = (Entity)Optional.ofNullable(getParent()).filter(x -> x instanceof Entity).orElse(null);
         if (entity == null)
         {
-            for (int i = 0; i < paramValues.length; ++i)
+            for (int i = 0; i < paramValues.length - nonPositionedParametersCount; ++i)
             {
                 paramValues[i] = rawParamValues[paramMapping[i]];
             }
         }
         else
         {
-            for (int i = 0; i < paramValues.length; ++i)
+            for (int i = 0; i < paramValues.length - nonPositionedParametersCount; ++i)
             {
                 String paramName = parameterNames.get(i);
                 paramValues[i] = entity.filterValue(paramName, rawParamValues[paramMapping[i]]);
             }
+        }
+        // non positioned parameters should always be given last (CB TODO - document)
+        for (int i = 0; i < nonPositionedParametersCount; ++i)
+        {
+            paramValues[paramValues.length - nonPositionedParametersCount + i] = rawParamValues[rawParamValues.length - nonPositionedParametersCount + i];
         }
         return paramValues;
     }

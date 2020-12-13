@@ -21,6 +21,7 @@ package com.republicate.modality;
 
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.impl.AttributeHolder;
+import com.republicate.modality.impl.PostgresqlCopyManager;
 import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.SqlUtils;
 import com.republicate.modality.sql.StatementPool;
@@ -73,6 +74,7 @@ public class Transaction extends Action
             else
             {
                 connection = getModel().getTransactionConnection();
+                StatementPool.setCurrentTransactionConnection(getModel().getModelId(), connection);
             }
             connection.enterBusyState();
             int param = 0;
@@ -82,6 +84,22 @@ public class Transaction extends Action
                 {
                     getModel().getLogger().trace("prepare-{}", individualStatement);
                 }
+                // Check for postgresql COPY FROM STDIN command
+                if (PostgresqlCopyManager.isPostgresqlCopyFromStdin(getModel(), individualStatement, paramValues))
+                {
+                    if (postgresqlCopyManager == null)
+                    {
+                        synchronized (this)
+                        {
+                            if (postgresqlCopyManager == null)
+                            {
+                                postgresqlCopyManager = new PostgresqlCopyManager(getModel());
+                            }
+                        }
+                    }
+                    return postgresqlCopyManager.copyFromStdin(individualStatement, paramValues[0]);
+                }
+
                 PreparedStatement statement = connection.prepareStatement(individualStatement);
                 int paramCount = statement.getParameterMetaData().getParameterCount();
                 if (getModel().getLogger().isTraceEnabled())

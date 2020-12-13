@@ -169,7 +169,7 @@ public class ConfigHelper
         return findURL(path, servletContext, true);
     }
 
-    public URL findURL(String path, Object servletContext, boolean mandatory)
+    public /*static*/ URL findURL(String path, Object servletContext, boolean mandatory)
     {
         URL url = null;
         boolean webContext = false;
@@ -248,7 +248,7 @@ public class ConfigHelper
         return url;
     }
 
-    protected boolean fileExists(final File file)
+    protected static boolean fileExists(final File file)
     {
         boolean ret;
         if (System.getSecurityManager() != null)

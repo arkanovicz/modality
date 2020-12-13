@@ -20,11 +20,16 @@ package com.republicate.modality;
  */
 
 import com.republicate.modality.impl.AttributeHolder;
+import com.republicate.modality.impl.PostgresqlCopyManager;
+import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.PooledStatement;
+import com.republicate.modality.sql.StatementPool;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Action extends Attribute
 {
@@ -53,25 +58,45 @@ public class Action extends Attribute
     {
         long ret = 0;
         PooledStatement statement = null;
-        try
+        String query = getQuery();
+        // Check for postgresql COPY FROM STDIN command
+        if (PostgresqlCopyManager.isPostgresqlCopyFromStdin(getModel(), query, paramValues))
         {
-            statement = getModel().prepareUpdate(getQuery());
-            statement.getConnection().enterBusyState();
-            ret = statement.executeUpdate(paramValues);
-            if (ret == 1 && generatedKeyColumn != null)
+            if (postgresqlCopyManager == null)
             {
-                ret = statement.getLastInsertID(generatedKeyColumn);
+                synchronized (this)
+                {
+                    if (postgresqlCopyManager == null)
+                    {
+                        postgresqlCopyManager = new PostgresqlCopyManager(getModel());
+                    }
+                }
             }
+            return postgresqlCopyManager.copyFromStdin(query, paramValues[0]);
         }
-        finally
+        else
         {
-            if (statement != null)
+            try
             {
-                statement.notifyOver();
-                statement.getConnection().leaveBusyState();
+
+                statement = getModel().prepareUpdate(getQuery());
+                statement.getConnection().enterBusyState();
+                ret = statement.executeUpdate(paramValues);
+                if (ret == 1 && generatedKeyColumn != null)
+                {
+                    ret = statement.getLastInsertID(generatedKeyColumn);
+                }
             }
+            finally
+            {
+                if (statement != null)
+                {
+                    statement.notifyOver();
+                    statement.getConnection().leaveBusyState();
+                }
+            }
+            return ret;
         }
-        return ret;
     }
 
     @Override
@@ -86,4 +111,8 @@ public class Action extends Attribute
     }
 
     private String generatedKeyColumn = null;
+
+    // for postgresql COPY FROM STDIN
+    protected PostgresqlCopyManager postgresqlCopyManager = null;
+
 }

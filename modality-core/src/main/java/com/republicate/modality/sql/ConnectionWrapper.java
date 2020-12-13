@@ -635,7 +635,7 @@ public class ConnectionWrapper
     public synchronized void enterBusyState()
     {
         //Logger.trace("connection #"+toString()+": entering busy state.");
-        busy++;
+        ++busy;
     }
 
     /**

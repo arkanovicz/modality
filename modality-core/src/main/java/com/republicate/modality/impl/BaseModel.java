@@ -639,6 +639,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return conversionHandler;
     }
 
+    protected Object getServletContext()
+    {
+        return servletContext; // null in a standalone context
+    }
+
     /*
      * Definition
      */
@@ -923,8 +928,13 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     }
 
     /*
-     * Helper Classes
+     * Helpers
      */
+
+    protected ConnectionWrapper getCurrentTransactionConnection()
+    {
+        return StatementPool.getCurrentTransactionConnection(getModelId());
+    }
 
     /**
      * <p>gather filters getters and setters in a subclass to ease configuration</p>

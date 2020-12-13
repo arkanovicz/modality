@@ -26,7 +26,7 @@ public class PostgresqlCopyManager
 {
     protected Model model;
 
-    private static final Pattern copyFromStdin = Pattern.compile("^COPY\\s+(\\w+)(?:\\s*\\([^)]+\\)\\s*|\\s+)\\s*FROM\\s+STDIN\\s+.*$");
+    private static final Pattern copyFromStdin = Pattern.compile("^COPY\\s+\"?(\\w+)\"?(?:\\s*\\([^)]+\\)\\s*|\\s+)\\s*FROM\\s+STDIN\\s+.*$");
     private static final String COPY_MANAGER_CLASS = "org.postgresql.copy.CopyManager";
     private static final String BASE_CONNECTION_CLASS = "org.postgresql.core.BaseConnection";
     private static Class copyManagerClass = null;

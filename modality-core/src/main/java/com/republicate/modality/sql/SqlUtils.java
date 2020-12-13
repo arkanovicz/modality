@@ -149,7 +149,7 @@ public class SqlUtils
         for (int i = 0; i < query.length(); ++i)
         {
             Character c = query.charAt(i);
-            currentQuery.append(c); // CB TODO - filter comments?
+            if(state.peek() != SplitState.COMMENT) currentQuery.append(c);
             switch (state.peek())
             {
                 case NORMAL: // normal
@@ -162,6 +162,7 @@ public class SqlUtils
                             {
                                 afterHyphen = false;
                                 state.push(SplitState.COMMENT);
+                                currentQuery.delete(currentQuery.length() - 2, currentQuery.length());
                             }
                             else
                             {

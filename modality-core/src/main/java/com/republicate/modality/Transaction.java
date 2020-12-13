@@ -25,6 +25,8 @@ import com.republicate.modality.impl.PostgresqlCopyManager;
 import com.republicate.modality.sql.ConnectionWrapper;
 import com.republicate.modality.sql.SqlUtils;
 import com.republicate.modality.sql.StatementPool;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
@@ -97,22 +99,32 @@ public class Transaction extends Action
                             }
                         }
                     }
-                    return postgresqlCopyManager.copyFromStdin(individualStatement, paramValues[0]);
+                    changed += postgresqlCopyManager.copyFromStdin(individualStatement, paramValues[0]);
                 }
+                else
+                {
 
-                PreparedStatement statement = connection.prepareStatement(individualStatement);
-                int paramCount = statement.getParameterMetaData().getParameterCount();
-                if (getModel().getLogger().isTraceEnabled())
-                {
-                    getModel().getLogger().trace("params-{}", Arrays.asList(paramValues).subList(param, param + paramCount));
+                    PreparedStatement statement = connection.prepareStatement(individualStatement);
+                    int paramCount = statement.getParameterMetaData().getParameterCount();
+                    if (getModel().getLogger().isTraceEnabled())
+                    {
+                        getModel().getLogger().trace("params-{}", Arrays.asList(paramValues).subList(param, param + paramCount));
+                    }
+                    for (int i = 1; i <= paramCount; ++i)
+                    {
+                        statement.setObject(i, paramValues[param++]);
+                    }
+                    changed += statement.executeUpdate();
                 }
-                for (int i = 1; i <= paramCount; ++i)
-                {
-                    statement.setObject(i, paramValues[param++]);
-                }
-                changed += statement.executeUpdate();
             }
-            connection.commit();
+            if (savepoint == null)
+            {
+                connection.commit();
+            }
+            else
+            {
+                connection.releaseSavepoint(savepoint);
+            }
             return changed;
         }
         catch (SQLException sqle)

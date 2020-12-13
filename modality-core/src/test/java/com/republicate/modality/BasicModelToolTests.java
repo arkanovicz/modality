@@ -49,6 +49,8 @@ import static org.junit.Assert.*;
 /**
  * <p>Basic model tests</p>
  *
+ * Note: for speed reasons, db state is not resetted between tests ; so each test MUST leave a clean state when succesful.
+ *
  * @author Claude Brisson
  * @since VelocityTools 3.1
  * @version $Id$
@@ -153,7 +155,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 //        Object wrapped = ((WrappingInstance)author).unwrap(MyAuthor.class);
 //        assertNotNull(wrapped);
 //    }
-//
+
 //    public @Test void testBadTransaction() throws Exception
 //    {
 //        DataSource dataSource = initDataSource();
@@ -307,27 +309,27 @@ public class BasicModelToolTests extends BaseBookshelfTests
 //            model.perform("cleanup_books");
 //        }
 //    }
-//
-//    public @Test void testGoodTransaction() throws Exception
-//    {
-//        DataSource dataSource = initDataSource();
-//        Model model = new Model();
-//        model.setDataSource(dataSource);
-//        model.setReverseMode(Model.ReverseMode.COLUMNS);
-//        model.initialize(getResourceReader("test_action.xml"));
-//        Entity book = model.getEntity("book");
-//        assertNotNull(book);
-//        Instance oneBook = book.fetch(1);
-//        assertNotNull(oneBook);
-//        String title = oneBook.getString("title");
-//        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
-//        long count = oneBook.perform("good_transaction");
-//        assertEquals(3, count);
-//        oneBook.refresh();
-//        String newtitle = oneBook.getString("title");
-//        assertEquals(title, newtitle);
-//    }
-//
+
+    public @Test void testGoodTransaction() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Model model = new Model();
+        model.setDataSource(dataSource);
+        model.setReverseMode(Model.ReverseMode.COLUMNS);
+        model.initialize(getResourceReader("test_action.xml"));
+        Entity book = model.getEntity("book");
+        assertNotNull(book);
+        Instance oneBook = book.fetch(1);
+        assertNotNull(oneBook);
+        String title = oneBook.getString("title");
+        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+        long count = oneBook.perform("good_transaction");
+        assertEquals(3, count);
+        oneBook.refresh();
+        String newtitle = oneBook.getString("title");
+        assertEquals(title, newtitle);
+    }
+
 //    public @Test void testInputFilter() throws Exception
 //    {
 //        DataSource dataSource = initDataSource();
@@ -366,36 +368,37 @@ public class BasicModelToolTests extends BaseBookshelfTests
 //        model.initialize();
 //    }
 //
-//    public @Test void testKeysComparison() throws Exception
-//    {
-//        DataSource dataSource = initDataSource();
-//        Properties props = new Properties();
-//        props.put("model.datasource", dataSource);
-//        props.put("model.reverse", "full");
-//        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-//        props.put("model.identifiers.mapping.*", "lowercase");
-//        props.put("model.identifiers.mapping.*.*", "lowercase");
-//
-//        Model model = new Model().configure(props).initialize();
-//
-//        Instance book = model.getEntity("book").fetch(1);
-//        Map<String, Serializable> values = new HashMap<>();
-//        values.put("book_id", "1");
-//        book.putAll(values);
-//        book.update();
-//        values.put("book_id", 1452345);
-//        book.putAll(values);
-//        try
-//        {
-//            book.update();
-//            fail("Update should be forbidden if PK did change");
-//        }
-//        catch (IllegalStateException ise)
-//        {
-//            assertEquals("instance must be persisted", ise.getMessage());
-//        }
-//    }
-//
+
+    public @Test void testKeysComparison() throws Exception
+    {
+        DataSource dataSource = initDataSource();
+        Properties props = new Properties();
+        props.put("model.datasource", dataSource);
+        props.put("model.reverse", "full");
+        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+        props.put("model.identifiers.mapping.*", "lowercase");
+        props.put("model.identifiers.mapping.*.*", "lowercase");
+
+        Model model = new Model().configure(props).initialize();
+
+        Instance book = model.getEntity("book").fetch(1);
+        Map<String, Serializable> values = new HashMap<>();
+        values.put("book_id", "1");
+        book.putAll(values);
+        book.update();
+        values.put("book_id", 1452345);
+        book.putAll(values);
+        try
+        {
+            book.update();
+            fail("Update should be forbidden if PK did change");
+        }
+        catch (IllegalStateException ise)
+        {
+            assertEquals("instance must be persisted", ise.getMessage());
+        }
+    }
+
 //    public @Test void testLastInsertId() throws Exception
 //    {
 //        DataSource dataSource = initDataSource();
@@ -640,150 +643,150 @@ public class BasicModelToolTests extends BaseBookshelfTests
         }
     }
 
-    public @Test void testUpsert() throws Exception
-    {
-        DataSource dataSource = initDataSource();
-        Model model = new Model();
-        model.setDataSource(dataSource);
-        model.setReverseMode(Model.ReverseMode.COLUMNS);
-        model.initialize(getResourceReader("test_action.xml"));
-        Entity book = model.getEntity("book");
-        assertNotNull(book);
-        Instance oneBook = book.fetch(1);
-        assertNotNull(oneBook);
-        String title = oneBook.getString("title");
-        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
-        oneBook.put("title", "foo");
-        oneBook.upsert();
-        assertEquals("foo", book.fetch(1).getString("title"));
-        oneBook = book.newInstance(oneBook);
-        oneBook.put("title", title);
-        oneBook.upsert();
-        assertFalse(oneBook.isDirty());
-        assertEquals(title, book.fetch(1).getString("title"));
-    }
-
-    public @Test void testValueFilters() throws Exception
-    {
-        DataSource dataSource = initDataSource();
-        Properties props = new Properties();
-        props.put("model.datasource", dataSource);
-        props.put("model.reverse", "full");
-        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("model.identifiers.mapping.*", "lowercase");
-        props.put("model.identifiers.mapping.*.*", "lowercase");
-        // allow html in book title
-        props.put("model.filters.read.book.title", "escape_html");
-        // disallow html in names
-        props.put("model.filters.write.*.name", "no_html");
-        props.put("model.filters.read.book.title", "escape_html");
-
-        Model model = new Model().configure(props).initialize();
-
-        Instance book = model.getEntity("book").fetch(1);
-        Instance publisher = book.retrieve("publisher");
-
-        // test no_html
-        publisher.put("name", "<forbidden>");
-        try
-        {
-            publisher.update();
-            fail("expecting SQLException for invalid character");
-        }
-        catch (SQLException sqle) {}
-
-        // test escape_html
-        String prevTitle = book.getString("title");
-        String title = "the common <way> is \"hidden\"";
-        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
-        book.put("title", title);
-        book.update();
-        book.refresh();
-        Serializable digestedTitle = book.get("title");
-        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
-        String disgestedTitle = book.getString("title");
-        assertEquals(escapedTitle, disgestedTitle);
-        book.put("title", prevTitle);
-        book.update();
-        book.refresh();
-        assertEquals("something's very wrong", prevTitle, book.getString("title"));
-    }
-
-    public @Test void testValueFiltersRelaxing() throws Exception
-    {
-        DataSource dataSource = initDataSource();
-        Properties props = new Properties();
-        props.put("model.datasource", dataSource);
-        props.put("model.reverse", "full");
-        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("model.identifiers.mapping.*", "lowercase");
-        props.put("model.identifiers.mapping.*.*", "lowercase");
-
-        // disallow html everywhere
-        props.put("model.filters.write.*.*", "no_html");
-        // allow html in book title
-        props.put("model.filters.write.book.title", "-no_html");
-        props.put("model.filters.read.book.title", "escape_html");
-
-        Model model = new Model().configure(props).initialize();
-
-        Instance book = model.getEntity("book").fetch(1);
-        Instance publisher = book.retrieve("publisher");
-
-        // test no_html
-        publisher.put("name", "<forbidden>");
-        try
-        {
-            publisher.update();
-            fail("expecting SQLException for invalid character");
-        }
-        catch (SQLException sqle) {}
-
-        // test escape_html
-        String prevTitle = book.getString("title");
-        String title = "the common <way> is \"hidden\"";
-        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
-        book.put("title", title);
-        book.update();
-        book.refresh();
-        Serializable digestedTitle = book.get("title");
-        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
-        String disgestedTitle = book.getString("title");
-        assertEquals(escapedTitle, disgestedTitle);
-        book.put("title", prevTitle);
-        book.update();
-        book.refresh();
-        assertEquals("something's very wrong", prevTitle, book.getString("title"));
-    }
-
-    public @Test void testWithoutInputFilter() throws Exception
-    {
-        DataSource dataSource = initDataSource();
-        Properties props = new Properties();
-        props.put("model.datasource", dataSource);
-        props.put("model.reverse", "tables");
-        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
-        props.put("model.identifiers.mapping.*", "lowercase");
-        props.put("model.identifiers.mapping.*.*", "lowercase");
-
-        Model model = new Model().configure(props).initialize();
-        Instance book = model.getEntity("book").fetch(1);
-        Date date = (Date)book.get("published");
-        assertNotNull(date);
-        DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-        assertEquals("2018-05-09", ymd.format(date));
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.set(2008, 8, 8);
-        book.put("published", cal);
-        try
-        {
-            book.update();
-            fail("should throw when hsqldb receives a Calendar");
-        }
-        catch (SQLException sqle)
-        {
-            assertEquals("incompatible data type in conversion", sqle.getMessage());
-        }
-    }
+//    public @Test void testUpsert() throws Exception
+//    {
+//        DataSource dataSource = initDataSource();
+//        Model model = new Model();
+//        model.setDataSource(dataSource);
+//        model.setReverseMode(Model.ReverseMode.COLUMNS);
+//        model.initialize(getResourceReader("test_action.xml"));
+//        Entity book = model.getEntity("book");
+//        assertNotNull(book);
+//        Instance oneBook = book.fetch(1);
+//        assertNotNull(oneBook);
+//        String title = oneBook.getString("title");
+//        assertEquals("The Astonishing Life of Duncan Moonwalker", title);
+//        oneBook.put("title", "foo");
+//        oneBook.upsert();
+//        assertEquals("foo", book.fetch(1).getString("title"));
+//        oneBook = book.newInstance(oneBook);
+//        oneBook.put("title", title);
+//        oneBook.upsert();
+//        assertFalse(oneBook.isDirty());
+//        assertEquals(title, book.fetch(1).getString("title"));
+//    }
+//
+//    public @Test void testValueFilters() throws Exception
+//    {
+//        DataSource dataSource = initDataSource();
+//        Properties props = new Properties();
+//        props.put("model.datasource", dataSource);
+//        props.put("model.reverse", "full");
+//        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+//        props.put("model.identifiers.mapping.*", "lowercase");
+//        props.put("model.identifiers.mapping.*.*", "lowercase");
+//        // allow html in book title
+//        props.put("model.filters.read.book.title", "escape_html");
+//        // disallow html in names
+//        props.put("model.filters.write.*.name", "no_html");
+//        props.put("model.filters.read.book.title", "escape_html");
+//
+//        Model model = new Model().configure(props).initialize();
+//
+//        Instance book = model.getEntity("book").fetch(1);
+//        Instance publisher = book.retrieve("publisher");
+//
+//        // test no_html
+//        publisher.put("name", "<forbidden>");
+//        try
+//        {
+//            publisher.update();
+//            fail("expecting SQLException for invalid character");
+//        }
+//        catch (SQLException sqle) {}
+//
+//        // test escape_html
+//        String prevTitle = book.getString("title");
+//        String title = "the common <way> is \"hidden\"";
+//        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
+//        book.put("title", title);
+//        book.update();
+//        book.refresh();
+//        Serializable digestedTitle = book.get("title");
+//        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
+//        String disgestedTitle = book.getString("title");
+//        assertEquals(escapedTitle, disgestedTitle);
+//        book.put("title", prevTitle);
+//        book.update();
+//        book.refresh();
+//        assertEquals("something's very wrong", prevTitle, book.getString("title"));
+//    }
+//
+//    public @Test void testValueFiltersRelaxing() throws Exception
+//    {
+//        DataSource dataSource = initDataSource();
+//        Properties props = new Properties();
+//        props.put("model.datasource", dataSource);
+//        props.put("model.reverse", "full");
+//        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+//        props.put("model.identifiers.mapping.*", "lowercase");
+//        props.put("model.identifiers.mapping.*.*", "lowercase");
+//
+//        // disallow html everywhere
+//        props.put("model.filters.write.*.*", "no_html");
+//        // allow html in book title
+//        props.put("model.filters.write.book.title", "-no_html");
+//        props.put("model.filters.read.book.title", "escape_html");
+//
+//        Model model = new Model().configure(props).initialize();
+//
+//        Instance book = model.getEntity("book").fetch(1);
+//        Instance publisher = book.retrieve("publisher");
+//
+//        // test no_html
+//        publisher.put("name", "<forbidden>");
+//        try
+//        {
+//            publisher.update();
+//            fail("expecting SQLException for invalid character");
+//        }
+//        catch (SQLException sqle) {}
+//
+//        // test escape_html
+//        String prevTitle = book.getString("title");
+//        String title = "the common <way> is \"hidden\"";
+//        String escapedTitle = StringEscapeUtils.escapeHtml4(title);
+//        book.put("title", title);
+//        book.update();
+//        book.refresh();
+//        Serializable digestedTitle = book.get("title");
+//        assertEquals("did not find an HtmlEscaped object", ValueFilters.HtmlEscaped.class, digestedTitle.getClass());
+//        String disgestedTitle = book.getString("title");
+//        assertEquals(escapedTitle, disgestedTitle);
+//        book.put("title", prevTitle);
+//        book.update();
+//        book.refresh();
+//        assertEquals("something's very wrong", prevTitle, book.getString("title"));
+//    }
+//
+//    public @Test void testWithoutInputFilter() throws Exception
+//    {
+//        DataSource dataSource = initDataSource();
+//        Properties props = new Properties();
+//        props.put("model.datasource", dataSource);
+//        props.put("model.reverse", "tables");
+//        props.put("model.identifiers.inflector", "org.atteo.evo.inflector.English");
+//        props.put("model.identifiers.mapping.*", "lowercase");
+//        props.put("model.identifiers.mapping.*.*", "lowercase");
+//
+//        Model model = new Model().configure(props).initialize();
+//        Instance book = model.getEntity("book").fetch(1);
+//        Date date = (Date)book.get("published");
+//        assertNotNull(date);
+//        DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+//        assertEquals("2018-05-09", ymd.format(date));
+//        Calendar cal = GregorianCalendar.getInstance();
+//        cal.set(2008, 8, 8);
+//        book.put("published", cal);
+//        try
+//        {
+//            book.update();
+//            fail("should throw when hsqldb receives a Calendar");
+//        }
+//        catch (SQLException sqle)
+//        {
+//            assertEquals("incompatible data type in conversion", sqle.getMessage());
+//        }
+//    }
 
 }

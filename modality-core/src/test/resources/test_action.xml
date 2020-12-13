@@ -31,12 +31,14 @@ under the License.
             update book set title = 'something else' where book_id = <book_id/>;
             update book set title = (select title from buffer) where book_id = <book_id/>;
         </action>
+
         <action name="bad_transaction">
-            declare local temporary table buffer (title varchar(200)) on commit preserve rows;
-            insert into buffer select title from book where book_id = <book_id/>;
+            declare local temporary table buffer2 (title varchar(200)) on commit preserve rows;
+            insert into buffer2 select title from book where book_id = <book_id/>;
             update book set title = 'something else' where book_id = <book_id/>;
-            update book set title = (select title from buffer) where book_id = <book_id/> and some illegal sql;
+            update book set title = (select title from buffer2) where book_id = <book_id/> and some illegal sql;
         </action>
+
     </book>
     <action name="new_book">
         insert into book (title, publisher_id) values (<title/>, 1);

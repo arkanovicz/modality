@@ -20,6 +20,8 @@ package com.republicate.modality.util;
  */
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +34,8 @@ import java.util.Set;
 
 public class TypeUtils
 {
+    protected static Logger logger = LoggerFactory.getLogger("sql-types");
+
     public static String toString(Object value)
     {
         return value == null ? null : value.toString();
@@ -53,10 +57,21 @@ public class TypeUtils
                 ? 't'
                 : 'f';
         }
-        if (value instanceof String && ((String) value).length() == 1)
+        if (value instanceof String)
         {
-            return ((String)value).charAt(0);
+            switch (((String) value).length())
+            {
+                case 0:
+                    logger.warn("empty string cannot be converted to char, returning null");
+                    return null;
+                case 1:
+                    return ((String)value).charAt(0);
+                default:
+                    logger.warn("string '{}' truncated when converted to char", value);
+                    return ((String)value).charAt(0);
+            }
         }
+        logger.warn("class {} cannot be converted to char, returning null", value.getClass().getName());
         return null;
     }
 
@@ -87,6 +102,7 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}' cannot be converted to boolean, returning false", value);
                 return false;
             }
         }
@@ -94,6 +110,7 @@ public class TypeUtils
         {
             return ((Number)value).longValue() != 0l;
         }
+        logger.warn("class {} cannot be converted to boolean, returning false", value.getClass().getName());
         return false;
     }
 
@@ -115,8 +132,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to byte, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to byte, returning null", value.getClass().getName());
         return null;
     }
 
@@ -139,8 +159,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to short, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to short, returning null", value.getClass().getName());
         return null;
     }
 
@@ -162,8 +185,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to integer, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to integer, returning null", value.getClass().getName());
         return null;
     }
 
@@ -185,8 +211,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to long, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to long, returning null", value.getClass().getName());
         return null;
     }
 
@@ -208,8 +237,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to float, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to float, returning null", value.getClass().getName());
         return null;
     }
 
@@ -231,8 +263,11 @@ public class TypeUtils
             }
             catch (NumberFormatException nfe)
             {
+                logger.warn("string '{}'  cannot be converted to double, returning null", value);
+                return null;
             }
         }
+        logger.warn("class {} cannot be converted to double, returning null", value.getClass().getName());
         return null;
     }
 
@@ -246,6 +281,7 @@ public class TypeUtils
         {
             return ((Calendar)value).getTime();
         }
+        logger.warn("class {} cannot be converted to date, returning null", value.getClass().getName());
         return null;
     }
 
@@ -262,6 +298,7 @@ public class TypeUtils
             calendar.setTime((Date)value);
             return calendar;
         }
+        logger.warn("class {} cannot be converted to calendar, returning null", value.getClass().getName());
         return null;
     }
 

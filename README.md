@@ -4,6 +4,16 @@
 
 **Modality** is a lightweight but hightly configurable Java ORM, with a companion set of tools 
 
+<div style="float:right;font-style:italic;">
+  <ul style="list-style-type: none;">
+    <li><a href="https://arkanovicz.github.io/modality/docs/index.html">index</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-core.html">modality-core</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-webapp.html">modality-webapp</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/velocity-tools-model.html">velocity-tools-model</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/apidocs/">javadocs</a></li>
+  </ul>
+</diV>
+
 # Modality ORM library
 
 Encompases a data access layer, a hierarchical and reentrant model definition gathering SQL queries, database values, names custom filters and much more. See [modality-core's REAME](modality-core).

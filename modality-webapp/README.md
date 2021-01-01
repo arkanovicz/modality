@@ -14,6 +14,8 @@ If you are familiar with the MVC architecture,
 
 ## Authentication Filters
 
+*Note: All authentication related classes have been moved to the modality-webapp-auth package.*
+
 See the [class diagram](src/site/dependencies.svg), and the [call graph](src/site/auth_call_graph.svg).
 
 ### Configuration

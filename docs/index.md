@@ -1,9 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/arkanovicz/modality/master/src/site/modality.png" title="Modality">
-</p>
-
-**Modality** is a lightweight but hightly configurable Java ORM, with a companion set of tools 
-
 <div style="float:right;font-style:italic;">
   <ul style="list-style-type: none;">
     <li><a href="https://arkanovicz.github.io/modality/docs/index.html">index</a></li>
@@ -12,7 +6,13 @@
     <li><a href="https://arkanovicz.github.io/modality/docs/velocity-tools-model.html">velocity-tools-model</a></li>
     <li><a href="https://arkanovicz.github.io/modality/docs/apidocs/">javadocs</a></li>
   </ul>
-</diV>
+</div>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arkanovicz/modality/master/src/site/modality.png" title="Modality">
+</p>
+
+**Modality** is a lightweight but hightly configurable Java ORM, with a companion set of tools 
 
 # Modality ORM library
 

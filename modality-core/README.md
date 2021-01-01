@@ -1,5 +1,15 @@
 # Modality Core
 
+<div style="float:right;font-style:italic;">
+  <ul style="list-style-type: none;">
+    <li><a href="https://arkanovicz.github.io/modality/docs/index.html">docs home</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-core.html">modality-core doc</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-webapp.html">modality-webapp doc</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/velocity-tools-model.html">velocity-tools-model doc</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/apidocs/">javadocs</a></li>
+  </ul>
+</div>
+
 Lightweight ORM for Java, providing:
 
 - An automatic reverse enginering of database structure

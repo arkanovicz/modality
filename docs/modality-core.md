@@ -1,3 +1,13 @@
+<div style="float:right;font-style:italic;">
+  <ul style="list-style-type: none;">
+    <li><a href="https://arkanovicz.github.io/modality/docs/index.html">index</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-core.html">modality-core</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/modality-webapp.html">modality-webapp</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/velocity-tools-model.html">velocity-tools-model</a></li>
+    <li><a href="https://arkanovicz.github.io/modality/docs/apidocs/">javadocs</a></li>
+  </ul>
+</div>
+
 # Modality Core
 
 Lightweight ORM for Java, providing:

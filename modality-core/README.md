@@ -2,7 +2,7 @@
 
 Lightweight ORM for Java, providing:
 
-- An automatic reverse enginering of database structure
+- An automatic reverse enginering of the database structure
 - An extensible XML model definition schema
 - Custom filtering of identifiers an values
 
@@ -154,6 +154,8 @@ this file is typically located in `/WEB-INF/`.
 The model definition itself (`model.xml`) defines the accessible model objects and gather the SQL code - it is distinct from the above configuration (`model.properties`),
 which defines the model generic behavior. This definition contains all entities (which can *or not* correspond to a database table), attributes (sql queries returning a scalar, a row or rowset)
 and actions (single or multi modification statements, always kept within a single transaction).
+
+Small catch: in `model.xml`, you will have to escape the `<` character into `&lt;`.
 
 Instances classes can use the generic `Instance` class, or be any Java POJO with standard getters and setters.
 

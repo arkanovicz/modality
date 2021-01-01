@@ -1,0 +1,16 @@
+com.republicate.modality
+com.republicate.modality.api.client
+com.republicate.modality.config
+com.republicate.modality.filter
+com.republicate.modality.impl
+com.republicate.modality.sql
+com.republicate.modality.tools.model
+com.republicate.modality.tools.velosurf
+com.republicate.modality.util
+com.republicate.modality.velosurf
+com.republicate.modality.webapp
+com.republicate.modality.webapp.access
+com.republicate.modality.webapp.auth
+com.republicate.modality.webapp.auth.helpers
+com.republicate.modality.webapp.example
+com.republicate.modality.webapp.util

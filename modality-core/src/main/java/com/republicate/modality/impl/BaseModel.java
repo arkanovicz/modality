@@ -351,7 +351,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         }
         catch (Exception e)
         {
-            throw initializationError = new ConfigurationException("could not initialize model", e);
+            throw initializationError = new ConfigurationException("could not initialize model " + getModelId(), e);
         }
         return getModel();
     }

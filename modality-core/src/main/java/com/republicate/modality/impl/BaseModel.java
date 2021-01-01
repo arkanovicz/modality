@@ -75,6 +75,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -491,16 +492,25 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public Model setDataSource(String dataSourceName) throws Exception
     {
-        Context ctx = InitialContext.doLookup("java:comp/env");
-        Object resource = ctx.lookup(dataSourceName);
-        if (resource == null)
+        Object resource;
+        Context ctx;
+        try
         {
-            throw new RuntimeException("Data source not found: " + dataSourceName);
+            ctx = InitialContext.doLookup("java:comp/env");
+            resource = ctx.lookup(dataSourceName);
+            if (resource == null)
+            {
+                throw new RuntimeException("Data source not found: " + dataSourceName);
+            }
+        }
+        catch (NameNotFoundException nnfe)
+        {
+            throw new RuntimeException("Data source not found: " + dataSourceName, nnfe);
         }
         DataSource dataSource = null;
         if (resource instanceof DataSource)
         {
-            dataSource = (DataSource) ctx.lookup(dataSourceName);
+            dataSource = (DataSource)resource;
         }
         else if (resource instanceof ConnectionPoolDataSource)
         {

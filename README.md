@@ -20,7 +20,7 @@ Usage: include the needed module(s) in your `pom.xml`'s dependencies section as 
 
 While the ORM is usable on its own or within other Java/Kotlin web frameworks, the project comes with a companion set of tools which stick to the J2EE and JDBC standards to provide a lightweight, loosely coupled and highly cusomizable [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) [pull](https://en.wikipedia.org/wiki/Web_framework#Push-based_vs._pull-based) architecture based on the Java J2EE servlets API.
 
-Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design) approach rather than top-down. This makes Modality an *anti-framework*: its various components do stick to the underlying norms, have a minimal interdependance and just do the specific task they are intended to, leveraging the learning curve and added complexity, and nevertheless those components assembly covers all the basic needs of a fully functional MVC webapp.
+Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design) approach rather than top-down. This makes Modality an *anti-framework*: its various components do stick to the underlying norms, have a minimal interdependance and just do the specific task they are intended to, leveraging the learning curve and added complexity, and nevertheless those components assembly cover all the basic needs of a fully functional MVC webapp.
 
 + the Model layer is addressed with a generic ORM Java API witouth any code generation and with minimal optional caching, providing a complete database structure reverse enginering feature.
 + the View layer is Apache Velocity, but other Java View layer technologies can easily be used instead.

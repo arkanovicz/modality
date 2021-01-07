@@ -414,15 +414,19 @@ public abstract class BaseEntity extends AttributeHolder
                 value = column.write(value);
                 if (getModel().getDriverInfos().isStrictColumnTypes())
                 {
-                    Class clazz = SqlUtils.getSqlTypeClass(column.type);
-                    if (clazz == null)
+                    Class formalClass = SqlUtils.getSqlTypeClass(column.type);
+                    if (formalClass == null)
                     {
                         throw new SQLException("unhandled SQL type: " + column.type);
                     }
-                    Converter converter = getModel().getConversionHandler().getNeededConverter(clazz, value.getClass());
-                    if (converter != null)
+                    Class actualClass = value.getClass();
+                    if (formalClass != actualClass)
                     {
-                        value = converter.convert(value);
+                        Converter converter = getModel().getConversionHandler().getNeededConverter(formalClass, value.getClass());
+                        if (converter != null)
+                        {
+                            value = converter.convert(value);
+                        }
                     }
                 }
             }

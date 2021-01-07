@@ -325,8 +325,9 @@ public abstract class BaseEntity extends AttributeHolder
             {
                 attribute.addQueryPart(" AND ");
             }
-            attribute.addQueryPart(quoteIdentifier(sqlPrimaryKey.get(i)) + " = ");
-            attribute.addParameter(getColumn(i).name);
+            String sqlPKColName = sqlPrimaryKey.get(i);
+            attribute.addQueryPart(quoteIdentifier(sqlPKColName) + " = ");
+            attribute.addParameter(translateColumnName(sqlPKColName));
         }
     }
 

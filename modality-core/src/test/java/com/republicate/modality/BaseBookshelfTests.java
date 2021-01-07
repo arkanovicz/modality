@@ -21,6 +21,7 @@ package com.republicate.modality;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -35,7 +36,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -77,7 +77,7 @@ public class BaseBookshelfTests implements Colorizer
 {
     protected static Logger logger = LoggerFactory.getLogger("tests");
 
-    protected static DataSource initDataSource() throws Exception
+    protected static DataSource getDataSource() throws Exception
     {
         BasicDataSource ds = new BasicDataSource();
         ds.setUrl("jdbc:hsqldb:.;hsqldb.sqllog=3");
@@ -86,18 +86,12 @@ public class BaseBookshelfTests implements Colorizer
         return ds;
     }
 
-    private static boolean dataSourcePopulated = false;
-
-    protected static synchronized void populateDataSource() throws Exception
+    protected static synchronized void populateDataSource(String sqlFile) throws Exception
     {
-        if (dataSourcePopulated)
-        {
-            return;
-        }
-        DataSource ds = initDataSource();
+        DataSource ds = getDataSource();
         Connection connection = ds.getConnection();
         Statement statement = connection.createStatement();
-        String sql = IOUtils.toString(getResourceReader("bookshelf.sql"));
+        String sql = IOUtils.toString(getResourceReader(sqlFile));
         for (String command : sql.split(";"))
         {
             if (command.trim().length() == 0) continue;
@@ -107,8 +101,20 @@ public class BaseBookshelfTests implements Colorizer
         }
         statement.close();
         connection.close();
-        dataSourcePopulated = true;
     }
+
+    @AfterClass
+    public static void clearDataSource() throws Exception
+    {
+        DataSource ds = getDataSource();
+        Connection connection = ds.getConnection();
+        Statement statement = connection.createStatement();
+        // Under hsqldb, next statement has for effect to just *empty* the default schema.
+        statement.executeUpdate("DROP SCHEMA PUBLIC CASCADE;");
+        statement.close();
+        connection.close();
+    }
+
 
     protected static URL getResource(String name)
     {
@@ -134,7 +140,7 @@ public class BaseBookshelfTests implements Colorizer
                 switch (name)
                 {
                     case "java:comp/env": return this;
-                    case "jdbc/test-data-source": return initDataSource();
+                    case "jdbc/test-data-source": return getDataSource();
                     default: return null;
                 }
             }

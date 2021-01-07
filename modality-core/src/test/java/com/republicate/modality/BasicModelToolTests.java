@@ -92,12 +92,12 @@ public class BasicModelToolTests extends BaseBookshelfTests
     @BeforeClass
     public static void populateDataSource() throws Exception
     {
-        BaseBookshelfTests.populateDataSource();
+        BaseBookshelfTests.populateDataSource("bookshelf.sql");
     }
 
     public @Test void testAction() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -158,7 +158,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testBadTransaction() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -187,7 +187,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
         Map identMapping = new HashMap();
         identMapping.put("*", "lowercase");
         identMapping.put("*.*", "lowercase");
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -205,7 +205,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testCollision() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties modelProps = new Properties();
         modelProps.put("model.datasource", dataSource);
         modelProps.put("model.reverse", "extended");
@@ -227,7 +227,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testCount() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -240,7 +240,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testCustomEntity() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.FULL);
@@ -276,7 +276,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void testGeneratedColumns() throws Exception
     {
         Model model = new Model();
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
         model.initialize(getResourceReader("test_action.xml"));
@@ -293,7 +293,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     public @Test void testGeneratedColumns2() throws Exception
     {
         Model model = new Model();
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
         model.initialize(getResourceReader("test_action.xml"));
@@ -312,7 +312,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testGoodTransaction() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -332,7 +332,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testInputFilter() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties props = new Properties();
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "tables");
@@ -371,7 +371,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testKeysComparison() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties props = new Properties();
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "full");
@@ -401,7 +401,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testLastInsertId() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.FULL);
@@ -420,7 +420,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testMixedParams() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.FULL);
@@ -441,7 +441,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
     {
         // test model
         Model model = new Model();
-        model.setDataSource(initDataSource());
+        model.setDataSource(getDataSource());
         model.initialize(getResource("test_init_model.xml"));
         assertEquals(Model.WriteAccess.JAVA, model.getWriteAccess());
 
@@ -509,7 +509,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testRealData() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.initialize(getResourceReader("test_init_model.xml"));
@@ -520,7 +520,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testReverseColumns() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -538,7 +538,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testReverseJoins() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.JOINS);
@@ -571,7 +571,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testSuccessfulManualTransaction() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -602,7 +602,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testUnsuccessfulManualTransaction() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -645,7 +645,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testUpsert() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Model model = new Model();
         model.setDataSource(dataSource);
         model.setReverseMode(Model.ReverseMode.COLUMNS);
@@ -668,7 +668,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testValueFilters() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties props = new Properties();
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "full");
@@ -714,7 +714,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testValueFiltersRelaxing() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties props = new Properties();
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "full");
@@ -761,7 +761,7 @@ public class BasicModelToolTests extends BaseBookshelfTests
 
     public @Test void testWithoutInputFilter() throws Exception
     {
-        DataSource dataSource = initDataSource();
+        DataSource dataSource = getDataSource();
         Properties props = new Properties();
         props.put("model.datasource", dataSource);
         props.put("model.reverse", "tables");

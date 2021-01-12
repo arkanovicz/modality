@@ -115,12 +115,8 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
         expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.properties")).andAnswer(eval(null));
-        // expect(filterConfig.getInitParameter(ServletUtils.SHARED_CONFIG_PARAM)).andAnswer(eval("true"));
-        // expect(servletContext.getAttribute(ServletUtils.VELOCITY_VIEW_KEY)).andAnswer(() -> velocityView);
-        // Capture<Model> modelCapture = new Capture<>();
-        // servletContext.setAttribute(eq("_MODEL_model"), capture(modelCapture));
-        // expect(servletContext.getAttribute("_MODEL_model")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
+        expect(servletContext.getResourcePaths("/WEB-INF/migrations")).andAnswer(eval(null));
     }
 
     protected Capture<Instance> recordSuccessfullLogin() throws Exception

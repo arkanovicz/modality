@@ -202,7 +202,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         try
         {
             config.setPrefix("model.");
-            Optional.ofNullable(config.getString(MODEL_LOGGER_NAME)).ifPresent(this::setLoggerName);
+            Optional.ofNullable(config.getString(MODEL_LOGGER_NAME,!DEFAULT_MODEL_ID.equals(getModelId()) ? getModelId() : null))
+                .ifPresent(this::setLoggerName);
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -273,7 +274,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 }
             }
 
-            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, "sql/" + getModelId());
+            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, DEFAULT_MIGRATION_PATH);
             if (!"false".equals(versionningScripts))
             {
                     setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
@@ -918,7 +919,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     }
     protected void upgradeIfNeeded()
     {
-        if (versionningScripts == null || versionningScripts.isEmpty()) return;
+        if (versionningScripts == null || versionningScripts.isEmpty())
+        {
+            logger.debug("Not checking database version (no migration script provided)");
+            return;
+        }
         SortedSet<String> applied = null;
         // first try
         try

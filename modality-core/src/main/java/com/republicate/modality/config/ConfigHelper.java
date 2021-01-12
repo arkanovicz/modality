@@ -25,6 +25,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +33,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -159,29 +162,14 @@ public class ConfigHelper
         }
     }
 
-    public URL findURL(String path)
-    {
-        return findURL(path, null, true);
-    }
+    private Boolean webContext = null;
+    private Method servletUtils_getURL = null;
+    private Method servletContext_getResourcePaths = null;
 
-    public URL findURL(String path, boolean mandatory)
+    private boolean isWebContext(Object servletContext)
     {
-        return findURL(path, null, mandatory);
-    }
-
-    public URL findURL(String path, Object servletContext)
-    {
-        return findURL(path, servletContext, true);
-    }
-
-    public /*static*/ URL findURL(String path, Object servletContext, boolean mandatory)
-    {
-        URL url = null;
-        boolean webContext = false;
-
-        // check if we're in a view tools context:
-        // 1) we must find the  ServletContext and ServletUtils classes
-        // 2) we must have a servletContext
+        if (webContext != null) return webContext.booleanValue();
+        boolean isWebContext = false;
         Class servletContextClass = null;
         Class servletUtilsClass = null;
         try
@@ -200,38 +188,75 @@ public class ConfigHelper
             }
             if (servletContext != null && servletContextClass.isAssignableFrom(servletContext.getClass()))
             {
-                webContext = true;
                 // remember it
                 config.setProperty("servletContext", servletContext);
-                Method getURL = null;
                 try
                 {
-                    getURL = servletUtilsClass.getMethod("getURL", String.class, servletContextClass);
-
-                    // only search in WEB-INF/
-                    if (!path.startsWith("/WEB-INF/"))
-                    {
-                        path = "/WEB-INF/" + path;
-                    }
-                    url = (URL) getURL.invoke(null, new Object[] { path, servletContext });
+                    servletUtils_getURL = servletUtilsClass.getMethod("getURL", String.class, servletContextClass);
+                    servletContext_getResourcePaths = servletContextClass.getMethod("getResourcePaths", String.class);
+                    isWebContext = true;
                 }
-                catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
+                catch (NoSuchMethodException e)
                 {
-                    if (mandatory)
-                    {
-                        throw new ConfigurationException("could not get URL for path '" + path + "'", e);
-                    }
                 }
             }
         }
-        if (!webContext)
+        webContext = Boolean.valueOf(isWebContext);
+        return isWebContext;
+    }
+
+    public URL findURL(String path)
+    {
+        return findURL(path, null, true);
+    }
+
+    public URL findURL(String path, boolean mandatory)
+    {
+        return findURL(path, null, mandatory);
+    }
+
+    public URL findURL(String path, Object servletContext)
+    {
+        return findURL(path, servletContext, true);
+    }
+
+    public /*static*/ URL findURL(String path, Object servletContext, boolean mandatory)
+    {
+        URL url = null;
+        boolean webContext = isWebContext(servletContext);
+        if (webContext)
+        {
+            try
+            {
+                // we want an absolute path
+                String absolutePath = path;
+                if (!absolutePath.startsWith("/")) absolutePath = "/" + absolutePath;
+                // only search in WEB-INF/
+                if (!absolutePath.startsWith("/WEB-INF/"))
+                {
+                    absolutePath = "/WEB-INF" + absolutePath;
+                }
+                if (servletContext == null)
+                {
+                    servletContext = getInternal("servletContext");
+                }
+                url = (URL) servletUtils_getURL.invoke(null, new Object[]{absolutePath, servletContext});
+            }
+            catch (IllegalAccessException | InvocationTargetException e)
+            {
+                if (mandatory)
+                {
+                    throw new ConfigurationException("could not get URL for path '" + path + "'", e);
+                }
+            }
+        }
+        if (url == null)
         {
             // check class path
             url = ClassUtils.getResource(path, ConfigHelper.class);
-
-            // check filesystem
-            if (url == null)
+            if (url == null && !webContext)
             {
+                // check filesystem
                 try
                 {
                     File defFile = new File(path);
@@ -266,12 +291,82 @@ public class ConfigHelper
 
     public Set<URL> findResources(String path, String pattern, Object servletContext)
     {
-        Reflections reflections = new Reflections(new ResourcesScanner());
-        Set<String> resources = reflections.getResources(Pattern.compile(pattern));
-        return resources.stream()
-            .map(resource -> findURL(path, servletContext, false))
-            .filter(url -> url != null)
-            .collect(Collectors.toCollection(TreeSet::new));
+        Set<URL> ret = null;
+        Pattern patternRx = Pattern.compile(pattern);
+        boolean webContext = isWebContext(servletContext);
+        if (webContext)
+        {
+            if (servletContext == null) servletContext = getInternal("servletContext");
+            if (servletContext != null)
+            {
+                // we want an absolute path
+                String absolutePath = path;
+                if (!absolutePath.startsWith("/")) absolutePath = "/" + absolutePath;
+                // only search in WEB-INF/
+                if (!absolutePath.startsWith("/WEB-INF/"))
+                {
+                    absolutePath = "/WEB-INF" + absolutePath;
+                }
+                try
+                {
+                    Set<String> resources = (Set<String>)servletContext_getResourcePaths.invoke(servletContext, absolutePath);
+                    if (resources != null)
+                    {
+                        final Object finalServletContext = servletContext;
+                        ret = resources.stream()
+                            .map(resource -> findURL(path, finalServletContext, false))
+                            .filter(url -> url != null)
+                            .collect(Collectors.toCollection(TreeSet::new));
+                    }
+                }
+                catch (IllegalAccessException | InvocationTargetException e)
+                {
+                }
+            }
+        }
+        if (ret == null)
+        {
+            // check classpath
+            Reflections reflections = new Reflections(new ResourcesScanner());
+            Set<String> resources = reflections.getResources(patternRx);
+            ret = resources.stream()
+                .map(resource -> findURL(path, null, false))
+                .filter(url -> url != null)
+                .collect(Collectors.toCollection(TreeSet::new));
+            if ((ret == null || ret.isEmpty()) && !webContext)
+            {
+                // check filesystem
+                File defFile = new File(path);
+                if (directoryExists(defFile))
+                {
+                    File[] files = defFile.listFiles(new FilenameFilter()
+                    {
+                        @Override
+                        public boolean accept(File dir, String name)
+                        {
+                            return patternRx.matcher(name).matches();
+                        }
+                    });
+                    if (files != null)
+                    {
+                        ret = Arrays.stream(files)
+                            .map(file -> {
+                                try
+                                {
+                                    return file.toPath().toUri().toURL();
+                                }
+                                catch (MalformedURLException mfue)
+                                {
+                                    throw new ConfigurationException("could not get URL for path '" + file.getAbsolutePath() + "'", mfue);
+                                }
+                            })
+                            .collect(Collectors.toCollection(TreeSet::new));
+                    }
+                }
+
+            }
+        }
+        return ret;
     }
 
     protected static boolean fileExists(final File file)
@@ -285,16 +380,39 @@ public class ConfigHelper
                     @Override
                     public Boolean run()
                     {
-                        return file.exists();
+                        return file.exists() && file.canRead();
                     }
                 });
         }
         else
         {
-            ret = file.exists();
+            ret = file.exists() && file.canRead();
         }
         return ret;
     }
+
+    protected static boolean directoryExists(final File file)
+    {
+        boolean ret;
+        if (System.getSecurityManager() != null)
+        {
+            ret = AccessController.doPrivileged(
+                new PrivilegedAction<Boolean>()
+                {
+                    @Override
+                    public Boolean run()
+                    {
+                        return file.exists() && file.isDirectory() && file.canRead();
+                    }
+                });
+        }
+        else
+        {
+            ret = file.exists() && file.isDirectory() && file.canRead();
+        }
+        return ret;
+    }
+
 
     public void setPrefix(String prefix)
     {

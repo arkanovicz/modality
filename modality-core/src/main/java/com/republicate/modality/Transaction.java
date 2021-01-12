@@ -187,7 +187,7 @@ public class Transaction extends Action
     }
 
     @Override
-    protected synchronized void setQuery(String qry)
+    public synchronized void setQuery(String qry)
     {
         super.setQuery(qry);
         statements = null; // triggers recalculation

@@ -21,6 +21,8 @@ package com.republicate.modality.config;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.util.ExtProperties;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConfigHelper
@@ -246,6 +251,27 @@ public class ConfigHelper
             }
         }
         return url;
+    }
+
+    /**
+     * Find resources on the file system or in the classpath
+     * @param path package name, absolute path or relative path
+     * @param pattern filename pattern
+     * @return set of resources
+     */
+    public Set<URL> findResources(String path, String pattern)
+    {
+        return findResources(path, pattern, null);
+    }
+
+    public Set<URL> findResources(String path, String pattern, Object servletContext)
+    {
+        Reflections reflections = new Reflections(new ResourcesScanner());
+        Set<String> resources = reflections.getResources(Pattern.compile(pattern));
+        return resources.stream()
+            .map(resource -> findURL(path, servletContext, false))
+            .filter(url -> url != null)
+            .collect(Collectors.toCollection(TreeSet::new));
     }
 
     protected static boolean fileExists(final File file)

@@ -72,4 +72,10 @@ public interface Constants
     String MODEL_NAMESPACE_URI = "https://republicate.com/index.html";
 
     String MODEL_CONNECTIONS_CHECK_INTERVAL = "connections_check_interval";
+
+    String MODEL_VERSIONNING_SCRIPTS = "versionning_scripts";
+
+    String DATABASE_VERSION = "database_version";
+
+    String CREATE_DATABASE_VERSION = "create_database_version";
 }

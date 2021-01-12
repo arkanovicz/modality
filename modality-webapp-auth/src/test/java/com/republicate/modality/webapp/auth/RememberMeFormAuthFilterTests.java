@@ -81,6 +81,7 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         recordFilterRequireInit();
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
+        expect(servletContext.getResourcePaths("/WEB-INF/migrations")).andAnswer(eval(null));
         Capture<Model> model = new Capture<>();
         servletContext.setAttribute(eq("_MODEL_model"), capture(model));
         expect(servletContext.getAttribute("_MODEL_model")).andAnswer(evalCapture(model));
@@ -152,6 +153,7 @@ public class RememberMeFormAuthFilterTests extends BaseFormAuthFilterTests
         recordFilterRequireInit();
 
         expect(servletContext.getResource("/WEB-INF/user_cred_model.xml")).andAnswer(eval(getResource("user_cred_cookie_model.xml")));
+        expect(servletContext.getResourcePaths("/WEB-INF/migrations")).andAnswer(eval(null));
         Capture<Model> model = new Capture<>();
         servletContext.setAttribute(eq("_MODEL_model"), capture(model));
         expect(servletContext.getAttribute("_MODEL_model")).andAnswer(evalCapture(model));

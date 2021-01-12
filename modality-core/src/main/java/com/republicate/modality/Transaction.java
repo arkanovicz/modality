@@ -159,6 +159,7 @@ public class Transaction extends Action
     {
         if (statements == null)
         {
+            // if statements are null at this point, this may be a mergeable query
             if (originalQuery == null) throw new SQLException("unhandled case");
             return splitStatements();
         }
@@ -173,7 +174,7 @@ public class Transaction extends Action
     }
 
     @Override
-    protected void initialize()
+    public void initialize()
     {
         super.initialize();
         try
@@ -187,7 +188,7 @@ public class Transaction extends Action
     }
 
     @Override
-    protected synchronized void setQuery(String qry)
+    public synchronized void setQuery(String qry)
     {
         super.setQuery(qry);
         statements = null; // triggers recalculation

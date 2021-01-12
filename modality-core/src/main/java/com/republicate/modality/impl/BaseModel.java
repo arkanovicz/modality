@@ -19,11 +19,14 @@ package com.republicate.modality.impl;
  * under the License.
  */
 
+import com.republicate.modality.Action;
 import com.republicate.modality.Attribute;
 import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.ModelRepository;
+import com.republicate.modality.RowsetAttribute;
+import com.republicate.modality.Transaction;
 import com.republicate.modality.WrappingInstance;
 import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigHelper;
@@ -42,6 +45,7 @@ import com.republicate.modality.util.ConversionHandler;
 import com.republicate.modality.util.ConversionHandlerImpl;
 import com.republicate.modality.util.Cryptograph;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.velocity.tools.ClassUtils;
@@ -59,12 +63,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,7 +78,9 @@ import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -194,7 +202,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         try
         {
             config.setPrefix("model.");
-            Optional.ofNullable(config.getString(MODEL_LOGGER_NAME)).ifPresent(this::setLoggerName);
+            Optional.ofNullable(config.getString(MODEL_LOGGER_NAME,!DEFAULT_MODEL_ID.equals(getModelId()) ? getModelId() : null))
+                .ifPresent(this::setLoggerName);
             setWriteAccess(config.getEnum(MODEL_WRITE_ACCESS, getWriteAccess()));
             setReverseMode(config.getEnum(MODEL_REVERSE_MODE, getReverseMode()));
             // TODO - Velocity-aware model should be a subclass
@@ -264,6 +273,13 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                     }
                 }
             }
+
+            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
+            if (!"false".equals(versionningScripts))
+            {
+                setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
+            }
+
             return getModel();
         }
         catch (RuntimeException re)
@@ -344,6 +360,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             initializeAttributes(); // root attributes initialization
             registerModel();
             initialized = true;
+            upgradeIfNeeded();
         }
         catch (ConfigurationException ce)
         {
@@ -592,6 +609,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         ensureConfigured();
         this.definition = definition;
         return getModel();
+    }
+
+    public void setVersionningScripts(Set<URL> versionningScripts)
+    {
+        this.versionningScripts = new TreeSet(ConfigHelper.urlComparator);
+        this.versionningScripts.addAll(versionningScripts);
     }
 
     public Credentials getCredentials()
@@ -861,6 +884,118 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 connection.leaveBusyState();
             }
         }
+    }
+
+    @Override
+    protected void initializeAttributes()
+    {
+        // add database_version and create_database_version if not present
+        // note: specifc vendors should be taken in to account in create table syntax
+        Attribute databaseVersion = getAttribute(DATABASE_VERSION);
+        if (databaseVersion == null)
+        {
+            databaseVersion = new RowsetAttribute(DATABASE_VERSION, this);
+            databaseVersion.setQuery("SELECT script FROM database_version ORDER BY script;");
+            addAttribute(databaseVersion);
+        }
+        Action createDatabaseVersion = getAction(CREATE_DATABASE_VERSION);
+        if (createDatabaseVersion == null)
+        {
+            createDatabaseVersion = new Action(CREATE_DATABASE_VERSION, this);
+            createDatabaseVersion.setQuery("CREATE TABLE database_version (script VARCHAR(200) NOT NULL PRIMARY KEY);");
+            addAttribute(createDatabaseVersion);
+        }
+        super.initializeAttributes();
+    }
+
+    // Migration scripts - CB TODO - this should be packaged as an external feature
+
+    private SortedSet<String> getAppliedScripts() throws SQLException
+    {
+        Iterator<Instance> scripts = query(DATABASE_VERSION);
+        SortedSet<String> ret = new TreeSet<>();
+        while (scripts.hasNext())
+        {
+            ret.add(scripts.next().getString("script"));
+        }
+        return ret;
+    }
+    protected void upgradeIfNeeded()
+    {
+        if (versionningScripts == null || versionningScripts.isEmpty())
+        {
+            logger.debug("Not checking database version (no migration script provided)");
+            return;
+        }
+        SortedSet<String> applied = null;
+        // first try
+        try
+        {
+            applied = getAppliedScripts();
+        }
+        catch (SQLException sqle)
+        {
+            // ignore
+        }
+        // on failure, try to create the versionning table
+        if (applied == null)
+        {
+            try
+            {
+                getAction(CREATE_DATABASE_VERSION).perform();
+                applied = getAppliedScripts();
+            }
+            catch (SQLException sqle)
+            {
+                throw new ConfigurationException("Could not check database for needed upgrade", sqle);
+            }
+        }
+        Iterator<URL> availableIt = versionningScripts.iterator();
+        Iterator<String> appliedIt = applied.iterator();
+        while (true)
+        {
+            if (!availableIt.hasNext())
+            {
+                if (appliedIt.hasNext())
+                {
+                    String firstNotFound = appliedIt.next();
+                    throw new ConfigurationException("Versionning inconsistency: script '" + firstNotFound + "' and following not found in resources");
+                }
+                break;
+            }
+            URL availableUrl = availableIt.next();
+            String availableScript = availableUrl.getPath();
+            int slash = availableScript.lastIndexOf('/');
+            if (slash != -1)
+            {
+                availableScript = availableScript.substring(slash + 1);
+            }
+            if (appliedIt.hasNext())
+            {
+                String appliedScript = appliedIt.next();
+                if (!appliedScript.equals(availableScript))
+                {
+                    throw new ConfigurationException("Versionning inconsistency: history divergence: next resource script is '" + availableScript + "', next applied script is '" + appliedScript + "'");
+                }
+                continue;
+            }
+            try
+            {
+                logger.info("upgrading model to {}", availableScript);
+                Transaction upgrade = new Transaction("upgrade_" + availableScript, this);
+                String sql = IOUtils.toString(availableUrl, StandardCharsets.UTF_8).trim();
+                if (!sql.endsWith(";")) sql += ";";
+                sql += "INSERT INTO " + DATABASE_VERSION + " VALUES ('" + availableScript + "');";
+                upgrade.setQuery(sql);
+                upgrade.initialize();
+                upgrade.perform();
+            }
+            catch (IOException|SQLException e)
+            {
+                throw new ConfigurationException("Could not upgrade model to " + availableScript, e);
+            }
+        }
+        logger.info("model is up to date");
     }
 
     private void declareUpstreamJoin(Entity pkEntity, Entity fkEntity, List<String> fkColumns) throws SQLException
@@ -1370,4 +1505,5 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      */
     private ConversionHandler conversionHandler = new ConversionHandlerImpl();
 
+    private SortedSet<URL> versionningScripts = null;
 }

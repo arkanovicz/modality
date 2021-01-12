@@ -79,5 +79,5 @@ public interface Constants
 
     String CREATE_DATABASE_VERSION = "create_database_version";
 
-    String DEFAULT_MIGRATION_PATH = "migrations";
+    String DEFAULT_MIGRATION_ROOT_PATH = "migrations";
 }

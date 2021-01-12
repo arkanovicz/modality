@@ -34,7 +34,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -278,6 +278,8 @@ public class ConfigHelper
         return url;
     }
 
+    public static final Comparator<URL> urlComparator = (o1, o2) -> o1.toString().compareTo(o2.toString());
+
     /**
      * Find resources on the file system or in the classpath
      * @param path package name, absolute path or relative path
@@ -314,9 +316,9 @@ public class ConfigHelper
                     {
                         final Object finalServletContext = servletContext;
                         ret = resources.stream()
-                            .map(resource -> findURL(path, finalServletContext, false))
+                            .map(resource -> findURL(resource, finalServletContext, false))
                             .filter(url -> url != null)
-                            .collect(Collectors.toCollection(TreeSet::new));
+                            .collect(Collectors.toCollection(() -> new TreeSet<>(urlComparator)));
                     }
                 }
                 catch (IllegalAccessException | InvocationTargetException e)
@@ -332,7 +334,7 @@ public class ConfigHelper
             ret = resources.stream()
                 .map(resource -> findURL(path, null, false))
                 .filter(url -> url != null)
-                .collect(Collectors.toCollection(TreeSet::new));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(urlComparator)));
             if ((ret == null || ret.isEmpty()) && !webContext)
             {
                 // check filesystem
@@ -360,7 +362,7 @@ public class ConfigHelper
                                     throw new ConfigurationException("could not get URL for path '" + file.getAbsolutePath() + "'", mfue);
                                 }
                             })
-                            .collect(Collectors.toCollection(TreeSet::new));
+                            .collect(Collectors.toCollection(() -> new TreeSet<>(urlComparator)));
                     }
                 }
 

@@ -274,10 +274,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 }
             }
 
-            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, DEFAULT_MIGRATION_PATH);
+            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
             if (!"false".equals(versionningScripts))
             {
-                    setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
+                setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
             }
 
             return getModel();
@@ -359,8 +359,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             getInstances().initialize();
             initializeAttributes(); // root attributes initialization
             registerModel();
-            upgradeIfNeeded();
             initialized = true;
+            upgradeIfNeeded();
         }
         catch (ConfigurationException ce)
         {
@@ -613,7 +613,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     public void setVersionningScripts(Set<URL> versionningScripts)
     {
-        this.versionningScripts = new TreeSet(versionningScripts);
+        this.versionningScripts = new TreeSet(ConfigHelper.urlComparator);
+        this.versionningScripts.addAll(versionningScripts);
     }
 
     public Credentials getCredentials()
@@ -907,6 +908,8 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         super.initializeAttributes();
     }
 
+    // Migration scripts - CB TODO - this should be packaged as an external feature
+
     private SortedSet<String> getAppliedScripts() throws SQLException
     {
         Iterator<Instance> scripts = query(DATABASE_VERSION);
@@ -984,6 +987,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 if (!sql.endsWith(";")) sql += ";";
                 sql += "INSERT INTO " + DATABASE_VERSION + " VALUES ('" + availableScript + "');";
                 upgrade.setQuery(sql);
+                upgrade.initialize();
                 upgrade.perform();
             }
             catch (IOException|SQLException e)

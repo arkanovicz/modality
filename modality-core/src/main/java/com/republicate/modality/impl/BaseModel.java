@@ -274,7 +274,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 }
             }
 
-            String versionningScripts = config.getString(MODEL_VERSIONNING_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
+            String versionningScripts = config.getString(MODEL_MIGRATION_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
             if (!"false".equals(versionningScripts))
             {
                 setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
@@ -909,6 +909,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     }
 
     // Migration scripts - CB TODO - this should be packaged as an external feature
+    // CB TODO - generate undo statements for engines that don't know how to rollback DDL statements
 
     private SortedSet<String> getAppliedScripts() throws SQLException
     {
@@ -958,8 +959,9 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             {
                 if (appliedIt.hasNext())
                 {
+                    // CB TODO - there could be a flag to relax this case
                     String firstNotFound = appliedIt.next();
-                    throw new ConfigurationException("Versionning inconsistency: script '" + firstNotFound + "' and following not found in resources");
+                    throw new ConfigurationException("Versionning inconsistency: script '" + firstNotFound + "' and following ones not found in resources");
                 }
                 break;
             }

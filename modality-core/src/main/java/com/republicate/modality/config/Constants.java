@@ -73,7 +73,7 @@ public interface Constants
 
     String MODEL_CONNECTIONS_CHECK_INTERVAL = "connections_check_interval";
 
-    String MODEL_VERSIONNING_SCRIPTS = "versionning_scripts";
+    String MODEL_MIGRATION_SCRIPTS = "migration_scripts";
 
     String DATABASE_VERSION = "database_version";
 

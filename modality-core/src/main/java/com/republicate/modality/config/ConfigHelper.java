@@ -316,6 +316,7 @@ public class ConfigHelper
                     {
                         final Object finalServletContext = servletContext;
                         ret = resources.stream()
+                            .filter(resource -> patternRx.matcher(resource).matches())
                             .map(resource -> findURL(resource, finalServletContext, false))
                             .filter(url -> url != null)
                             .collect(Collectors.toCollection(() -> new TreeSet<>(urlComparator)));

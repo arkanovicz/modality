@@ -75,9 +75,9 @@ public interface Constants
 
     String MODEL_MIGRATION_SCRIPTS = "migration_scripts";
 
-    String DATABASE_VERSION = "database_version";
+    String MODEL_VERSION = "model_version";
 
-    String CREATE_DATABASE_VERSION = "create_database_version";
+    String CREATE_MODEL_VERSION = "create_model_version";
 
     String DEFAULT_MIGRATION_ROOT_PATH = "migrations";
 }

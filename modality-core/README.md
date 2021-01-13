@@ -256,11 +256,12 @@ This location is searched:
 
 When found, the following happens at the end of model initialization:
 
-+ Modality will create the `database_version` table in the target schema if it doesn't exist, containing a single `varchar(200)` `script` field, which is meant to receive all the successfully applied scripts filenames (without path).
++ Modality will create the `model_version` table in the target schema if it doesn't exist, containing a single `varchar(200)` `script` field, which is meant to receive all the successfully applied scripts filenames (without path).
 + It will then compare available scripts and applied scripts history, bailing out on any divergence or inconsistency.
-+ Each remaining available script which hasn't yet been applied will be run inside a specific transaction which will also populate the `database_version` table.
++ Each remaining available script which hasn't yet been applied will be run inside a specific transaction which will also populate the `model_version` table.
 
 That's it. No checksum tests as in Flyway or Liquibase, which I found rather counterproductive with time.
 
 Be aware that when using an engine which is not able to handle rollbacks of DDL statements (like `mysql` and `mariadb`), you will have to manually revert those if something wrong happens.
 
+When updating a schema, if you are maintaining global creation scripts, you would typically add the `model_version` table and populate it with the considered scripts.

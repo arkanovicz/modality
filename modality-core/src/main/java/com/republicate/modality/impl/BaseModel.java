@@ -889,21 +889,21 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     @Override
     protected void initializeAttributes()
     {
-        // add database_version and create_database_version if not present
+        // add model_version and create_model_version root attributes if not present
         // note: specifc vendors should be taken in to account in create table syntax
-        Attribute databaseVersion = getAttribute(DATABASE_VERSION);
-        if (databaseVersion == null)
+        Attribute modelVersion = getAttribute(MODEL_VERSION);
+        if (modelVersion == null)
         {
-            databaseVersion = new RowsetAttribute(DATABASE_VERSION, this);
-            databaseVersion.setQuery("SELECT script FROM database_version ORDER BY script;");
-            addAttribute(databaseVersion);
+            modelVersion = new RowsetAttribute(MODEL_VERSION, this);
+            modelVersion.setQuery("SELECT script FROM model_version ORDER BY script;");
+            addAttribute(modelVersion);
         }
-        Action createDatabaseVersion = getAction(CREATE_DATABASE_VERSION);
-        if (createDatabaseVersion == null)
+        Action createModelVersion = getAction(CREATE_MODEL_VERSION);
+        if (createModelVersion == null)
         {
-            createDatabaseVersion = new Action(CREATE_DATABASE_VERSION, this);
-            createDatabaseVersion.setQuery("CREATE TABLE database_version (script VARCHAR(200) NOT NULL PRIMARY KEY);");
-            addAttribute(createDatabaseVersion);
+            createModelVersion = new Action(CREATE_MODEL_VERSION, this);
+            createModelVersion.setQuery("CREATE TABLE model_version (script VARCHAR(200) NOT NULL PRIMARY KEY);");
+            addAttribute(createModelVersion);
         }
         super.initializeAttributes();
     }
@@ -913,7 +913,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private SortedSet<String> getAppliedScripts() throws SQLException
     {
-        Iterator<Instance> scripts = query(DATABASE_VERSION);
+        Iterator<Instance> scripts = query(MODEL_VERSION);
         SortedSet<String> ret = new TreeSet<>();
         while (scripts.hasNext())
         {
@@ -943,7 +943,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             try
             {
-                getAction(CREATE_DATABASE_VERSION).perform();
+                getAction(CREATE_MODEL_VERSION).perform();
                 applied = getAppliedScripts();
             }
             catch (SQLException sqle)
@@ -987,7 +987,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 Transaction upgrade = new Transaction("upgrade_" + availableScript, this);
                 String sql = IOUtils.toString(availableUrl, StandardCharsets.UTF_8).trim();
                 if (!sql.endsWith(";")) sql += ";";
-                sql += "INSERT INTO " + DATABASE_VERSION + " VALUES ('" + availableScript + "');";
+                sql += "INSERT INTO " + MODEL_VERSION + " VALUES ('" + availableScript + "');";
                 upgrade.setQuery(sql);
                 upgrade.initialize();
                 upgrade.perform();

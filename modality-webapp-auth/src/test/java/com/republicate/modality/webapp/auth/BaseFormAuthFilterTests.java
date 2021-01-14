@@ -116,7 +116,7 @@ public class BaseFormAuthFilterTests extends BaseWebBookshelfTests
         expect(servletContext.getResource("/WEB-INF/modality.properties")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.properties")).andAnswer(eval(null));
         expect(servletContext.getResource("/WEB-INF/model.xml")).andAnswer(eval(null));
-        expect(servletContext.getResourcePaths("/WEB-INF/migrations")).andAnswer(eval(null));
+        expect(servletContext.getResourcePaths("/WEB-INF/migrations/model")).andAnswer(eval(null));
     }
 
     protected Capture<Instance> recordSuccessfullLogin() throws Exception

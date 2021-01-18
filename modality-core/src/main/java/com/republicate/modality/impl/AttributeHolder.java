@@ -144,7 +144,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof ScalarAttribute))
         {
-            throw new SQLException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar attribute: " + name);
         }
 
         return ((ScalarAttribute)attribute).evaluate(source);
@@ -160,7 +160,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof ScalarAttribute))
         {
-            throw new SQLException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a scalar attribute: " + name);
         }
         return ((ScalarAttribute)attribute).evaluate(source, params);
     }
@@ -287,7 +287,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new SQLException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a row attribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(params);
     }
@@ -302,7 +302,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new SQLException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a row attribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(source);
     }
@@ -317,7 +317,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowAttribute))
         {
-            throw new SQLException("not a scalar baseAttribute: " + name);
+            throw new SQLException("not a row attribute: " + name);
         }
         return ((RowAttribute)attribute).retrieve(source, params);
     }
@@ -332,7 +332,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new SQLException("not a scalar attribute: " + name);
+            throw new SQLException("not a rowset attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(params);
     }
@@ -347,7 +347,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new SQLException("not a scalar attribute: " + name);
+            throw new SQLException("not a rowset attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(source);
     }
@@ -362,7 +362,7 @@ public abstract class AttributeHolder implements Serializable
         }
         if (!(attribute instanceof RowsetAttribute))
         {
-            throw new SQLException("not a scalar attribute: " + name);
+            throw new SQLException("not a rowset attribute: " + name);
         }
         return ((RowsetAttribute)attribute).query(source, params);
     }

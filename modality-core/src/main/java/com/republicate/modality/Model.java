@@ -101,6 +101,7 @@ public class Model extends BaseModel
         {
             try
             {
+                getLogger().error("initiating transaction rollback upon error", sqle);
                 if (connection != null)
                 {
                     connection.rollback();

@@ -32,7 +32,7 @@ public class IdentifiersFilters extends ConfigurableFilters<String>
 
     public static String snakeToCamel(String snake)
     {
-        snake = snake.toLowerCase(Locale.ROOT);
+        // snake = snake.toLowerCase(Locale.ROOT); CB - commented, so that the function is idempotent on camel case
         String[] parts = snake.split("_"); // CB TODO factorize regex building
         StringBuilder builder = new StringBuilder();
         boolean first = true;

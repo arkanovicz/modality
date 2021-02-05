@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.republicate.modality.webapp.util.HttpUtils.toByteArray;
 
-public class SavedRequest
+public class SavedRequest implements Serializable
 {
     protected static Logger logger = LoggerFactory.getLogger("auth");
 
@@ -70,13 +71,20 @@ public class SavedRequest
         characterEncoding = request.getCharacterEncoding();
 
         // attributes
-        attributes = new Hashtable<String, Object>();
+        attributes = new Hashtable<>();
         Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements())
         {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = request.getAttribute(attributeName);
-            attributes.put(attributeName, attributeValue);
+            if (attributeValue instanceof Serializable)
+            {
+                attributes.put(attributeName, (Serializable)attributeValue);
+            }
+            else
+            {
+                logger.warn("ignoring non-serializable attribute {}", attributeName);
+            }
         }
 
         if (method.equals("POST"))
@@ -166,7 +174,7 @@ public class SavedRequest
         return servletPath;
     }
 
-    public Hashtable<String, Object> getAttributes()
+    public Hashtable<String, Serializable> getAttributes()
     {
         return attributes;
     }
@@ -249,7 +257,7 @@ public class SavedRequest
     private String pathTranslated = null;
     private String contentType = null;
     private String characterEncoding = null;
-    private Hashtable<String, Object> attributes = null;
+    private Hashtable<String, Serializable> attributes = null;
     private Hashtable<String, String> headers = null;
     private byte[] body = null;
 }

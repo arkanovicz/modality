@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class Instance extends SlotTreeMap
@@ -453,15 +454,17 @@ public class Instance extends SlotTreeMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> map)
     {
+        /* CB TODO check PK change
         Serializable[] pk = null;
         if (persisted)
         {
             pk = getPrimaryKey();
         }
+         */
         super.putAll(map);
         if (persisted)
         {
-            // the persisted flag became false at this point if PK changed
+            // the persisted flag should be false before this point if PK changed
             entity.getNonPrimaryKeyMask().stream()
                 .filter(col ->
                 {
@@ -470,6 +473,45 @@ public class Instance extends SlotTreeMap
                 })
                 .forEach(col -> dirtyFlags.set(col));
         }
+    }
+
+    public void putColumns(Map<? extends String, ? extends Serializable> map) throws SQLException
+    {
+        putColumns(map, true);
+    }
+
+    public void putColumns(Map<? extends String, ? extends Serializable> map, boolean skipNullInputs) throws SQLException
+    {
+        /* CB TODO check PK change
+        Serializable[] pk = null;
+        if (persisted)
+        {
+            pk = getPrimaryKey();
+        }
+         */
+        if (entity == null) throw new SQLException("Instance doesn't have any entity");
+        entity.getColumnNames().forEach(column ->
+            {
+                // null values are
+                Serializable value = map.get(column);
+                if (!skipNullInputs || value != null)
+                {
+                    put(column, value);
+                }
+            }
+        );
+        if (persisted)
+        {
+            // the persisted flag should be false before this point if PK changed
+            entity.getNonPrimaryKeyMask().stream()
+                .filter(col ->
+                {
+                    String colName = entity.getColumn(col).name;
+                    return !Objects.equals(get(colName), map.get(colName));
+                })
+                .forEach(col -> dirtyFlags.set(col));
+        }
+
     }
 
     protected Serializable putImpl(String key, Serializable value)

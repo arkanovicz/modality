@@ -137,7 +137,7 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
                 user = super.getAuthentifiedUser(request); // will call authenticate()
                 if (user == null)
                 {
-                    logger.info("failed login with params {}", new ParameterTool(request));
+                    logger.info("failed login for {}", new ParameterTool(request)); // CB TODO - avoid displaying 'pass%' fields in the logs
                 }
                 return user;
             }

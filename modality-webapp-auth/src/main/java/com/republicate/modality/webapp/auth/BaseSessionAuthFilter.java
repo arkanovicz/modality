@@ -29,7 +29,9 @@ import org.apache.velocity.tools.view.ServletUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -137,7 +139,7 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
                 user = super.getAuthentifiedUser(request); // will call authenticate()
                 if (user == null)
                 {
-                    logger.info("failed login with params {}", new ParameterTool(request));
+                    logger.info("failed login for {}", displayUser(user));
                 }
                 return user;
             }
@@ -375,8 +377,19 @@ public abstract class BaseSessionAuthFilter<USER> extends BaseAuthFilter<USER>
      */
     protected String displayUser(USER user)
     {
-        // user.getString
-        return String.valueOf(user);
+        if (user instanceof Map)
+        {
+            return
+                ((Map)user).entrySet().stream()
+                    // CB TODO - why is casting needed here? Is it just the IDE?
+                    .filter(entry -> !String.valueOf(((Map.Entry) entry).getKey()).startsWith("pass"))
+                    .collect(Collectors.toMap(entry -> ((Map.Entry)entry).getKey(), entry-> ((Map.Entry)entry).getValue()))
+                    .toString();
+        }
+        else
+        {
+            return String.valueOf(user);
+        }
     }
 
     private JeeConfig config = null;

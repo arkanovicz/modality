@@ -20,8 +20,6 @@ package com.republicate.modality.webapp.auth;
  */
 
 import com.republicate.modality.Model;
-import com.republicate.modality.util.TypeUtils;
-import com.republicate.modality.webapp.ModalityFilter;
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
 import org.eclipse.jetty.servlet.ServletTester;
 
@@ -34,7 +32,6 @@ import java.util.stream.Stream;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

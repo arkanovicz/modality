@@ -1285,7 +1285,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                         {
                             try
                             {
-                                Object obj = clazz.newInstance();
+                                java.lang.Object obj = clazz.newInstance();
                                 return new WrappingInstance(entity, obj);
                             }
                             catch (InstantiationException | IllegalAccessException e)

@@ -23,7 +23,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.webapp.WebappModelProvider;
 import org.junit.After;
 import org.junit.Before;
@@ -110,7 +110,7 @@ public class HTTPBasicAuthTests extends BaseHTTPAuthTests
     @Test
     public void testGoodAuthenticate() throws Exception
     {
-        String b64 = TypeUtils.base64Encode("nestor:secret");
+        String b64 = ConversionUtils.base64Encode("nestor:secret");
         String request =
             "GET / HTTP/1.1\r\n" +
                 "Host: test\r\n" +

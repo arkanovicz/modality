@@ -19,19 +19,17 @@ package com.republicate.modality;
  * under the License.
  */
 
-import com.republicate.modality.filter.Filter;
+import com.republicate.json.Json;
 import com.republicate.modality.filter.ValueFilters;
 import com.republicate.modality.sql.RowValues;
 import com.republicate.modality.util.ChainedMap;
-import com.republicate.modality.util.SlotTreeMap;
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,10 +37,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
-public class Instance extends SlotTreeMap
+public class Instance extends Json.Object
 {
     public Instance(Model model)
     {
@@ -120,112 +117,112 @@ public class Instance extends SlotTreeMap
 
     public String evaluateString(String name, Map params) throws SQLException
     {
-        return TypeUtils.toString(evaluate(name, params));
+        return ConversionUtils.toString(evaluate(name, params));
     }
 
     public Character evaluateChar(String name, Map params) throws SQLException
     {
-        return TypeUtils.toChar(evaluate(name, params));
+        return ConversionUtils.toChar(evaluate(name, params));
     }
 
     public Boolean evaluateBoolean(String name, Map params) throws SQLException
     {
-        return TypeUtils.toBoolean(evaluate(name, params));
+        return ConversionUtils.toBoolean(evaluate(name, params));
     }
 
     public Byte evaluateByte(String name, Map params) throws SQLException
     {
-        return TypeUtils.toByte(evaluate(name, params));
+        return ConversionUtils.toByte(evaluate(name, params));
     }
 
     public Short evaluateShort(String name, Map params) throws SQLException
     {
-        return TypeUtils.toShort(evaluate(name, params));
+        return ConversionUtils.toShort(evaluate(name, params));
     }
 
     public Integer evaluateInteger(String name, Map params) throws SQLException
     {
-        return TypeUtils.toInteger(evaluate(name, params));
+        return ConversionUtils.toInteger(evaluate(name, params));
     }
 
     public Long evaluateLong(String name, Map params) throws SQLException
     {
-        return TypeUtils.toLong(evaluate(name, params));
+        return ConversionUtils.toLong(evaluate(name, params));
     }
 
     public Float evaluateFloat(String name, Map params) throws SQLException
     {
-        return TypeUtils.toFloat(evaluate(name, params));
+        return ConversionUtils.toFloat(evaluate(name, params));
     }
 
     public Double evaluateDouble(String name, Map params) throws SQLException
     {
-        return TypeUtils.toDouble(evaluate(name, params));
+        return ConversionUtils.toDouble(evaluate(name, params));
     }
 
     public Date evaluateDate(String name, Map params) throws SQLException
     {
-        return TypeUtils.toDate(evaluate(name, params));
+        return ConversionUtils.toDate(evaluate(name, params));
     }
 
     public Calendar evaluateCalendar(String name, Map params) throws SQLException
     {
-        return TypeUtils.toCalendar(evaluate(name, params));
+        return ConversionUtils.toCalendar(evaluate(name, params));
     }
 
     public String evaluateString(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toString(evaluate(name, params));
+        return ConversionUtils.toString(evaluate(name, params));
     }
 
     public Character evaluateChar(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toChar(evaluate(name, params));
+        return ConversionUtils.toChar(evaluate(name, params));
     }
 
     public Boolean evaluateBoolean(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toBoolean(evaluate(name, params));
+        return ConversionUtils.toBoolean(evaluate(name, params));
     }
 
     public Byte evaluateByte(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toByte(evaluate(name, params));
+        return ConversionUtils.toByte(evaluate(name, params));
     }
 
     public Short evaluateShort(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toShort(evaluate(name, params));
+        return ConversionUtils.toShort(evaluate(name, params));
     }
 
     public Integer evaluateInteger(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toInteger(evaluate(name, params));
+        return ConversionUtils.toInteger(evaluate(name, params));
     }
 
     public Long evaluateLong(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toLong(evaluate(name, params));
+        return ConversionUtils.toLong(evaluate(name, params));
     }
 
     public Float evaluateFloat(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toFloat(evaluate(name, params));
+        return ConversionUtils.toFloat(evaluate(name, params));
     }
 
     public Double evaluateDouble(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toDouble(evaluate(name, params));
+        return ConversionUtils.toDouble(evaluate(name, params));
     }
 
     public Date evaluateDate(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toDate(evaluate(name, params));
+        return ConversionUtils.toDate(evaluate(name, params));
     }
 
     public Calendar evaluateCalendar(String name, Serializable... params) throws SQLException
     {
-        return TypeUtils.toCalendar(evaluate(name, params));
+        return ConversionUtils.toCalendar(evaluate(name, params));
     }
 
     public Instance retrieve(String name, Map params) throws SQLException
@@ -278,57 +275,57 @@ public class Instance extends SlotTreeMap
 
     public String getString(String name)
     {
-        return TypeUtils.toString(get(name));
+        return ConversionUtils.toString(get(name));
     }
 
     public Character getChar(String name)
     {
-        return TypeUtils.toChar(get(name));
+        return ConversionUtils.toChar(get(name));
     }
 
     public Boolean getBoolean(String name)
     {
-        return TypeUtils.toBoolean(get(name));
+        return ConversionUtils.toBoolean(get(name));
     }
 
     public Byte getByte(String name)
     {
-        return TypeUtils.toByte(get(name));
+        return ConversionUtils.toByte(get(name));
     }
 
     public Short getShort(String name)
     {
-        return TypeUtils.toShort(get(name));
+        return ConversionUtils.toShort(get(name));
     }
 
     public Integer getInteger(String name)
     {
-        return TypeUtils.toInteger(get(name));
+        return ConversionUtils.toInteger(get(name));
     }
 
     public Long getLong(String name)
     {
-        return TypeUtils.toLong(get(name));
+        return ConversionUtils.toLong(get(name));
     }
 
     public Float getFloat(String name)
     {
-        return TypeUtils.toFloat(get(name));
+        return ConversionUtils.toFloat(get(name));
     }
 
     public Double getDouble(String name)
     {
-        return TypeUtils.toDouble(get(name));
+        return ConversionUtils.toDouble(get(name));
     }
     
     public Date getDate(String name)
     {
-        return TypeUtils.toDate(get(name));
+        return ConversionUtils.toDate(get(name));
     }
 
     public Calendar getCalendar(String name)
     {
-        return TypeUtils.toCalendar(get(name));
+        return ConversionUtils.toCalendar(get(name));
     }
 
     public final Model getModel()
@@ -454,25 +451,30 @@ public class Instance extends SlotTreeMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> map)
     {
-        /* CB TODO check PK change
-        Serializable[] pk = null;
         if (persisted)
         {
-            pk = getPrimaryKey();
-        }
-         */
-        super.putAll(map);
-        if (persisted)
-        {
-            // the persisted flag should be false before this point if PK changed
-            entity.getNonPrimaryKeyMask().stream()
-                .filter(col ->
+            for (Entity.Column column : entity.getPrimaryKey())
+            {
+                if (map.containsKey(column.name) && !Objects.equals(ConversionUtils.toString(get(column.name)), ConversionUtils.toString(map.get(column.name))))
                 {
-                    String colName = entity.getColumn(col).name;
-                    return !Objects.equals(get(colName), map.get(colName));
-                })
-                .forEach(col -> dirtyFlags.set(col));
+                    persisted = false;
+                    break;
+                }
+            }
+
+            if (persisted)
+            {
+                // the persisted flag should be false before this point if PK changed
+                entity.getNonPrimaryKeyMask().stream()
+                    .filter(col ->
+                    {
+                        String colName = entity.getColumn(col).name;
+                        return map.containsKey(colName) && !Objects.equals(ConversionUtils.toString(get(colName)), ConversionUtils.toString(map.get(colName)));
+                    })
+                    .forEach(col -> dirtyFlags.set(col));
+            }
         }
+        super.putAll(map);
     }
 
     public void putColumns(Map<? extends String, ? extends Serializable> map) throws SQLException
@@ -530,7 +532,7 @@ public class Instance extends SlotTreeMap
             {
                 if (column.isKeyColumn())
                 {
-                    if (!TypeUtils.sameValues(ret, value))
+                    if (!ConversionUtils.sameValues(ret, value))
                     {
                         persisted = false;
                     }
@@ -550,7 +552,7 @@ public class Instance extends SlotTreeMap
      * @return equality status
      */
     @Override
-    public boolean equals(final Object o)
+    public boolean equals(final java.lang.Object o)
     {
         return (o instanceof Instance)
             && getEntity() == ((Instance)o).getEntity()

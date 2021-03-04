@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class TypeUtils
+public class ConversionUtils
 {
     protected static Logger logger = LoggerFactory.getLogger("sql-types");
 

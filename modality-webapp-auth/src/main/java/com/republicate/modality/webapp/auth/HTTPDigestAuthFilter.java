@@ -24,10 +24,11 @@ import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.ScalarAttribute;
 import com.republicate.modality.config.ConfigurationException;
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
 
+import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -89,7 +90,7 @@ public class HTTPDigestAuthFilter extends BaseHTTPDigestAuthFilter<Instance>
         try
         {
             getModel(); // force initialization
-            SlotMap params = new SlotHashMap();
+            Map<String, Serializable> params = new HashMap<>();
             params.put("realm", getRealm());
             params.put("login", login);
             return digestByLoginAttribute.getString(params);
@@ -107,7 +108,7 @@ public class HTTPDigestAuthFilter extends BaseHTTPDigestAuthFilter<Instance>
         try
         {
             getModel(); // force initialization
-            SlotMap params = new SlotHashMap();
+            Map<String, Serializable> params = new HashMap<>();
             params.put("realm", getRealm());
             params.put("login", login);
             return userByLoginAttribute.retrieve(params);

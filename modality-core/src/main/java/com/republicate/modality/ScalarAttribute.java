@@ -21,7 +21,7 @@ package com.republicate.modality;
 
 import com.republicate.modality.impl.AttributeHolder;
 import com.republicate.modality.sql.PooledStatement;
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -86,71 +86,71 @@ public class ScalarAttribute extends Attribute
 
     public String getString(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toString(evaluate(paramValues));
+        return ConversionUtils.toString(evaluate(paramValues));
     }
 
     public String getString(Map source) throws SQLException
     {
-        return TypeUtils.toString(evaluate(source));
+        return ConversionUtils.toString(evaluate(source));
     }
 
     public Boolean getBoolean(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toBoolean(evaluate(paramValues));
+        return ConversionUtils.toBoolean(evaluate(paramValues));
     }
 
     public Boolean getBoolean(Map source) throws SQLException
     {
-        return TypeUtils.toBoolean(evaluate(source));
+        return ConversionUtils.toBoolean(evaluate(source));
     }
 
     public Short getShort(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toShort(evaluate(paramValues));
+        return ConversionUtils.toShort(evaluate(paramValues));
     }
 
     public Short getShort(Map source) throws SQLException
     {
-        return TypeUtils.toShort(evaluate(source));
+        return ConversionUtils.toShort(evaluate(source));
     }
 
     public Integer getInteger(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toInteger(evaluate(paramValues));
+        return ConversionUtils.toInteger(evaluate(paramValues));
     }
 
     public Integer getInteger(Map source) throws SQLException
     {
-        return TypeUtils.toInteger(evaluate(source));
+        return ConversionUtils.toInteger(evaluate(source));
     }
 
     public Long getLong(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toLong(evaluate(paramValues));
+        return ConversionUtils.toLong(evaluate(paramValues));
     }
 
     public Long getLong(Map source) throws SQLException
     {
-        return TypeUtils.toLong(evaluate(source));
+        return ConversionUtils.toLong(evaluate(source));
     }
 
     public Float getFloat(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toFloat(evaluate(paramValues));
+        return ConversionUtils.toFloat(evaluate(paramValues));
     }
 
     public Float getFloat(Map source) throws SQLException
     {
-        return TypeUtils.toFloat(evaluate(source));
+        return ConversionUtils.toFloat(evaluate(source));
     }
 
     public Double getDouble(Serializable... paramValues) throws SQLException
     {
-        return TypeUtils.toDouble(evaluate(paramValues));
+        return ConversionUtils.toDouble(evaluate(paramValues));
     }
 
     public Double getDouble(Map source) throws SQLException
     {
-        return TypeUtils.toDouble(evaluate(source));
+        return ConversionUtils.toDouble(evaluate(source));
     }
 }

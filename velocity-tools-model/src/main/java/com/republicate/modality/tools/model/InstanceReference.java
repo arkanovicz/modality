@@ -21,7 +21,6 @@ package com.republicate.modality.tools.model;
 
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
-import com.republicate.modality.util.SlotMap;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -30,7 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class InstanceReference implements Reference, SlotMap
+public class InstanceReference implements Reference, Map<String, Serializable>, Serializable
 {
     public InstanceReference(Instance instance, ModelTool modelReference)
     {

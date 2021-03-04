@@ -1,7 +1,7 @@
 package com.republicate.modality.filter;
 
+import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.util.Cryptograph;
-import com.republicate.modality.util.TypeUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,14 +10,11 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 public class ValueFilters extends ConfigurableFilters<Serializable>
 {
@@ -26,16 +23,16 @@ public class ValueFilters extends ConfigurableFilters<Serializable>
         super(configurationPrefix);
         addStockFilter("lowercase", x -> String.valueOf(x).toLowerCase(Locale.ROOT));
         addStockFilter("uppercase", x -> String.valueOf(x).toUpperCase(Locale.ROOT));
-        addStockFilter("calendar_to_date", x -> x instanceof Calendar ? TypeUtils.toDate(x) : x);
-        addStockFilter("date_to_calendar", x -> x instanceof java.sql.Date ? TypeUtils.toCalendar(x) : x);
+        addStockFilter("calendar_to_date", x -> x instanceof Calendar ? ConversionUtils.toDate(x) : x);
+        addStockFilter("date_to_calendar", x -> x instanceof java.sql.Date ? ConversionUtils.toCalendar(x) : x);
         addStockFilter("number_to_boolean", x -> x instanceof Number ? ((Number)x).longValue() != 0 : x);
-        addStockFilter("raw_obfuscate", x -> cryptograph.encrypt(TypeUtils.toString(x)));
-        addStockFilter("raw_deobfuscate", x -> cryptograph.decrypt(TypeUtils.toBytes(x)));
-        addStockFilter("obfuscate", x -> TypeUtils.base64Encode(cryptograph.encrypt(String.valueOf(x))));
-        addStockFilter("deobfuscate", x -> cryptograph.decrypt(TypeUtils.base64Decode(x)));
-        addStockFilter("deobfuscate_strings", x -> x instanceof String ? cryptograph.decrypt(TypeUtils.base64Decode(x)) : x);
-        addStockFilter("base64_encode", x -> TypeUtils.base64Encode(x));
-        addStockFilter("base64_decode", x -> TypeUtils.base64Decode(x));
+        addStockFilter("raw_obfuscate", x -> cryptograph.encrypt(ConversionUtils.toString(x)));
+        addStockFilter("raw_deobfuscate", x -> cryptograph.decrypt(ConversionUtils.toBytes(x)));
+        addStockFilter("obfuscate", x -> ConversionUtils.base64Encode(cryptograph.encrypt(String.valueOf(x))));
+        addStockFilter("deobfuscate", x -> cryptograph.decrypt(ConversionUtils.base64Decode(x)));
+        addStockFilter("deobfuscate_strings", x -> x instanceof String ? cryptograph.decrypt(ConversionUtils.base64Decode(x)) : x);
+        addStockFilter("base64_encode", x -> ConversionUtils.base64Encode(x));
+        addStockFilter("base64_decode", x -> ConversionUtils.base64Decode(x));
         addStockFilter("mask", x -> null);
         addStockFilter("no_html", x -> StringUtils.indexOfAny(String.valueOf(x), "<>\"") == -1 ? x : error("invalid character"));
         addStockFilter("escape_html", x -> new HtmlEscaped(x));

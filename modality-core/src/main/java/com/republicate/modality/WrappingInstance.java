@@ -19,8 +19,8 @@ package com.republicate.modality;
  * under the License.
  */
 
+import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.util.Converter;
-import com.republicate.modality.util.TypeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 public class WrappingInstance extends Instance implements Wrapper
 {
-    public WrappingInstance(Entity entity, Object pojo)
+    public WrappingInstance(Entity entity, java.lang.Object pojo)
     {
         super(entity);
         this.pojo = pojo;
@@ -49,7 +49,7 @@ public class WrappingInstance extends Instance implements Wrapper
         Class paramClass = setter.getRight();
         try
         {
-            if (value != null && value.getClass() != paramClass && !TypeUtils.isMethodInvocationConvertible(paramClass, value.getClass()))
+            if (value != null && value.getClass() != paramClass && !ConversionUtils.isMethodInvocationConvertible(paramClass, value.getClass()))
             {
                 Converter converter = getModel().getConversionHandler().getNeededConverter(paramClass, value.getClass());
                 if (converter == null)
@@ -58,7 +58,7 @@ public class WrappingInstance extends Instance implements Wrapper
                 }
                 value = converter.convert(value);
             }
-            Object methodRet = method.invoke(pojo, value);
+            java.lang.Object methodRet = method.invoke(pojo, value);
             if (methodRet != null && !(methodRet instanceof Void))
             {
                 if (!(methodRet instanceof Serializable))
@@ -90,7 +90,7 @@ public class WrappingInstance extends Instance implements Wrapper
     }
 
     @Override
-    public Serializable get(Object key)
+    public Serializable get(java.lang.Object key)
     {
         Method getter = getters.get(key);
         if (getter == null)
@@ -124,7 +124,7 @@ public class WrappingInstance extends Instance implements Wrapper
         }
     }
 
-    private Object pojo;
+    private java.lang.Object pojo;
     private Map<String, Method> getters = null;
     private Map<String, Pair<Method, Class>> setters = null;
 

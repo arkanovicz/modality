@@ -22,7 +22,7 @@ under the License.
     <parent>
         <groupId>com.republicate.modality</groupId>
         <artifactId>modality-examples</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1-easytarif</version>
     </parent>
 
     <artifactId>modality-example-bookshelf</artifactId>

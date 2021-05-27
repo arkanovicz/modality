@@ -330,6 +330,7 @@ public class ConfigHelper
         if (ret == null)
         {
             // check classpath
+            /*
             Reflections reflections = new Reflections(new ResourcesScanner());
             Set<String> resources = reflections.getResources(patternRx);
             ret = resources.stream()
@@ -368,6 +369,7 @@ public class ConfigHelper
                 }
 
             }
+             */
         }
         return ret;
     }

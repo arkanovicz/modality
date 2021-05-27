@@ -614,7 +614,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     public void setVersionningScripts(Set<URL> versionningScripts)
     {
         this.versionningScripts = new TreeSet(ConfigHelper.urlComparator);
-        this.versionningScripts.addAll(versionningScripts);
+        if (versionningScripts != null)
+        {
+            this.versionningScripts.addAll(versionningScripts);
+        }
     }
 
     public Credentials getCredentials()

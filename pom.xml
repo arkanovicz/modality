@@ -27,7 +27,7 @@ under the License.
 
     <groupId>com.republicate.modality</groupId>
     <artifactId>modality</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1-easytarif</version>
 
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>

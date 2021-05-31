@@ -284,9 +284,10 @@ public class ConfigDigester
                 for (Method method : clazz.getDeclaredMethods())
                 {
                     // prefix matching: we allow a method name like setWriteAccess for a parameter like write="..."
-                    if (method.getParameterCount() == 2 && method.getName().equals("put") && method.getParameterTypes()[0] == String.class)
+                    if (method.getParameterCount() == 2 && method.getName().equals("put") && method.getParameterTypes()[0].isAssignableFrom(String.class))
                     {
                         setter = method;
+                        break;
                     }
                 }
                 clazz = clazz.getSuperclass();
@@ -429,7 +430,7 @@ public class ConfigDigester
     public static Object convertParamToClass(Object value, Class clazz) throws ConfigurationException
     {
         Object ret;
-        if (clazz == String.class || Map.class.isAssignableFrom(clazz))
+        if (clazz == String.class || clazz == Object.class || Map.class.isAssignableFrom(clazz))
         {
             ret = value;
         }

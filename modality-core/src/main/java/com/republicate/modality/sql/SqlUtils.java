@@ -20,10 +20,13 @@ package com.republicate.modality.sql;
  */
 
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -125,6 +128,44 @@ public class SqlUtils
     public static List<String> splitStatements(String query, Character identifierQuoteChar)
     {
         return splitStatements(query, identifierQuoteChar, false);
+    }
+
+    private static Constructor pgObjectCtor = null;
+    private static Method pgObjectSetType = null;
+    private static Method pgObjectSetValue = null;
+
+    private static synchronized void initPGObjectStuff() throws SQLException
+    {
+        if (pgObjectCtor == null)
+        {
+            try
+            {
+                Class clazz = Class.forName("org.postgresql.util.PGobject");
+                pgObjectCtor = clazz.getConstructor();
+                pgObjectSetType = clazz.getMethod("setType", String.class);
+                pgObjectSetValue = clazz.getMethod("setValue", String.class);
+            }
+            catch (ClassNotFoundException|NoSuchMethodException e)
+            {
+                throw new SQLException("could not initialize PgObject accessors", e);
+            }
+        }
+    }
+
+    public static Serializable getPGObject(String typeName, Serializable value) throws SQLException
+    {
+        if (pgObjectCtor == null) initPGObjectStuff();
+        try
+        {
+            Serializable pgObject = (Serializable)pgObjectCtor.newInstance();
+            pgObjectSetType.invoke(pgObject, typeName);
+            pgObjectSetValue.invoke(pgObject, String.valueOf(value));
+            return pgObject;
+        }
+        catch (IllegalAccessException|InvocationTargetException|InstantiationException e)
+        {
+            throw new SQLException("could not build PgObject", e);
+        }
     }
 
     public enum SplitState

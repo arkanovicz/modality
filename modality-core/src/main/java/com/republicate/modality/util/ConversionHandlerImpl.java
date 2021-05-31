@@ -19,12 +19,14 @@ package com.republicate.modality.util;
  * under the License.
  */
 
+import com.republicate.json.Json;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.velocity.util.introspection.IntrospectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -662,7 +664,7 @@ public class ConversionHandlerImpl implements ConversionHandler
               }
               catch (ParseException pe)
               {
-                  logger.warn("could not parse '{}' into an iso date", o);
+                  logger.warn("could not parse '{}' into an iso date", o, pe);
                   return null;
               }
           }
@@ -679,12 +681,43 @@ public class ConversionHandlerImpl implements ConversionHandler
                 }
                 catch (ParseException pe)
                 {
-                    logger.warn("could not parse '{}' into an iso timestamp", o);
+                    logger.warn("could not parse '{}' into an iso timestamp", o, pe);
                     return null;
                 }
             }
         };
         standardConverterMap.put(Pair.of(java.sql.Timestamp.class, String.class), stringToTimestamp);
+
+        /* String to Json */
+
+        Converter<Json> stringToJson = new Converter<Json>()
+        {
+            @Override
+            public Json convert(Serializable o)
+            {
+                try
+                {
+                    return Json.parse(String.valueOf(o));
+                }
+                catch (IOException ioe)
+                {
+                    logger.warn("could not parse '{}' into an iso timestamp", o, ioe);
+                    return null;
+                }
+            }
+        };
+        standardConverterMap.put(Pair.of(Json.class, String.class), stringToJson);
+
+        /* Json to String */
+        Converter<String> jsonToString = new Converter<String>()
+        {
+            @Override
+            public String convert(Serializable o)
+            {
+                return ((Json)o).toString();
+            }
+        };
+        standardConverterMap.put(Pair.of(String.class, Json.class), jsonToString);
     }
 
     /**

@@ -23,6 +23,9 @@ import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.util.ExtProperties;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -330,7 +333,10 @@ public class ConfigHelper
         if (ret == null)
         {
             // check classpath
-            Reflections reflections = new Reflections(new ResourcesScanner());
+            String pkg = path.replace('/', '.');
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forPackage(pkg))
+                .setScanners(Scanners.Resources));
             Set<String> resources = reflections.getResources(patternRx);
             ret = resources.stream()
                 .map(resource -> findURL(path, null, false))

@@ -55,6 +55,7 @@ public class RowAttribute extends Attribute
         PooledStatement statement = null;
         try
         {
+            // CB TODO - we don't impose the result set cardinality to be exactly one, this should be an option (or two, for null and > 1)
             statement = getModel().prepareQuery(getQuery());
             statement.getConnection().enterBusyState();
             ResultSet result = statement.executeQuery(paramValues);

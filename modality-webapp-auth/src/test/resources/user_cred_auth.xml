@@ -34,7 +34,7 @@ under the License.
     </scalar>
 
     <row name="user_by_login" result="USER">
-        select user.* as digest from user where login = <login/> and <realm/> = 'TESTS';
+        select user.* from user where login = <login/> and <realm/> = 'TESTS';
     </row>
 
 </model>

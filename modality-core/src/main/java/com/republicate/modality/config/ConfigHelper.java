@@ -22,7 +22,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.velocity.tools.ClassUtils;
 import org.apache.velocity.util.ExtProperties;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;

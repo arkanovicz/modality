@@ -23,9 +23,10 @@ import com.republicate.modality.Entity;
 import com.republicate.modality.Instance;
 import com.republicate.modality.sql.PooledStatement;
 import com.republicate.modality.sql.SqlUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 import java.io.Serializable;
 import java.sql.ResultSet;

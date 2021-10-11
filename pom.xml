@@ -48,6 +48,9 @@ under the License.
         <module>velocity-tools-apiclient</module>
         -->
         <module>velocity-tools-model</module>
+        <!--
+            <module>modality-kotlin-maven-plugin</module>
+        -->
     </modules>
     <licenses>
         <license>
@@ -172,20 +175,6 @@ under the License.
                             </property>
                         </systemProperties>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

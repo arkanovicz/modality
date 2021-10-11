@@ -306,6 +306,11 @@ public class Instance extends SlotTreeMap
         return TypeUtils.toInteger(get(name));
     }
 
+    public Integer getInt(String name)
+    {
+        return ConversionUtils.toInteger(get(name));
+    }
+
     public Long getLong(String name)
     {
         return TypeUtils.toLong(get(name));

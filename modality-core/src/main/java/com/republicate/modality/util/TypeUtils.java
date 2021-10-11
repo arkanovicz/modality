@@ -167,6 +167,11 @@ public class TypeUtils
         return null;
     }
 
+    public static Integer toInt(Object value)
+    {
+        return toInteger(value);
+    }
+
     public static Integer toInteger(Object value)
     {
         if (value == null)

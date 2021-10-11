@@ -499,11 +499,13 @@ public class Instance extends Json.Object
         if (entity == null) throw new SQLException("Instance doesn't have any entity");
         entity.getColumnNames().forEach(column ->
             {
-                // null values are
-                Serializable value = map.get(column);
-                if (!skipNullInputs || value != null)
+                if (map.containsKey(column))
                 {
-                    put(column, value);
+                    Serializable value = map.get(column);
+                    if (!skipNullInputs || value != null)
+                    {
+                        put(column, value);
+                    }
                 }
             }
         );
@@ -514,7 +516,7 @@ public class Instance extends Json.Object
                 .filter(col ->
                 {
                     String colName = entity.getColumn(col).name;
-                    return !Objects.equals(get(colName), map.get(colName));
+                    return map.containsKey(colName);
                 })
                 .forEach(col -> dirtyFlags.set(col));
         }

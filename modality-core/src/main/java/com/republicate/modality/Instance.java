@@ -374,7 +374,7 @@ public class Instance extends SlotTreeMap
 
     public boolean isDirty()
     {
-        return dirtyFlags.cardinality() > 0;
+        return !persisted || dirtyFlags.cardinality() > 0;
     }
 
     public void refresh() throws SQLException
@@ -459,25 +459,27 @@ public class Instance extends SlotTreeMap
     @Override
     public void putAll(Map<? extends String, ? extends Serializable> map)
     {
-        /* CB TODO check PK change
-        Serializable[] pk = null;
         if (persisted)
         {
-            pk = getPrimaryKey();
-        }
-         */
-        super.putAll(map);
-        if (persisted)
-        {
+            for (Entity.Column column : entity.getPrimaryKey())
+            {
+                if (map.containsKey(column.name) && !Objects.equals(ConversionUtils.toString(get(column.name)), ConversionUtils.toString(map.get(column.name))))
+                {
+                    persisted = false;
+                    break;
+                }
+            }
+
             // the persisted flag should be false before this point if PK changed
             entity.getNonPrimaryKeyMask().stream()
                 .filter(col ->
                 {
                     String colName = entity.getColumn(col).name;
-                    return !Objects.equals(get(colName), map.get(colName));
+                    return map.containsKey(colName) && !Objects.equals(ConversionUtils.toString(get(colName)), ConversionUtils.toString(map.get(colName)));
                 })
                 .forEach(col -> dirtyFlags.set(col));
         }
+        super.putAll(map);
     }
 
     public void putColumns(Map<? extends String, ? extends Serializable> map) throws SQLException
@@ -487,13 +489,6 @@ public class Instance extends SlotTreeMap
 
     public void putColumns(Map<? extends String, ? extends Serializable> map, boolean skipNullInputs) throws SQLException
     {
-        /* CB TODO check PK change
-        Serializable[] pk = null;
-        if (persisted)
-        {
-            pk = getPrimaryKey();
-        }
-         */
         if (entity == null) throw new SQLException("Instance doesn't have any entity");
         entity.getColumnNames().forEach(column ->
             {
@@ -507,18 +502,6 @@ public class Instance extends SlotTreeMap
                 }
             }
         );
-        if (persisted)
-        {
-            // the persisted flag should be false before this point if PK changed
-            entity.getNonPrimaryKeyMask().stream()
-                .filter(col ->
-                {
-                    String colName = entity.getColumn(col).name;
-                    return map.containsKey(colName);
-                })
-                .forEach(col -> dirtyFlags.set(col));
-        }
-
     }
 
     protected Serializable putImpl(String key, Serializable value)

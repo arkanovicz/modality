@@ -32,14 +32,14 @@ public class IteratorUtils
      * @param iterator
      * @return instances indexed by key column
      */
-    public static NavigableMap<Serializable, Instance> toMap(String keyColumn, Iterator<Instance> iterator)
+    public static <T extends Serializable> NavigableMap<T, Instance> toMap(String keyColumn, Iterator<Instance> iterator)
     {
-        NavigableMap<Serializable, Instance> ret = new TreeMap<>();
+        NavigableMap<T, Instance> ret = new TreeMap<>();
         while (iterator.hasNext())
         {
             Instance instance = iterator.next();
             Serializable key = instance.get(keyColumn);
-            Instance previous = ret.put(key, instance);
+            Instance previous = ret.put((T)key, instance);
             if (previous != null)
             {
                 throw new RuntimeException("toMap(): column " + keyColumn + " is not a key");
@@ -54,13 +54,13 @@ public class IteratorUtils
      * @param iterator
      * @return grouped instances
      */
-    public static NavigableMap<Serializable, List<Instance>> toGroupsMap(String column, Iterator<Instance> iterator)
+    public static <T extends Serializable> NavigableMap<T, List<Instance>> toGroupsMap(String column, Iterator<Instance> iterator)
     {
-        NavigableMap<Serializable, List<Instance>> ret = new TreeMap<>();
+        NavigableMap<T, List<Instance>> ret = new TreeMap<>();
         while (iterator.hasNext())
         {
             Instance instance = iterator.next();
-            Serializable value = instance.get(column);
+            T value = (T)instance.get(column);
             List lst = ret.get(value);
             if (lst == null)
             {

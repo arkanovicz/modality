@@ -308,11 +308,6 @@ public class Instance extends Json.Object
         return ConversionUtils.toInteger(get(name));
     }
 
-    public Integer getInt(String name)
-    {
-        return ConversionUtils.toInteger(get(name));
-    }
-
     public Long getLong(String name)
     {
         return ConversionUtils.toLong(get(name));

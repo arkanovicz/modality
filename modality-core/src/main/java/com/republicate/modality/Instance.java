@@ -371,7 +371,7 @@ public class Instance extends Json.Object
 
     public boolean isDirty()
     {
-        return dirtyFlags.cardinality() > 0;
+        return !persisted || dirtyFlags.cardinality() > 0;
     }
 
     public void refresh() throws SQLException
@@ -467,17 +467,14 @@ public class Instance extends Json.Object
                 }
             }
 
-            if (persisted)
-            {
-                // the persisted flag should be false before this point if PK changed
-                entity.getNonPrimaryKeyMask().stream()
-                    .filter(col ->
-                    {
-                        String colName = entity.getColumn(col).name;
-                        return map.containsKey(colName) && !Objects.equals(ConversionUtils.toString(get(colName)), ConversionUtils.toString(map.get(colName)));
-                    })
-                    .forEach(col -> dirtyFlags.set(col));
-            }
+            // the persisted flag should be false before this point if PK changed
+            entity.getNonPrimaryKeyMask().stream()
+                .filter(col ->
+                {
+                    String colName = entity.getColumn(col).name;
+                    return map.containsKey(colName) && !Objects.equals(ConversionUtils.toString(get(colName)), ConversionUtils.toString(map.get(colName)));
+                })
+                .forEach(col -> dirtyFlags.set(col));
         }
         super.putAll(map);
     }
@@ -489,13 +486,6 @@ public class Instance extends Json.Object
 
     public void putColumns(Map<? extends String, ? extends Serializable> map, boolean skipNullInputs) throws SQLException
     {
-        /* CB TODO check PK change
-        Serializable[] pk = null;
-        if (persisted)
-        {
-            pk = getPrimaryKey();
-        }
-         */
         if (entity == null) throw new SQLException("Instance doesn't have any entity");
         entity.getColumnNames().forEach(column ->
             {
@@ -509,18 +499,6 @@ public class Instance extends Json.Object
                 }
             }
         );
-        if (persisted)
-        {
-            // the persisted flag should be false before this point if PK changed
-            entity.getNonPrimaryKeyMask().stream()
-                .filter(col ->
-                {
-                    String colName = entity.getColumn(col).name;
-                    return map.containsKey(colName);
-                })
-                .forEach(col -> dirtyFlags.set(col));
-        }
-
     }
 
     protected Serializable putImpl(String key, Serializable value)

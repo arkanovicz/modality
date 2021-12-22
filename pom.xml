@@ -55,13 +55,13 @@ under the License.
     <licenses>
         <license>
             <name>Apache Licence</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
     <scm>
         <connection>scm:git:git@github.com:arkanovicz/velocity-model.git</connection>
         <developerConnection>scm:git:git@github.com:arkanovicz/velocity-model.git</developerConnection>
-        <url>http://arkanovicz.github.io/velocity-model/</url>
+        <url>https://arkanovicz.github.io/modality/</url>
     </scm>
     <developers>
         <developer>
@@ -69,7 +69,7 @@ under the License.
             <name>Claude Brisson</name>
             <email>claude@renegat.net</email>
             <organization>republicate.com</organization>
-            <organizationUrl>http://republicate.com</organizationUrl>
+            <organizationUrl>https://republicate.com</organizationUrl>
         </developer>
     </developers>
     <properties>
@@ -87,7 +87,7 @@ under the License.
     <repositories>
         <repository>
             <id>republicate.com</id>
-            <url>http://republicate.com/maven2</url>
+            <url>https://republicate.com/maven2</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -181,6 +181,7 @@ under the License.
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.2.0</version>
                     <configuration>
+                        <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                         <doclint>none</doclint>
                     </configuration>
                     <executions>

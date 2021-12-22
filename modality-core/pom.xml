@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.apache.velocity.tools</groupId>
             <artifactId>velocity-tools-generic</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <version>${velocity-tools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

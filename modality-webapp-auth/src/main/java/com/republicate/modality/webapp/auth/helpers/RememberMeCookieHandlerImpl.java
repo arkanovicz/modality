@@ -25,10 +25,8 @@ import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.util.AESCryptograph;
+import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.util.Cryptograph;
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
-import com.republicate.modality.util.TypeUtils;
 import com.republicate.modality.webapp.util.HttpUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -37,7 +35,9 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -131,7 +131,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         String decrypted;
         try
         {
-            byte[] bytes = TypeUtils.base64Decode(rememberMeValue);
+            byte[] bytes = ConversionUtils.base64Decode(rememberMeValue);
             decrypted = cryptograph.decrypt(bytes);
         }
         catch (Exception e)
@@ -158,7 +158,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
             logger.debug("wrong number of user key values");
             return null;
         }
-        SlotMap params = buildParams(pk, ip, ua, secureKey);
+        Map<String, Serializable> params = buildParams(pk, ip, ua, secureKey);
         try
         {
             return doCheckCookie.retrieve(params);
@@ -187,7 +187,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
             Cookie cookie = createCookie(pk, ip, ua, secureKey);
             response.addCookie(cookie);
 
-            SlotMap params = buildParams(pk, ip, ua, secureKey);
+            Map<String, Serializable> params = buildParams(pk, ip, ua, secureKey);
             try
             {
                 doCreateCookie.perform(params);
@@ -246,7 +246,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
 
-        SlotMap params = buildParams(pk, ip, ua, secureKey);
+        Map<String, Serializable> params = buildParams(pk, ip, ua, secureKey);
         try
         {
             action.perform(params);
@@ -265,9 +265,9 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
             .orElse(null);
     }
 
-    private SlotMap buildParams(Serializable[] pk, String ip, String ua, String secureKey)
+    private Map<String, Serializable> buildParams(Serializable[] pk, String ip, String ua, String secureKey)
     {
-        SlotMap params = new SlotHashMap();
+        Map<String, Serializable> params = new HashMap<>();
         IntStream.range(0, pk.length).forEach(i -> params.put(usersPrimaryKey.get(i), pk[i]));
         params.put("ip", ip);
         params.put("user_agent", ua);
@@ -283,7 +283,7 @@ public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
             .append('#').append(ip)
             .append('#').append(ua)
             .append('#').append(secureKey);
-        String encrypted = TypeUtils.base64Encode(cryptograph.encrypt(cleanCookie.toString()));
+        String encrypted = ConversionUtils.base64Encode(cryptograph.encrypt(cleanCookie.toString()));
         Cookie cookie = new Cookie(cookieName, encrypted);
         if (cookieDomain != null)
         {

@@ -24,12 +24,13 @@ import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 import com.republicate.modality.RowAttribute;
 import com.republicate.modality.config.ConfigurationException;
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 
 public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
@@ -59,7 +60,7 @@ public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
     {
         try
         {
-            SlotMap params = new SlotHashMap();
+            Map<String, Serializable> params = new HashMap<>();
             params.put("realm", realm);
             params.put("login", login);
             params.put("password", password);

@@ -20,11 +20,10 @@ package com.republicate.modality.velosurf;
  */
 
 import com.republicate.modality.Model;
-import com.republicate.modality.config.ConfigDigester;
 import com.republicate.modality.config.ConfigurationException;
 import com.republicate.modality.util.AESCryptograph;
+import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.util.Cryptograph;
-import com.republicate.modality.util.TypeUtils;
 import org.apache.velocity.tools.XmlUtils;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -87,12 +86,12 @@ public class Velosurf extends Model
 
     public String obfuscate(String clear)
     {
-        return TypeUtils.base64Encode(obfuscator.encrypt(clear));
+        return ConversionUtils.base64Encode(obfuscator.encrypt(clear));
     }
 
     public String deobfuscate(String obfuscated)
     {
-        return obfuscator.decrypt(TypeUtils.base64Decode(obfuscated));
+        return obfuscator.decrypt(ConversionUtils.base64Decode(obfuscated));
     }
 
     private Cryptograph obfuscator = null;

@@ -20,10 +20,9 @@ package com.republicate.modality;
  */
 
 import com.republicate.modality.impl.BaseEntity;
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -63,7 +62,7 @@ public class Entity extends BaseEntity implements Iterable<Instance>
 
     public long getCount() throws SQLException
     {
-        return TypeUtils.toLong(getCountAttribute().evaluate());
+        return ConversionUtils.toLong(getCountAttribute().evaluate());
     }
 
     public Instance fetch(Serializable... key) throws SQLException

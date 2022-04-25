@@ -23,7 +23,7 @@ import com.republicate.modality.Entity;
 import com.republicate.modality.Model;
 import com.republicate.modality.impl.AttributeHolder;
 import com.republicate.modality.impl.BaseAttribute;
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.ClassUtils;
 import org.w3c.dom.Attr;
@@ -436,7 +436,7 @@ public class ConfigDigester
         }
         else if (clazz == Boolean.TYPE)
         {
-            ret = TypeUtils.toBoolean(value);
+            ret = ConversionUtils.toBoolean(value);
         }
         else if (Enum.class.isAssignableFrom(clazz) && value instanceof String)
         {

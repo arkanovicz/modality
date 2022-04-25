@@ -19,7 +19,7 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.util.TypeUtils;
+import com.republicate.modality.util.ConversionUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -48,7 +48,7 @@ public abstract class BaseHTTPBasicAuthFilter<USER> extends BaseAuthFilter<USER>
         USER ret = null;
         if (authHeader != null && authHeader.startsWith("Basic "))
         {
-            byte[] decrypted = TypeUtils.base64Decode(authHeader.substring(6));
+            byte[] decrypted = ConversionUtils.base64Decode(authHeader.substring(6));
             String clear = new String(decrypted, StandardCharsets.UTF_8);
             int sep = clear.indexOf(':');
             if (sep == -1)

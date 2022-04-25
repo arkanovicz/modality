@@ -19,15 +19,16 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import com.republicate.modality.util.SlotHashMap;
-import com.republicate.modality.util.SlotMap;
 import com.republicate.modality.webapp.auth.helpers.NonceStore;
 import com.republicate.modality.webapp.util.Digester;
 import com.republicate.modality.webapp.util.HttpUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -77,7 +78,7 @@ public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER
     {
         String authHeader = request.getHeader("Authenticate");
         USER ret = null;
-        SlotMap authParams = null;
+        Map<String, Serializable> authParams = null;
         if (authHeader != null)
         {
             try
@@ -117,13 +118,13 @@ public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER
         return ret;
     }
 
-    private SlotMap getAuthenticationParams(String headerValue) throws AuthenticationException
+    private Map<String, Serializable> getAuthenticationParams(String headerValue) throws AuthenticationException
     {
         if (!headerValue.startsWith("Digest "))
         {
             throw new AuthenticationException("invalid Digest authentication: " + headerValue);
         }
-        SlotMap ret = new SlotHashMap();
+        Map<String, Serializable> ret = new HashMap<>();
         boolean hasQOP = false;
         int nc = 0;
         String[] parts = headerValue.substring(7).split(", *");
@@ -208,7 +209,7 @@ public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER
         return ret;
     }
 
-    private Pair<String, USER> calcExpectedResponse(SlotMap authParams, HttpServletRequest request) throws AuthenticationException
+    private Pair<String, USER> calcExpectedResponse(Map<String, Serializable> authParams, HttpServletRequest request) throws AuthenticationException
     {
         String username = (String) authParams.get("username");
         String md5 = getUserRealmPasswordMD5(username);
@@ -242,7 +243,7 @@ public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER
 
     protected abstract USER getUserInstance(String login) throws AuthenticationException;
 
-    private String calcHA1(SlotMap authParams, String md5) throws AuthenticationException
+    private String calcHA1(Map<String, Serializable> authParams, String md5) throws AuthenticationException
     {
         String algorithm = (String)authParams.get("algorithm");
         String ha1;
@@ -260,7 +261,7 @@ public abstract class BaseHTTPDigestAuthFilter<USER> extends BaseAuthFilter<USER
         return ha1;
     }
 
-    private String calcHA2(SlotMap authParams, HttpServletRequest request) throws AuthenticationException
+    private String calcHA2(Map<String, Serializable> authParams, HttpServletRequest request) throws AuthenticationException
     {
         String qop = (String)authParams.get("qop");
         String ha2;

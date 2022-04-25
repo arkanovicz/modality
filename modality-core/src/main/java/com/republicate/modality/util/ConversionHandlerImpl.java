@@ -662,7 +662,7 @@ public class ConversionHandlerImpl implements ConversionHandler
               }
               catch (ParseException pe)
               {
-                  logger.warn("could not parse '{}' into an iso date", o);
+                  logger.warn("could not parse '{}' into an iso date", o, pe);
                   return null;
               }
           }
@@ -679,7 +679,7 @@ public class ConversionHandlerImpl implements ConversionHandler
                 }
                 catch (ParseException pe)
                 {
-                    logger.warn("could not parse '{}' into an iso timestamp", o);
+                    logger.warn("could not parse '{}' into an iso timestamp", o, pe);
                     return null;
                 }
             }

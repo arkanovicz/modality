@@ -37,6 +37,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -70,9 +71,9 @@ public abstract class BaseEntity extends AttributeHolder
         this.sqlName = table;
     }
 
-    protected void addColumn(String name, String sqlName,  int type, Integer size, boolean generated) throws SQLException
+    protected void addColumn(String name, String sqlName,  int type, Integer size, boolean generated, String typeName) throws SQLException
     {
-        addColumn(new Entity.Column(name, sqlName, type, size, generated));
+        addColumn(new Entity.Column(name, sqlName, type, size, generated, typeName));
     }
 
     protected void addColumn(Entity.Column column) throws SQLException
@@ -405,7 +406,6 @@ public abstract class BaseEntity extends AttributeHolder
     protected final Serializable filterValue(String columnName, Serializable value) throws SQLException
     {
         if (value != null)
-
         {
             value = getModel().getFilters().getWriteFilters().filter(value);
             Column column = getColumn(columnName);
@@ -417,7 +417,8 @@ public abstract class BaseEntity extends AttributeHolder
                     Class formalClass = SqlUtils.getSqlTypeClass(column.type);
                     if (formalClass == null)
                     {
-                        throw new SQLException("unhandled SQL type: " + column.type);
+                        getLogger().warn("unhandled SQL type (falling back to String): {} ", column.typeName);
+                        formalClass = String.class;
                     }
                     Class actualClass = value.getClass();
                     if (formalClass != actualClass)
@@ -426,6 +427,16 @@ public abstract class BaseEntity extends AttributeHolder
                         if (converter != null)
                         {
                             value = converter.convert(value);
+                        }
+                    }
+                    // special mappings
+                    if (column.type == Types.OTHER)
+                    {
+                        switch (getModel().getDriverInfos().getTag())
+                        {
+                            case "postgresql":
+                                value = SqlUtils.getPGObject(column.typeName, value);
+                                break;
                         }
                     }
                 }
@@ -504,11 +515,12 @@ public abstract class BaseEntity extends AttributeHolder
 
     public static class Column implements Serializable
     {
-        public Column(String name, String sqlName, int type, Integer size, boolean generated)
+        public Column(String name, String sqlName, int type, Integer size, boolean generated, String typeName)
         {
             this.name = name;
             this.sqlName = sqlName;
             this.type = type;
+            this.typeName = typeName;
             this.size = size;
             this.generated = generated;
         }
@@ -560,6 +572,7 @@ public abstract class BaseEntity extends AttributeHolder
         public final String name;
         public final String sqlName;
         public final int type;
+        public final String typeName;
         public final Integer size;
         public final boolean generated;
         private int index = -1;

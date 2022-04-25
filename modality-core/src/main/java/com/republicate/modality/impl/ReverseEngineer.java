@@ -154,10 +154,11 @@ public class ReverseEngineer
                     String colSqlName = columns.getString("COLUMN_NAME");
                     String colName = identifiers.transformColumnName(table, colSqlName);
                     int dataType = columns.getInt("DATA_TYPE");
+                    String typeName = columns.getString("TYPE_NAME");
                     String gen1 = columns.getString("IS_AUTOINCREMENT");
                     String gen2 = columns.getString("IS_GENERATEDCOLUMN");
                     boolean generated = "YES".equals(gen1) || "YES".equals(gen2);
-                    ret.add(new Entity.Column(colName, colSqlName, dataType, size, generated));
+                    ret.add(new Entity.Column(colName, colSqlName, dataType, size, generated, typeName));
                 }
             }
             return ret;
@@ -313,6 +314,10 @@ public class ReverseEngineer
      */
     private List<String> sortColumns(List<String> ordered, List<String> unordered, List<String> target)
     {
+        if (ordered.size() != unordered.size() || ordered.size() != target.size())
+        {
+            throw new ConfigurationException("FK/PK cardinality inconsistency");
+        }
         if(ordered.size() == 1)
         {
             return target;

@@ -314,6 +314,10 @@ public class ReverseEngineer
      */
     private List<String> sortColumns(List<String> ordered, List<String> unordered, List<String> target)
     {
+        if (ordered.size() != unordered.size() || ordered.size() != target.size())
+        {
+            throw new ConfigurationException("FK/PK cardinality inconsistency");
+        }
         if(ordered.size() == 1)
         {
             return target;

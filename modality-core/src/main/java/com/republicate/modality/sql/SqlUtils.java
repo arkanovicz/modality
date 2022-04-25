@@ -184,12 +184,13 @@ public class SqlUtils
         Stack<SplitState> state = new Stack<>();
         state.push(SplitState.NORMAL);
         int dollars = 0;
-        boolean afterHyphen = false;
+        Character c = null, prevChar = null;
         int parLevel = 0;
         StringBuilder currentQuery = new StringBuilder();
         for (int i = 0; i < query.length(); ++i)
         {
-            Character c = query.charAt(i);
+            prevChar = c;
+            c = query.charAt(i);
             if(state.peek() != SplitState.COMMENT) currentQuery.append(c);
             switch (state.peek())
             {
@@ -199,15 +200,10 @@ public class SqlUtils
                     {
                         case '-':
                         {
-                            if (afterHyphen)
+                            if (prevChar != null && prevChar == '-')
                             {
-                                afterHyphen = false;
                                 state.push(SplitState.COMMENT);
                                 currentQuery.delete(currentQuery.length() - 2, currentQuery.length());
-                            }
-                            else
-                            {
-                                afterHyphen = true;
                             }
                             break;
                         }

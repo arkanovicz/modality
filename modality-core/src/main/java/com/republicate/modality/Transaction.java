@@ -36,6 +36,7 @@ import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Transaction extends Action
 {
@@ -114,7 +115,15 @@ public class Transaction extends Action
                     {
                         statement.setObject(i, paramValues[param++]);
                     }
-                    changed += statement.executeUpdate();
+                    // some engines use SELECT statements as part of write operations, like postgres with SELECT SETVAL(...)
+                    if (individualStatement.toUpperCase(Locale.ROOT).startsWith("SELECT"))
+                    {
+                        statement.execute();
+                    }
+                    else
+                    {
+                        changed += statement.executeUpdate();
+                    }
                 }
             }
             if (savepoint == null)

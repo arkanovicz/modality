@@ -601,6 +601,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             setDefinition(new URL(path));
         }
+        else
+        {
+            String location = path;
+            if (!location.startsWith("/")) location = "/" + location;
+            URL resource = this.getClass().getResource(location);
+            if (resource == null) throw new ConfigurationException("definition not found: " + location);
+            setDefinition(resource);
+        }
         return getModel();
     }
 

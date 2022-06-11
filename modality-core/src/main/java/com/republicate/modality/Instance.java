@@ -305,7 +305,7 @@ public class Instance extends Json.Object
 
     public Integer getInt(String name)
     {
-        return TypeUtils.toInteger(get(name));
+        return ConversionUtils.toInt(get(name));
     }
 
     public Long getLong(String name)
@@ -460,7 +460,7 @@ public class Instance extends Json.Object
         {
             for (Entity.Column column : entity.getPrimaryKey())
             {
-                if (map.containsKey(column.name) && !Objects.equals(TypeUtils.toString(get(column.name)), TypeUtils.toString(map.get(column.name))))
+                if (map.containsKey(column.name) && !Objects.equals(ConversionUtils.toString(get(column.name)), ConversionUtils.toString(map.get(column.name))))
                 {
                     persisted = false;
                     break;
@@ -472,7 +472,7 @@ public class Instance extends Json.Object
                 .filter(col ->
                 {
                     String colName = entity.getColumn(col).name;
-                    return map.containsKey(colName) && !Objects.equals(TypeUtils.toString(get(colName)), TypeUtils.toString(map.get(colName)));
+                    return map.containsKey(colName) && !Objects.equals(ConversionUtils.toString(get(colName)), ConversionUtils.toString(map.get(colName)));
                 })
                 .forEach(col -> dirtyFlags.set(col));
         }

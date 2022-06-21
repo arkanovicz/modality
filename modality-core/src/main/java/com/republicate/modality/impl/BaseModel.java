@@ -670,7 +670,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return Collections.unmodifiableNavigableMap(entitiesMap);
     }
 
-    protected UserInstancesConfig getInstances()
+    public UserInstancesConfig getInstances()
     {
         return userInstancesConfig;
     }

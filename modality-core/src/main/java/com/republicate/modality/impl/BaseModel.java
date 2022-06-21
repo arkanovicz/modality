@@ -1182,7 +1182,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         private String cryptographClass = null;
     }
 
-    protected class UserInstancesConfig
+    public class UserInstancesConfig
     {
 
         protected Class getFactory()

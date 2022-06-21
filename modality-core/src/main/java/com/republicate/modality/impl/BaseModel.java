@@ -1265,27 +1265,66 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                     }
                     if (Instance.class.isAssignableFrom(clazz))
                     {
-                        try
+                        Constructor<?> ctors[] = clazz.getDeclaredConstructors();
+                        if (ctors.length != 1)
                         {
-                            final Constructor ctor = clazz.getDeclaredConstructor(Entity.class);
-                            // ctor.setAccessible(true);
-                            entity.setInstanceBuilder(() ->
+                            throw new ConfigurationException("Class " + clazz.getName() + " must declare a single public ctor");
+                        }
+                        final Constructor<?> ctor = ctors[0];
+                        // valid constructors take either zero argument or one argument of type Entity
+                        Class<?> args[] = ctor.getParameterTypes();
+                        switch (args.length)
+                        {
+                            case 0:
                             {
-                                try
+                                entity.setInstanceBuilder(() ->
                                 {
-                                    return (Instance)ctor.newInstance(entity);
-                                }
-                                catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                                    try
+                                    {
+                                        return (Instance)ctor.newInstance();
+                                    }
+                                    catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                                    {
+                                        throw new RuntimeException("could not create instance of class " + clazz.getName());
+                                    }
+                                });
+                                break;
+                            }
+                            case 1:
+                            {
+                                if (args[0] != Entity.class)
                                 {
-                                    throw new RuntimeException("could not create instance of class " + clazz.getName());
+                                    throw new ConfigurationException("Class " + clazz.getName() + " constructor can only be given an Entity as argument");
                                 }
-                            });
-
+                                entity.setInstanceBuilder(() ->
+                                {
+                                    try
+                                    {
+                                        return (Instance)ctor.newInstance(entity);
+                                    }
+                                    catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                                    {
+                                        throw new RuntimeException("could not create instance of class " + clazz.getName());
+                                    }
+                                });
+                                break;
+                            }
+                            default:
+                            {
+                                throw new ConfigurationException("Class " + clazz.getName() + " constructor must take zero or one argument");
+                            }
                         }
-                        catch (NoSuchMethodException nsme)
+                        entity.setInstanceBuilder(() ->
                         {
-                            throw new ConfigurationException("Class " + clazz.getName() + " must declare a public ctor taking an Entity as argument");
-                        }
+                            try
+                            {
+                                return (Instance)ctor.newInstance(entity);
+                            }
+                            catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                            {
+                                throw new RuntimeException("could not create instance of class " + clazz.getName());
+                            }
+                        });
                     }
                     else
                     {

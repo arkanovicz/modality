@@ -1314,17 +1314,6 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                                 throw new ConfigurationException("Class " + clazz.getName() + " constructor must take zero or one argument");
                             }
                         }
-                        entity.setInstanceBuilder(() ->
-                        {
-                            try
-                            {
-                                return (Instance)ctor.newInstance(entity);
-                            }
-                            catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
-                            {
-                                throw new RuntimeException("could not create instance of class " + clazz.getName());
-                            }
-                        });
                     }
                     else
                     {

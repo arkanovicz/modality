@@ -1285,7 +1285,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                                     }
                                     catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
                                     {
-                                        throw new RuntimeException("could not create instance of class " + clazz.getName());
+                                        throw new RuntimeException("could not create instance of class " + clazz.getName(), e);
                                     }
                                 });
                                 break;
@@ -1304,7 +1304,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                                     }
                                     catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
                                     {
-                                        throw new RuntimeException("could not create instance of class " + clazz.getName());
+                                        throw new RuntimeException("could not create instance of class " + clazz.getName(), e);
                                     }
                                 });
                                 break;

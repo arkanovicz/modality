@@ -274,10 +274,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 }
             }
 
-            String versionningScripts = config.getString(MODEL_MIGRATION_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
-            if (!"false".equals(versionningScripts))
+            String versioningScriptsPath = config.getString(MODEL_MIGRATION_SCRIPTS, DEFAULT_MIGRATION_ROOT_PATH + "/" + getModelId());
+            if (!"false".equals(versioningScriptsPath))
             {
-                setVersionningScripts(config.findResources(versionningScripts, ".*\\.sql", servletContext));
+                addVersioningScripts(config.findResources(versioningScriptsPath, ".*\\.sql", servletContext));
             }
 
             return getModel();
@@ -357,10 +357,10 @@ public abstract class BaseModel extends AttributeHolder implements Constants
             getFilters().initialize();
             reverseEngineer();
             getInstances().initialize();
+            upgradeIfNeeded();
             initializeAttributes(); // root attributes initialization
             registerModel();
             initialized = true;
-            upgradeIfNeeded();
         }
         catch (ConfigurationException ce)
         {
@@ -433,7 +433,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     protected void checkInitialized()
     {
-        if (!initialized)
+        if (!initialized && !migrating)
         {
             throw Optional.ofNullable(initializationError).orElse(new ConfigurationException("model hasn't been initialized"));
         }
@@ -619,10 +619,19 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         return getModel();
     }
 
-    public void setVersionningScripts(Set<URL> versionningScripts)
+    public void setVersioningScripts(Set<URL> versioningScripts)
     {
-        this.versionningScripts = new TreeSet(ConfigHelper.urlComparator);
-        this.versionningScripts.addAll(versionningScripts);
+        this.versioningScripts = new TreeSet(ConfigHelper.urlComparator);
+        this.versioningScripts.addAll(versioningScripts);
+    }
+
+    public void addVersioningScripts(Set<URL> versioningScripts)
+    {
+        if (this.versioningScripts == null)
+        {
+            this.versioningScripts = new TreeSet(ConfigHelper.urlComparator);
+        }
+        this.versioningScripts.addAll(versioningScripts);
     }
 
     public Credentials getCredentials()
@@ -894,8 +903,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         }
     }
 
-    @Override
-    protected void initializeAttributes()
+    private void initalizeVersioningAttributes()
     {
         // add model_version and create_model_version root attributes if not present
         // note: specifc vendors should be taken in to account in create table syntax
@@ -910,9 +918,14 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         if (createModelVersion == null)
         {
             createModelVersion = new Action(CREATE_MODEL_VERSION, this);
-            createModelVersion.setQuery("CREATE TABLE model_version (script VARCHAR(200) NOT NULL PRIMARY KEY);");
+            createModelVersion.setQuery("CREATE TABLE IF NOT EXISTS model_version (script VARCHAR(200) NOT NULL PRIMARY KEY);");
             addAttribute(createModelVersion);
         }
+    }
+
+    @Override
+    protected void initializeAttributes()
+    {
         super.initializeAttributes();
     }
 
@@ -931,11 +944,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     }
     protected void upgradeIfNeeded()
     {
-        if (versionningScripts == null || versionningScripts.isEmpty())
+        if (versioningScripts == null || versioningScripts.isEmpty())
         {
             logger.debug("Not checking database version (no migration script provided)");
             return;
         }
+        migrating = true;
         SortedSet<String> applied = null;
         // first try
         try
@@ -946,11 +960,12 @@ public abstract class BaseModel extends AttributeHolder implements Constants
         {
             // ignore
         }
-        // on failure, try to create the versionning table
+        // on failure, try to create the versioning table
         if (applied == null)
         {
             try
             {
+                initalizeVersioningAttributes();
                 getAction(CREATE_MODEL_VERSION).perform();
                 applied = getAppliedScripts();
             }
@@ -959,7 +974,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 throw new ConfigurationException("Could not check database for needed upgrade", sqle);
             }
         }
-        Iterator<URL> availableIt = versionningScripts.iterator();
+        Iterator<URL> availableIt = versioningScripts.iterator();
         Iterator<String> appliedIt = applied.iterator();
         while (true)
         {
@@ -969,7 +984,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 {
                     // CB TODO - there could be a flag to relax this case
                     String firstNotFound = appliedIt.next();
-                    throw new ConfigurationException("Versionning inconsistency: script '" + firstNotFound + "' and following ones not found in resources");
+                    throw new ConfigurationException("Versioning inconsistency: script '" + firstNotFound + "' and following ones not found in resources");
                 }
                 break;
             }
@@ -985,7 +1000,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 String appliedScript = appliedIt.next();
                 if (!appliedScript.equals(availableScript))
                 {
-                    throw new ConfigurationException("Versionning inconsistency: history divergence: next resource script is '" + availableScript + "', next applied script is '" + appliedScript + "'");
+                    throw new ConfigurationException("Versioning inconsistency: history divergence: next resource script is '" + availableScript + "', next applied script is '" + appliedScript + "'");
                 }
                 continue;
             }
@@ -1005,6 +1020,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 throw new ConfigurationException("Could not upgrade model to " + availableScript, e);
             }
         }
+        migrating = false;
         logger.info("model is up to date");
     }
 
@@ -1419,6 +1435,7 @@ public abstract class BaseModel extends AttributeHolder implements Constants
     private boolean configuring = false;
     private boolean configured = false;
     private boolean initialized = false;
+    private boolean migrating = false;
     private ConfigurationException initializationError = null;
 
     private Object servletContext = null;
@@ -1543,5 +1560,5 @@ public abstract class BaseModel extends AttributeHolder implements Constants
      */
     private ConversionHandler conversionHandler = new ConversionHandlerImpl();
 
-    private SortedSet<URL> versionningScripts = null;
+    private SortedSet<URL> versioningScripts = null;
 }

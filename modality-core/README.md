@@ -27,7 +27,7 @@ Lightweight ORM for Java, providing:
 + works with any JDBC-compliant data source
 + instances (rows) can be mapped to any POJO
 + connections and prepared statements pooling
-+ database schema versionning
++ database migration scripts
 
 ## Main Concepts
 
@@ -240,9 +240,9 @@ model.filters.write.*.html_* = -no_html
 model.filters.read.*.html_* = escape_html
 ```
 
-### Database schema versionning
+### Database schema versioning
 
-Modality provides a basic schema versionning feature.
+Modality provides a basic schema versioning feature.
 
 Migration scripts are specific to each database schema. They are searched in the `migations/$modelId` directory, which can be changed using the `model.migration_scripts` configuration property.
 
@@ -265,3 +265,5 @@ That's it. No checksum tests as in Flyway or Liquibase, which I found rather cou
 Be aware that when using an engine which is not able to handle rollbacks of DDL statements (like `mysql` and `mariadb`), you will have to manually revert those if something wrong happens.
 
 When updating a schema, if you are maintaining global creation scripts, you would typically add the `model_version` table and populate it with the considered scripts.
+
+Note that for now, Modality requires the target schema to already exist.

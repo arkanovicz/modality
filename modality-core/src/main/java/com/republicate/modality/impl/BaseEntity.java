@@ -329,6 +329,11 @@ public abstract class BaseEntity extends AttributeHolder
             String sqlPKColName = sqlPrimaryKey.get(i);
             attribute.addQueryPart(quoteIdentifier(sqlPKColName) + " = ");
             attribute.addParameter(translateColumnName(sqlPKColName));
+            if (model.getDriverInfos().isStrictColumnTypes() && model.getDriverInfos().hasColumnMarkers())
+            {
+                Column col = getColumn(sqlPKColName);
+                attribute.addQueryPart("::" + col.typeName);
+            }
         }
     }
 

@@ -112,6 +112,7 @@ public class SqlUtils
         sqlTypeToClass.put(Types.TIMESTAMP, java.sql.Timestamp.class);
         sqlTypeToClass.put(Types.TINYINT, Byte.class);
         sqlTypeToClass.put(Types.VARCHAR, String.class);
+        sqlTypeToClass.put(Types.BINARY, byte[].class);
     }
 
     public static Class getSqlTypeClass(int type)

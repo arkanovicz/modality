@@ -80,6 +80,7 @@ public class ConversionHandlerImpl implements ConversionHandler
 
     static DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     static DateFormat isoTimestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static DateFormat isoSepTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * a converters cache map, initialized with the standard narrowing and string parsing conversions.
@@ -677,7 +678,9 @@ public class ConversionHandlerImpl implements ConversionHandler
             {
                 try
                 {
-                    return new java.sql.Timestamp(isoTimestampFormat.parse(String.valueOf(o)).getTime());
+                    String strTime = String.valueOf(o);
+                    DateFormat format = strTime.contains("T") ? isoSepTimestampFormat : isoTimestampFormat;
+                    return new java.sql.Timestamp(format.parse(strTime).getTime());
                 }
                 catch (ParseException pe)
                 {

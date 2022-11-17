@@ -38,6 +38,7 @@ Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_
 
 Components:
 
++ [modality-core](modality-core) - Core Modality library.
 + [modality-api-client](modality-api-client) - API client utility for JSON/XML APIs.
 + [modality-webapp](modality-webapp) - servlets and filters for Modality-core configuration and initialization in a J2EE webapp environment.
 + [modality-webapp-auth](modality-webapp-auth) - authentication filters assortment.

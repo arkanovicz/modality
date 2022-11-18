@@ -39,9 +39,9 @@ Its design is based on a [bottom-up](https://en.wikipedia.org/wiki/Top-down_and_
 
 Components:
 
++ [modality-core](modality-core) - Core Modality library.
 + [modality-api-client](modality-api-client) - API client utility for JSON/XML APIs.
 + [modality-webapp](modality-webapp) - servlets and filters for Modality-core configuration and initialization in a J2EE webapp environment.
 + [modality-webapp-auth](modality-webapp-auth) - authentication filters assortment.
 + [velocity-tools-model](velocity-tools-model) - view layer model tool which encapsulates modality-core model objects for use with Apache Velocity Tools.
 
-Modules `modality-webapp` and `modality-webapp-auth` have been published with v1.0 because they are needed by `modality-example-bookshelf`, but shall undergo some refactoring. 

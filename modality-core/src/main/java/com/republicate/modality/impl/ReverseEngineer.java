@@ -206,7 +206,7 @@ public class ReverseEngineer
     {
         List<Pair<String, List<String>>> joins = new ArrayList<>();
         List<String> knownPK = pkEntity.getSqlPrimaryKey();
-        if (knownPK == null || knownPK.size() == 0)
+        if (knownPK == null || knownPK.size() == 0 || pkEntity.getTable() == null)
         {
             return joins;
         }

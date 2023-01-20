@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import javax.sql.DataSource;
 
 /**
@@ -38,35 +39,17 @@ import javax.sql.DataSource;
  */
 public class ConnectionPool implements Serializable
 {
+    private static final int VALIDATION_TIMEOUT = 1; // 1s is long enough
+
     protected static Logger logger = LoggerFactory.getLogger("sql");
+    private static Random randomizer = new Random();
 
     /**
      * Constructor.
-     * @param schema schema
-     * @param driverInfos infos on the driverInfos
-     * @param autocommit autocommit
-     * @param max max connections
-     * @throws SQLException
-     * /
-    public ConnectionPool(String schema, DriverInfos driverInfos, boolean autocommit, int max)
-            throws SQLException
-    {
-        this.schema = schema;
-        this.driverInfos = driverInfos;
-        this.autocommit = autocommit;
-        connections = new ArrayList<ConnectionWrapper>();
-        this.max = max;
-    }
-    */
-
-    /**
      *
-     * @param dataSource
-     * @param schema
-     * @param max
      * @throws SQLException
      */
-    public ConnectionPool(DataSource dataSource, Credentials credentials, DriverInfos driverInfos, String schema, boolean autocommit, int max) throws SQLException
+    public ConnectionPool(DataSource dataSource, Credentials credentials, DriverInfos driverInfos, String schema, boolean autocommit, int max, boolean checkConnections) throws SQLException
     {
         this.dataSource = dataSource;
         this.credentials = credentials;
@@ -74,6 +57,22 @@ public class ConnectionPool implements Serializable
         this.schema = schema;
         this.autocommit = autocommit;
         this.max = max;
+        this.checkConnections = checkConnections;
+    }
+
+    public ConnectionPool(DataSource dataSource, Credentials credentials, DriverInfos driverInfos, String schema, boolean autocommit, int max) throws SQLException
+    {
+        this(dataSource, credentials, driverInfos, schema, autocommit, max, true);
+    }
+
+    public ConnectionPool(DataSource dataSource, Credentials credentials, DriverInfos driverInfos, String schema, boolean autocommit) throws SQLException
+    {
+        this(dataSource, credentials, driverInfos, schema, autocommit, 50, true);
+    }
+
+    public ConnectionPool(DataSource dataSource, Credentials credentials, DriverInfos driverInfos, String schema) throws SQLException
+    {
+        this(dataSource, credentials, driverInfos, schema, true, 50, true);
     }
 
     public DataSource getDataSource()
@@ -96,14 +95,16 @@ public class ConnectionPool implements Serializable
         for(Iterator it = connections.iterator(); it.hasNext(); )
         {
             ConnectionWrapper c = (ConnectionWrapper)it.next();
-
-            if(c.isClosed())
+            if (!c.isBusy())
             {
-                it.remove();
-            }
-            else if(!c.isBusy())
-            {
-                return c;
+                if(c.isClosed() || checkConnections && !c.isValid(VALIDATION_TIMEOUT))
+                {
+                    it.remove();
+                }
+                else
+                {
+                    return c;
+                }
             }
         }
         if(connections.size() == max)
@@ -111,7 +112,7 @@ public class ConnectionPool implements Serializable
             logger.warn("Connection pool: max number of connections reached! ");
 
             // return a busy connection...
-            return connections.get(0);
+            return connections.get(randomizer.nextInt(connections.size()));
         }
 
         ConnectionWrapper newconn = createConnection();
@@ -199,4 +200,7 @@ public class ConnectionPool implements Serializable
 
     /** Maximum number of connections. */
     private int max;
+
+    /** whether to check connections */
+    private boolean checkConnections;
 }

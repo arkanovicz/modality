@@ -570,7 +570,7 @@ public class Instance extends Json.Object
     {
         if (model == null)
         {
-            // the only way this can happen is when instance has ben deserialized
+            // the only way this can happen is when instance has been deserialized
             // while corresponding model has never been initialized
             throw new IOException("cannot serialize instance again: its model was never initialized");
         }

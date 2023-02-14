@@ -23,7 +23,7 @@ under the License.
         <groupId>com.republicate.modality</groupId>
         <artifactId>modality</artifactId>
 
-        <version>2.3</version>
+        <version>2.4</version>
     </parent>
 
     <artifactId>velocity-tools-model</artifactId>

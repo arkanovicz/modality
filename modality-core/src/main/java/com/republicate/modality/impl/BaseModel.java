@@ -412,13 +412,11 @@ public abstract class BaseModel extends AttributeHolder implements Constants
                 setDataSource(new BasicDataSource(databaseURL));
             }
         }
-        // override driver properties deduced from database metadata
-        // with properties provided by the user
+        // set up driver properties defaults from database metadata
+        // TODO - do not overwrite user config
         Connection connection = getCredentials().getConnection(dataSource);
         Properties props = ReverseEngineer.getStockDriverProperties(connection.getMetaData().getURL());
-        DriverInfos stockInfos = new DriverInfos();
         ConfigDigester.setProperties(this, props);
-        getDriverInfos().setDefaults(stockInfos);
         getDriverInfos().log();
 
         connectionPool = new ConnectionPool(dataSource, credentials, driverInfos, schema, true, maxConnections);

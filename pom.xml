@@ -80,7 +80,7 @@ under the License.
         <servlet.version>3.1.0</servlet.version>
         <velocity-tools.version>3.1</velocity-tools.version>
         <jetty.version>9.4.49.v20220914</jetty.version>
-        <hsqldb.version>2.7.4</hsqldb.version>
+        <hsqldb.version>2.7.2</hsqldb.version>
     </properties>
     <!-- as long as we are using snapshot versions for Velocity and Velocity Tools,
          make sure we use the lastest ones

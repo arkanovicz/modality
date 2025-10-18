@@ -115,7 +115,7 @@ public class DriverInfos implements Constants, Serializable
 
     public void setPingQuery(String query)
     {
-        this.pingQuery = pingQuery;
+        this.pingQuery = query;
     }
 
     public CaseSensitivity getTablesCaseSensitivity()

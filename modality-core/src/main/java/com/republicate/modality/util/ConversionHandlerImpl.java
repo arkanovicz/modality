@@ -28,9 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -690,6 +692,25 @@ public class ConversionHandlerImpl implements ConversionHandler
             }
         };
         standardConverterMap.put(Pair.of(java.sql.Timestamp.class, String.class), stringToTimestamp);
+
+        Converter<java.sql.Time> stringToTime = new Converter<java.sql.Time>()
+        {
+            @Override
+            public Time convert(Serializable o)
+            {
+                try
+                {
+                    String strTime = String.valueOf(o);
+                    return Time.valueOf(LocalTime.parse(strTime));
+                }
+                catch (Exception e)
+                {
+                    logger.warn("could not parse '{}' into an iso time", o, e);
+                    return null;
+                }
+            }
+        };
+        standardConverterMap.put(Pair.of(java.sql.Time.class, String.class), stringToTime);
 
         /* String to Json */
 

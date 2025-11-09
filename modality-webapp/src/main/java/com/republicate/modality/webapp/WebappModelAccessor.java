@@ -2,7 +2,7 @@ package com.republicate.modality.webapp;
 
 import com.republicate.modality.Model;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 public interface WebappModelAccessor
 {

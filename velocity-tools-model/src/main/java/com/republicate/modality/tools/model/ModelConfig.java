@@ -86,7 +86,7 @@ public class ModelConfig extends SafeConfig
             Class servletUtilsClass = null;
             try
             {
-                servletContextClass = Class.forName("javax.servlet.ServletContext");
+                servletContextClass = Class.forName("jakarta.servlet.ServletContext");
                 servletUtilsClass = Class.forName("org.apache.velocity.tools.view.ServletUtils");
             } catch (ClassNotFoundException cnfe)
             {

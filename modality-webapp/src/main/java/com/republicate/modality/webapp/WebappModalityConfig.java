@@ -25,8 +25,8 @@ import org.apache.velocity.util.ExtProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 public class WebappModalityConfig
 {

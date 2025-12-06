@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test model where a "view" entity has explicit PK but doesn't exist in the database.
+This simulates a scenario where a client declares a view that doesn't exist.
+-->
+<model write="java">
+    <author/>
+    <book/>
+    <!-- This "view" entity doesn't exist in the database, but has explicit PK -->
+    <book_summary table="book_summary_view" sqlPrimaryKey="book_id"/>
+</model>

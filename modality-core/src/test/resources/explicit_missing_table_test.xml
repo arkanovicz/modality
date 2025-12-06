@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test model where an entity has an explicit table= attribute pointing to a non-existent table.
+This should throw ConfigurationException, not NPE.
+-->
+<model write="java">
+    <author/>
+    <!-- This entity explicitly maps to a table that doesn't exist -->
+    <book table="nonexistent_book"/>
+</model>

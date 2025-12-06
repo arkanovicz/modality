@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test model where sqlPrimaryKey references a column that doesn't exist in the table.
+The author table has author_id, but we specify nonexistent_id as PK.
+-->
+<model write="java">
+    <!-- This entity has a wrong PK column that doesn't exist -->
+    <author sqlPrimaryKey="nonexistent_id"/>
+    <book/>
+</model>

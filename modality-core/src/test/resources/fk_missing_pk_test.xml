@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test model where an FK references a table that doesn't match the entity declared in XML.
+The 'category' entity is declared but doesn't exist in the database.
+Meanwhile, 'book' has an FK to 'publisher' which exists in DB but is NOT in the XML.
+-->
+<model write="java">
+    <book/>
+    <!-- This entity does NOT exist in database but is declared -->
+    <category/>
+</model>

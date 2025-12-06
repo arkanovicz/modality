@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test for NPE at line 1032 in declareUpstreamJoin.
+The author entity has no explicit table= but has sqlPrimaryKey.
+The entity name will be used to guess the table name (AUTHOR) which doesn't exist.
+Since there's no explicit table=, the error path is different:
+- entity.setTable(null) is called instead of throwing ConfigurationException
+- Entity stays in knownEntitiesByTable
+- sqlPrimaryKey is set so getJoins() doesn't bail early
+- But getPrimaryKey() returns null because no columns
+- declareUpstreamJoin NPEs at line 1032
+-->
+<model write="java">
+    <book/>
+    <!-- author has sqlPrimaryKey but table 'author' doesn't exist - no explicit table= -->
+    <author sqlPrimaryKey="author_id"/>
+</model>

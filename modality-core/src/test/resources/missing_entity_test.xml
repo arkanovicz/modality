@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Test model that declares an entity (publisher) that doesn't exist in the database.
+This should trigger an NPE during join reverse engineering.
+-->
+<model write="java">
+    <!-- These entities exist in database -->
+    <author/>
+    <book/>
+    <!-- This entity does NOT exist in database - should cause NPE during join reverse engineering -->
+    <publisher/>
+</model>

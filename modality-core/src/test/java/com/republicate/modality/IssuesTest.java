@@ -9,6 +9,7 @@ import org.junit.runners.MethodSorters;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 
@@ -244,32 +245,17 @@ public class IssuesTest extends BaseBookshelfTests
         model.setReverseMode(Model.ReverseMode.EXTENDED);
         model.getIdentifiersFilters().addMappings(identMapping);
 
-        try
-        {
-            // This might throw NPE because 'nonexistent_id' column doesn't exist
-            // The entity tries to build primaryKey from sqlPrimaryKey but column isn't found
-            model.initialize(getResourceReader("wrong_pk_column_test.xml"));
-            fail("Should throw an exception for wrong PK column name");
-        }
-        catch (NullPointerException e)
-        {
-            // This is the bug! Should be ConfigurationException, not NPE
-            // For now we document that NPE occurs
-            logger.error("NPE when sqlPrimaryKey references non-existent column - this is a bug", e);
-        }
-        catch (ConfigurationException e)
-        {
-            // Log the full exception chain
-            logger.info("Got ConfigurationException: " + e.getMessage());
-            Throwable cause = e.getCause();
-            while (cause != null)
-            {
-                logger.info("  Cause: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
-                cause = cause.getCause();
-            }
-            // The exception is correct, just verify it was thrown
-            assertNotNull("ConfigurationException thrown as expected", e);
-        }
+        // Initialize should succeed but log warnings for invalid sqlPrimaryKey
+        // The entity will have no primary key because the column doesn't exist
+        model.initialize(getResourceReader("wrong_pk_column_test.xml"));
+
+        // The model should initialize without NPE
+        Entity author = model.getEntity("author");
+        assertNotNull("Entity should exist", author);
+        // Primary key should be null because the column was not found
+        List<Entity.Column> pk = author.getPrimaryKey();
+        assertTrue("Primary key should be null or empty due to invalid sqlPrimaryKey column",
+            pk == null || pk.isEmpty());
     }
 
     /**
@@ -298,36 +284,18 @@ public class IssuesTest extends BaseBookshelfTests
         model.setReverseMode(Model.ReverseMode.EXTENDED);
         model.getIdentifiersFilters().addMappings(identMapping);
 
-        try
-        {
-            // This should throw an exception - ideally ConfigurationException, not NPE
-            // The 'author' entity has sqlPrimaryKey="author_id" but table 'author_missing' doesn't exist
-            model.initialize(getResourceReader("npe_join_test.xml"));
-            fail("Should throw an exception for missing table with explicit sqlPrimaryKey");
-        }
-        catch (NullPointerException e)
-        {
-            // This is the bug - should be ConfigurationException
-            logger.error("NPE in join reverse engineering - table doesn't exist but has sqlPrimaryKey", e);
-            // For now, just document that it happens
-            assertNotNull("NPE thrown - this is a bug", e);
-        }
-        catch (ConfigurationException e)
-        {
-            // This is what we expect after the fix - or wrapped NPE
-            logger.info("Got ConfigurationException: " + e.getMessage());
-            Throwable cause = e.getCause();
-            while (cause != null)
-            {
-                logger.info("  Cause: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
-                if (cause instanceof NullPointerException)
-                {
-                    logger.error("Root cause is NPE - this should be a better error message", cause);
-                }
-                cause = cause.getCause();
-            }
-            assertNotNull("ConfigurationException thrown", e);
-        }
+        // Initialize should succeed with warnings logged
+        // The 'author' entity has sqlPrimaryKey="author_id" but table 'author_missing' doesn't exist
+        model.initialize(getResourceReader("npe_join_test.xml"));
+
+        // The model should initialize without NPE
+        // The author entity exists but has no table
+        Entity author = model.getEntity("author");
+        assertNotNull("Author entity should exist", author);
+
+        // The book entity should exist and work fine
+        Entity book = model.getEntity("book");
+        assertNotNull("Book entity should exist", book);
     }
 
 }

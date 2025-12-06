@@ -205,6 +205,10 @@ public class ReverseEngineer
     public List<Pair<String, List<String>>> getJoins(Entity pkEntity) throws SQLException
     {
         List<Pair<String, List<String>>> joins = new ArrayList<>();
+        if (pkEntity.getTable() == null)
+        {
+            return joins;
+        }
         List<String> knownPK = pkEntity.getSqlPrimaryKey();
         if (knownPK == null || knownPK.size() == 0)
         {

@@ -259,7 +259,26 @@ public abstract class BaseEntity extends AttributeHolder
 
         if (sqlPrimaryKey != null && sqlPrimaryKey.size() > 0)
         {
-            primaryKey = getSqlPrimaryKey().stream().map(sql -> columns.get(columnsMapping.get(sql))).collect(Collectors.toList());
+            primaryKey = getSqlPrimaryKey().stream().map(sql -> {
+                String colName = columnsMapping.get(sql);
+                if (colName == null)
+                {
+                    getLogger().warn("sqlPrimaryKey column '{}' not found in column mappings for entity {}", sql, getName());
+                    return null;
+                }
+                Column col = columns.get(colName);
+                if (col == null)
+                {
+                    getLogger().warn("sqlPrimaryKey column '{}' (mapped to '{}') not found in columns for entity {}", sql, colName, getName());
+                }
+                return col;
+            }).collect(Collectors.toList());
+            if (primaryKey.contains(null))
+            {
+                getLogger().error("entity {} has invalid sqlPrimaryKey configuration - some columns are missing", getName());
+                primaryKey = null;
+                return;
+            }
             primaryKeyMask = new BitSet();
             primaryKey.stream().forEach(col -> { col.setKeyColumn(); primaryKeyMask.set(col.getIndex()); });
 
@@ -339,9 +358,19 @@ public abstract class BaseEntity extends AttributeHolder
 
     protected void declareUpstreamJoin(String upstreamAttributeName, Entity pkEntity, List<String> fkColumns)
     {
+        List<String> pkColumns = pkEntity.getSqlPrimaryKey();
+        if (pkColumns == null || pkColumns.isEmpty())
+        {
+            getLogger().warn("cannot declare upstream join {}.{}: target entity {} has no primary key", getName(), upstreamAttributeName, pkEntity.getName());
+            return;
+        }
+        if (pkEntity.getTable() == null)
+        {
+            getLogger().warn("cannot declare upstream join {}.{}: target entity {} has no table", getName(), upstreamAttributeName, pkEntity.getName());
+            return;
+        }
         Attribute upstreamAttribute = new RowAttribute(upstreamAttributeName, this);
         upstreamAttribute.setResultEntity(pkEntity);
-        List<String> pkColumns = pkEntity.getSqlPrimaryKey();
         upstreamAttribute.addQueryPart("SELECT * FROM " + quoteIdentifier(pkEntity.getTable()) + " WHERE ");
         for (int col = 0; col < pkColumns.size(); ++ col)
         {
@@ -358,6 +387,16 @@ public abstract class BaseEntity extends AttributeHolder
 
     public void declareDownstreamJoin(String downstreamAttributeName, Entity fkEntity, List<String> fkColumns)
     {
+        if (sqlPrimaryKey == null || sqlPrimaryKey.isEmpty())
+        {
+            getLogger().warn("cannot declare downstream join {}.{}: source entity has no primary key", getName(), downstreamAttributeName);
+            return;
+        }
+        if (fkEntity.getTable() == null)
+        {
+            getLogger().warn("cannot declare downstream join {}.{}: target entity {} has no table", getName(), downstreamAttributeName, fkEntity.getName());
+            return;
+        }
         Attribute downstreamAttribute = new RowsetAttribute(downstreamAttributeName, this);
         downstreamAttribute.setResultEntity(fkEntity);
         downstreamAttribute.addQueryPart("SELECT * FROM " + quoteIdentifier(fkEntity.getTable()) + " WHERE ");
@@ -377,10 +416,25 @@ public abstract class BaseEntity extends AttributeHolder
     public void declareExtendedJoin(String joinAttributeName, List<String> leftFKCols, Entity joinEntity, List<String> rightFKCols, Entity rightEntity)
     {
         List<String> rightPK = rightEntity.getSqlPrimaryKey();
+        if (rightPK == null || rightPK.isEmpty())
+        {
+            getLogger().warn("cannot declare extended join {}.{}: right entity {} has no primary key", getName(), joinAttributeName, rightEntity.getName());
+            return;
+        }
+        if (sqlPrimaryKey == null || sqlPrimaryKey.isEmpty())
+        {
+            getLogger().warn("cannot declare extended join {}.{}: left entity has no primary key", getName(), joinAttributeName);
+            return;
+        }
+        if (rightEntity.getTable() == null || joinEntity.getTable() == null)
+        {
+            getLogger().warn("cannot declare extended join {}.{}: join or right entity has no table", getName(), joinAttributeName);
+            return;
+        }
         Attribute extendedJoin = new RowsetAttribute(joinAttributeName, this);
         extendedJoin.setResultEntity(rightEntity);
         extendedJoin.addQueryPart("SELECT " + quoteIdentifier(rightEntity.getTable()) + ".* FROM " +
-            quoteIdentifier(joinEntity.getTable()) + "JOIN " + quoteIdentifier(rightEntity.getTable()) + " ON ");
+            quoteIdentifier(joinEntity.getTable()) + " JOIN " + quoteIdentifier(rightEntity.getTable()) + " ON ");
         for (int col = 0; col < rightPK.size(); ++col)
         {
             if (col > 0)

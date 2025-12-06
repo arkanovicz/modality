@@ -1024,12 +1024,18 @@ public abstract class BaseModel extends AttributeHolder implements Constants
 
     private void declareUpstreamJoin(Entity pkEntity, Entity fkEntity, List<String> fkColumns) throws SQLException
     {
+        List<Entity.Column> pkColumns = pkEntity.getPrimaryKey();
+        if (pkColumns == null || pkColumns.isEmpty())
+        {
+            getLogger().warn("cannot declare upstream join from {} to {}: target entity has no primary key", fkEntity.getName(), pkEntity.getName());
+            return;
+        }
         String upstreamAttributeName;
         if (fkColumns.size() == 1)
         {
             // if fk column name equals pk column name, take pk table name
             // else take fk column name with '_id' stripped off
-            if (fkColumns.get(0).equals(pkEntity.getPrimaryKey().get(0).name))
+            if (fkColumns.get(0).equals(pkColumns.get(0).name))
             {
                 upstreamAttributeName = pkEntity.getName();
             }

@@ -237,6 +237,9 @@ public abstract class BaseEntity extends AttributeHolder
 
     protected void initialize()
     {
+        // Populate columnNames first so attribute initialization can check for collisions
+        columnNames = columns.values().stream().map(x -> x.name).collect(Collectors.toList());
+
         initializeAttributes();
         if (sqlName == null)
         {
@@ -244,17 +247,17 @@ public abstract class BaseEntity extends AttributeHolder
             return;
         }
 
-        columnNames = columns.values().stream().map(x -> x.name).collect(Collectors.toList());
-
         String tableIdentifier = quoteIdentifier(getTable());
 
         iterateAttribute = new RowsetAttribute("iterate", this);
         iterateAttribute.setResultEntity((Entity)this);
         iterateAttribute.addQueryPart("SELECT * FROM " + tableIdentifier);
+        iterateAttribute.setInternal(true);
         iterateAttribute.initialize();
 
         countAttribute = new ScalarAttribute("getCount", this);
         countAttribute.addQueryPart("SELECT COUNT(*) FROM " + tableIdentifier);
+        countAttribute.setInternal(true);
         countAttribute.initialize();
 
         if (sqlPrimaryKey != null && sqlPrimaryKey.size() > 0)
@@ -286,11 +289,13 @@ public abstract class BaseEntity extends AttributeHolder
             fetchAttribute.setResultEntity((Entity)this);
             fetchAttribute.addQueryPart("SELECT * FROM " + tableIdentifier + " WHERE ");
             addKeyMapToAttribute(fetchAttribute);
+            fetchAttribute.setInternal(true);
             fetchAttribute.initialize();
 
             delete = new Action("delete", this);
             delete.addQueryPart("DELETE FROM " + tableIdentifier + " WHERE ");
             addKeyMapToAttribute(delete);
+            delete.setInternal(true);
             delete.initialize();
 
             update = new UpdateAction(this);
@@ -298,6 +303,7 @@ public abstract class BaseEntity extends AttributeHolder
             update.addParameter(UpdateAction.DYNAMIC_PART);
             update.addQueryPart(" WHERE ");
             addKeyMapToAttribute(update);
+            update.setInternal(true);
             update.initialize();
         }
     }
@@ -329,6 +335,7 @@ public abstract class BaseEntity extends AttributeHolder
             insert.addParameter(param);
         }
         insert.addQueryPart(")");
+        insert.setInternal(true);
         insert.initialize();
         if (primaryKey.size() == 1 && primaryKey.get(0).generated)
         {
@@ -382,6 +389,7 @@ public abstract class BaseEntity extends AttributeHolder
             upstreamAttribute.addParameter(translateColumnName(fkColumns.get(col)));
         }
         addAttribute(upstreamAttribute);
+        upstreamAttribute.setInternal(true);
         upstreamAttribute.initialize();
     }
 
@@ -410,6 +418,7 @@ public abstract class BaseEntity extends AttributeHolder
             downstreamAttribute.addParameter(translateColumnName(sqlPrimaryKey.get(col)));
         }
         addAttribute(downstreamAttribute);
+        downstreamAttribute.setInternal(true);
         downstreamAttribute.initialize();
     }
 
@@ -454,6 +463,7 @@ public abstract class BaseEntity extends AttributeHolder
             extendedJoin.addParameter(translateColumnName(sqlPrimaryKey.get(col)));
         }
         addAttribute(extendedJoin);
+        extendedJoin.setInternal(true);
         extendedJoin.initialize();
     }
 

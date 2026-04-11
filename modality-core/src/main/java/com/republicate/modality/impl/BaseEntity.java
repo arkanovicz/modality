@@ -356,8 +356,11 @@ public abstract class BaseEntity extends AttributeHolder
             attribute.addQueryPart(quoteIdentifier(sqlPKColName) + " = ");
             attribute.addParameter(translateColumnName(sqlPKColName));
             Column col = getColumn(sqlPKColName);
-            if (model.getDriverInfos().isStrictColumnTypes() && model.getDriverInfos().hasColumnMarkers() && !"serial".equals(col.typeName))
+            if (model.getDriverInfos().isStrictColumnTypes() && model.getDriverInfos().hasColumnMarkers())
             {
+                // Note: serial-family pseudo type names are canonicalized to
+                // their underlying integer types in ReverseEngineer, so the
+                // cast here is always to a real PostgreSQL type.
                 attribute.addQueryPart("::" + col.typeName);
             }
         }

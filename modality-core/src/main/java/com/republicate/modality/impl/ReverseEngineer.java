@@ -127,6 +127,28 @@ public class ReverseEngineer
         return ret;
     }
 
+    /**
+     * PostgreSQL's serial-family pseudo-types ('serial', 'bigserial',
+     * 'smallserial') only exist as shorthand at table-creation time. The
+     * pgjdbc driver still reports them as TYPE_NAME for columns whose default
+     * is a sequence. Translate them to the underlying integer types so the
+     * type name remains valid in cast expressions ('?::int8' etc.) and in
+     * any other place where the raw type name is reused.
+     *
+     * Returns the input unchanged for any non-serial type or for null.
+     */
+    private static String canonicalizeSerialTypeName(String typeName)
+    {
+        if (typeName == null) return null;
+        switch (typeName)
+        {
+            case "serial":      return "int4";
+            case "bigserial":   return "int8";
+            case "smallserial": return "int2";
+            default:            return typeName;
+        }
+    }
+
     public List<Entity.Column> getColumns(Entity entity) throws SQLException
     {
         IdentifiersFilters identifiers = entity.getModel().getIdentifiersFilters();
@@ -155,6 +177,14 @@ public class ReverseEngineer
                     String colName = identifiers.transformColumnName(table, colSqlName);
                     int dataType = columns.getInt("DATA_TYPE");
                     String typeName = columns.getString("TYPE_NAME");
+                    // PostgreSQL JDBC reports serial-family columns with the
+                    // pseudo type names 'serial', 'bigserial', 'smallserial'
+                    // (because they were declared that way in CREATE TABLE).
+                    // Those names are not valid PostgreSQL types — they only
+                    // exist as shorthand at table-creation time. Translate them
+                    // to the underlying integer types so that downstream code
+                    // (parameter casts, PGObject construction, …) works.
+                    typeName = canonicalizeSerialTypeName(typeName);
                     String gen1 = columns.getString("IS_AUTOINCREMENT");
                     String gen2 = columns.getString("IS_GENERATEDCOLUMN");
                     boolean generated = "YES".equals(gen1) || "YES".equals(gen2);

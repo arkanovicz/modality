@@ -4,9 +4,6 @@
 
 **Modality** is a lightweight but hightly configurable Java ORM, with a companion set of tools 
 
-> **3.0** moves the web stack to the Jakarta namespace: `javax.servlet` → `jakarta.servlet`, targeting Jakarta EE 10 (Servlet 6.0, tested on Jetty 12). The previous `javax.*` line is maintained on the [`2.x`](../../tree/2.X) branch.
-
-
 <p align="right">
   <ul>
     <li><a href="https://arkanovicz.github.io/modality/docs/index.html">docs home</a></li>
@@ -16,6 +13,8 @@
     <li><a href="https://arkanovicz.github.io/modality/docs/apidocs/">javadocs</a></li>
   </ul>
 </p>
+
+> **3.0** moves the web stack to the Jakarta namespace: `javax.servlet` → `jakarta.servlet`. The previous `javax.*` line is maintained on the [`2.x`](../../tree/2.X) branch.
 
 # Modality ORM library
 

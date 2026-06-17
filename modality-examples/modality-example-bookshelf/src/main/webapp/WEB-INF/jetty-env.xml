@@ -20,7 +20,7 @@
     under the License.
 
 -->
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+<Configure class="org.eclipse.jetty.ee10.webapp.WebAppContext">
     <New id="bookshelf-database" class="org.eclipse.jetty.plus.jndi.Resource">
         <Arg></Arg>
         <Arg>jdbc/bookshelf</Arg>

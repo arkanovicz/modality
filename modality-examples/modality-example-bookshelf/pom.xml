@@ -32,8 +32,8 @@ under the License.
     <description>Bookshelf - Modality-Based Webapp</description>
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -112,93 +112,53 @@ under the License.
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.8.5</version>
+                <!-- Embedded Jetty 12 (Jakarta EE 10) serves the war for the integration test (requires JDK 17) -->
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
                 <configuration>
-                    <skip>${maven.test.skip}</skip>
-                    <container>
-                        <containerId>jetty9x</containerId>
-                        <timeout>1800000</timeout> <!-- @@ for debugging -->
-                        <!-- plugin tries to use http instead of https -->
-                        <!-- TODO - replace cargo with the jetty maven plugin -->
-                        <artifactInstaller>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-distribution</artifactId>
-                            <version>${jetty.version}</version>
-                        </artifactInstaller>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.commons</groupId>
-                                <artifactId>commons-dbcp2</artifactId>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.apache.commons</groupId>
-                                <artifactId>commons-pool2</artifactId>
-                            </dependency>
-                            <dependency>
-                                <groupId>commons-logging</groupId>
-                                <artifactId>commons-logging</artifactId>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.hsqldb</groupId>
-                                <artifactId>hsqldb</artifactId>
-                            </dependency>
-                        </dependencies>
-                    </container>
-                    <configuration>
-                        <files>
-                            <!-- policy file, disabled, see below
-                                 <copy>
-                                     <file>${project.basedir}/src/main/jetty/showcase.policy</file>
-                                     <todir>/</todir>
-                                     <configfile>true</configfile>
-                                 </copy>
-                                 -->
-                        </files>
-                        <properties>
-                            <!-- variables referenced in the showcase policy file -->
-                            <!-- commented since broken on windows due to a cargo bug like MNG-6386
-                                 <cargo.container>${project.build.directory}/cargo/installs</cargo.container>
-                                 <cargo.repository>${settings.localRepository}</cargo.repository>
-                                 <cargo.webapp>${project.build.directory}/${project.artifactId}</cargo.webapp>
-                                 <cargo.velocity-engine.version>${velocity.engine.version}</cargo.velocity-engine.version>
-                                 <cargo.velocity-tools.version>${project.version}</cargo.velocity-tools.version>
-                                 <cargo.slf4j.version>${slf4j.version}</cargo.slf4j.version>
-                                 <cargo.webapp-slf4j-logger.version>${webapp-slf4j-logger.version}</cargo.webapp-slf4j-logger.version>
-                            -->
-                            <cargo.jvmargs>
-                                <!-- enable remote debugging
-                                     -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006
-                                -->
-
-                                <!-- enable Jetty debug log
-                                     -Dorg.eclipse.jetty.LEVEL=DEBUG
-                                -->
-
-                                <!-- enable security manager
-                                     (disabled for now, see above note about policy file)
-                                     -Djava.security.manager
-                                     -Djava.security.policy=${project.build.directory}/cargo/configurations/jetty9x/showcase.policy
-                                -->
-                            </cargo.jvmargs>
-                        </properties>
-                    </configuration>
+                    <webApp>
+                        <contextPath>/modality-example-bookshelf</contextPath>
+                    </webApp>
+                    <httpConnector>
+                        <port>8080</port>
+                    </httpConnector>
+                    <stopKey>modality-bookshelf</stopKey>
+                    <stopPort>8090</stopPort>
+                    <scan>0</scan>
                 </configuration>
+                <dependencies>
+                    <!-- server classpath: JNDI for jetty-env.xml, connection pool, JDBC driver -->
+                    <dependency>
+                        <groupId>org.eclipse.jetty.ee10</groupId>
+                        <artifactId>jetty-ee10-plus</artifactId>
+                        <version>${jetty.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-dbcp2</artifactId>
+                        <version>2.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>${hsqldb.version}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
-                        <id>start-server</id>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
                         </goals>
-                        <phase>pre-integration-test</phase>
                     </execution>
                     <execution>
-                        <id>stop-server</id>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
                         <goals>
                             <goal>stop</goal>
                         </goals>
-                        <phase>post-integration-test</phase>
                     </execution>
                 </executions>
             </plugin>

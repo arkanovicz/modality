@@ -29,8 +29,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 
 import static org.easymock.EasyMock.*;
 

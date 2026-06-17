@@ -26,8 +26,8 @@ import com.republicate.modality.webapp.auth.helpers.CredentialsChecker;
 import com.republicate.modality.webapp.auth.helpers.CredentialsCheckerImpl;
 
 import java.util.Optional;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
 
 /**
  * <p>HTTP Basic Authentication filter.</p>

@@ -21,7 +21,7 @@ package com.republicate.modality.webapp.auth;
 
 import com.republicate.modality.Model;
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
-import org.eclipse.jetty.servlet.ServletTester;
+import org.eclipse.jetty.ee10.servlet.ServletTester;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -29,12 +29,12 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public abstract class BaseHTTPAuthTests extends BaseBookshelfTests
 {

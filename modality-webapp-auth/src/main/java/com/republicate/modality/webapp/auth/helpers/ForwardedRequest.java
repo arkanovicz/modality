@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class ForwardedRequest extends HttpServletRequestWrapper
 {

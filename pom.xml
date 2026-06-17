@@ -36,7 +36,7 @@ under the License.
     <modules>
         <module>modality-core</module>
         <module>modality-webapp</module>
-        <!-- <module>modality-webapp-auth</module> jetty 11 dependency problem -->
+        <module>modality-webapp-auth</module>
         <module>modality-api-client</module>
         <!-- no release yet
         <module>modality-webapp-oauth-client</module>
@@ -77,9 +77,9 @@ under the License.
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.version>4.13.2</junit.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <servlet.version>6.1.0</servlet.version>
+        <servlet.version>6.0.0</servlet.version>
         <velocity-tools.version>3.2-jakarta</velocity-tools.version>
-        <jetty.version>11.0.25</jetty.version>
+        <jetty.version>12.1.7</jetty.version>
         <hsqldb.version>2.7.1</hsqldb.version>
     </properties>
     <!-- as long as we are using snapshot versions for Velocity and Velocity Tools,

@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 public class CredentialsCheckerImpl implements CredentialsChecker<Instance>
 {

@@ -30,8 +30,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
 
 /**
  * <p>HTTP Digest Authentication filter.</p>

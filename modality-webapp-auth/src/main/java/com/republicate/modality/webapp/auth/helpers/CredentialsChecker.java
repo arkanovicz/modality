@@ -21,7 +21,7 @@ package com.republicate.modality.webapp.auth.helpers;
 
 import com.republicate.modality.Model;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 public interface CredentialsChecker<USER>
 {

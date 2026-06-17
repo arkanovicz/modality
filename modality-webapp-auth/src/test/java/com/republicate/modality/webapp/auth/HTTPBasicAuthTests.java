@@ -19,9 +19,9 @@ package com.republicate.modality.webapp.auth;
  * under the License.
  */
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import com.republicate.modality.util.ConversionUtils;
 import com.republicate.modality.webapp.WebappModelProvider;

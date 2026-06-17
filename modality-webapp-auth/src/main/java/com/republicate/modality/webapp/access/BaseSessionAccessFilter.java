@@ -20,10 +20,10 @@ package com.republicate.modality.webapp.access;
  */
 
 import java.util.Optional;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import static com.republicate.modality.webapp.auth.BaseSessionAuthFilter.LOGGED_SESSION_KEY;
 

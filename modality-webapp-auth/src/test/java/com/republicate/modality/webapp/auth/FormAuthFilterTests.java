@@ -32,7 +32,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import static org.easymock.EasyMock.*;
 

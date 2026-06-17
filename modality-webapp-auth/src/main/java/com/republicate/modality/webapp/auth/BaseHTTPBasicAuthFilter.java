@@ -23,11 +23,11 @@ import com.republicate.modality.util.ConversionUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * <p>Filter for HTTP Basic authentication.</p>

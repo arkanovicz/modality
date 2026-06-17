@@ -41,10 +41,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class RememberMeCookieHandlerImpl implements RememberMeCookieHandler
 {

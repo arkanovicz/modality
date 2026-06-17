@@ -23,9 +23,9 @@ package com.republicate.modality.webapp.auth.helpers;
 import com.republicate.modality.Instance;
 import com.republicate.modality.Model;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface RememberMeCookieHandler
 {
